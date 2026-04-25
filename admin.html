@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServiceLink - Admin Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f3f4f6;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { margin-bottom: 20px; color: #1f2937; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-number { font-size: 32px; font-weight: bold; color: #2563eb; }
+        .stat-label { color: #6b7280; margin-top: 8px; }
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .tab.active { background: #2563eb; color: white; }
+        .tab-content { display: none; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .tab-content.active { display: block; }
+        table { width: 100%; border-collapse: collapse; overflow-x: auto; display: block; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f9fafb; font-weight: 600; }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-open { background: #dbeafe; color: #2563eb; }
+        .badge-accepted { background: #d1fae5; color: #059669; }
+        .badge-completed { background: #f3f4f6; color: #6b7280; }
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-success {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-success:hover { background: #047857; }
+        .refresh-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔧 ServiceLink Admin Dashboard</h1>
+    
+    <div class="stats" id="stats"></div>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('users')">👥 Users</button>
+        <button class="tab" onclick="switchTab('gigs')">📋 Gigs</button>
+        <button class="tab" onclick="switchTab('reports')">🚨 Reports</button>
+        <button class="tab" onclick="switchTab('cashplus')">💰 CashPlus</button>
+    </div>
+    
+    <div id="users-tab" class="tab-content active">
+        <button class="refresh-btn" onclick="loadUsers()">🔄 Refresh Users</button>
+        <div id="users-list"></div>
+    </div>
+    
+    <div id="gigs-tab" class="tab-content">
+        <button class="refresh-btn" onclick="loadGigs()">🔄 Refresh Gigs</button>
+        <div id="gigs-list"></div>
+    </div>
+    
+    <div id="reports-tab" class="tab-content">
+        <button class="refresh-btn" onclick="loadReports()">🔄 Refresh Reports</button>
+        <div id="reports-list"></div>
+    </div>
+    
+    <div id="cashplus-tab" class="tab-content">
+        <button class="refresh-btn" onclick="loadCashPlusDeposits()">🔄 Refresh Deposits</button>
+        <div id="cashplus-list"></div>
+    </div>
+</div>
+
+<script>
+    async function loadStats() {
+        const response = await fetch('/api/stats');
+        const stats = await response.json();
+        document.getElementById('stats').innerHTML = `
+            <div class="stat-card"><div class="stat-number">${stats.totalUsers || 0}</div><div class="stat-label">Total Users</div></div>
+            <div class="stat-card"><div class="stat-number">${stats.totalGigs || 0}</div><div class="stat-label">Total Gigs</div></div>
+            <div class="stat-card"><div class="stat-number">${stats.openGigs || 0}</div><div class="stat-label">Open Gigs</div></div>
+            <div class="stat-card"><div class="stat-number">${stats.activeGigs || 0}</div><div class="stat-label">Active Gigs</div></div>
+            <div class="stat-card"><div class="stat-number">${stats.completedGigs || 0}</div><div class="stat-label">Completed Gigs</div></div>
+            <div class="stat-card"><div class="stat-number">MAD ${stats.totalWalletBalance || 0}</div><div class="stat-label">Total Wallet Balance</div></div>
+        `;
+    }
+    
+    async function loadUsers() {
+        const response = await fetch('/api/users/all');
+        const users = await response.json();
+        const container = document.getElementById('users-list');
+        if (users.length === 0) {
+            container.innerHTML = '<p>No users found.</p>';
+            return;
+        }
+        container.innerHTML = `
+            <div style="overflow-x: auto;">
+            <table>
+                <thead><tr><th>Name</th><th>Phone</th><th>Role</th><th>Balance</th><th>Joined</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    ${users.map(u => `
+                        <tr>
+                            <td>${escapeHtml(u.name)}</td>
+                            <td>${escapeHtml(u.phone)}</td>
+                            <td><span class="badge ${u.role === 'professional' ? 'badge-accepted' : 'badge-open'}">${u.role}</span></td>
+                            <td>MAD ${u.balance || 0}</td>
+                            <td>${new Date(u.created_at).toLocaleDateString()}</td>
+                            <td><button class="btn-danger" onclick="deleteUser('${u.id}')">Delete</button></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            </div>
+        `;
+    }
+    
+    async function loadGigs() {
+        const response = await fetch('/api/gigs');
+        const gigs = await response.json();
+        const container = document.getElementById('gigs-list');
+        if (gigs.length === 0) {
+            container.innerHTML = '<p>No gigs found.</p>';
+            return;
+        }
+        container.innerHTML = `
+            <div style="overflow-x: auto;">
+            <table>
+                <thead><tr><th>Title</th><th>Household</th><th>Professional</th><th>Status</th><th>Created</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    ${gigs.map(g => `
+                        <tr>
+                            <td>${escapeHtml(g.title)}</td>
+                            <td>${escapeHtml(g.household_name)}</td>
+                            <td>${escapeHtml(g.professional_name || '-')}</td>
+                            <td><span class="badge badge-${g.status}">${g.status}</span></td>
+                            <td>${new Date(g.created_at).toLocaleDateString()}</td>
+                            <td><button class="btn-danger" onclick="deleteGig('${g.id}')">Delete</button></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            </div>
+        `;
+    }
+    
+    async function loadReports() {
+        const response = await fetch('/api/reports');
+        const reports = await response.json();
+        const container = document.getElementById('reports-list');
+        if (reports.length === 0) {
+            container.innerHTML = '<p>No reports found.</p>';
+            return;
+        }
+        container.innerHTML = `
+            <div style="overflow-x: auto;">
+            <table>
+                <thead><tr><th>Reporter ID</th><th>Gig ID</th><th>Reason</th><th>Details</th><th>Status</th><th>Date</th></tr>
+                </thead>
+                <tbody>
+                    ${reports.map(r => `
+                        <tr>
+                            <td>${escapeHtml(r.reporter_id)}</td>
+                            <td>${escapeHtml(r.gig_id)}</td>
+                            <td>${escapeHtml(r.reason)}</td>
+                            <td>${escapeHtml(r.details || '-')}</td>
+                            <td><span class="badge badge-open">${r.status}</span></td>
+                            <td>${new Date(r.created_at).toLocaleDateString()}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            </div>
+        `;
+    }
+    
+    async function loadCashPlusDeposits() {
+        const response = await fetch('/api/cashplus/pending');
+        const deposits = await response.json();
+        const container = document.getElementById('cashplus-list');
+        if (deposits.length === 0) {
+            container.innerHTML = '<p>No pending deposits.</p>';
+            return;
+        }
+        container.innerHTML = `
+            <div style="overflow-x: auto;">
+            <table>
+                <thead><tr><th>User ID</th><th>Amount</th><th>Reference</th><th>Date</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    ${deposits.map(d => `
+                        <tr>
+                            <td>${escapeHtml(d.user_id)}</td>
+                            <td>MAD ${d.amount}</td>
+                            <td><strong>${escapeHtml(d.reference)}</strong></td>
+                            <td>${new Date(d.created_at).toLocaleString()}</td>
+                            <td><button class="btn-success" onclick="verifyDeposit('${d.reference}')">Verify & Credit</button></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            </div>
+        `;
+    }
+    
+    async function deleteUser(userId) {
+        if (!confirm('Are you sure you want to delete this user?')) return;
+        const response = await fetch(`/api/users/${userId}/delete`, { method: 'DELETE' });
+        if (response.ok) {
+            alert('User deleted');
+            loadUsers();
+            loadStats();
+        } else {
+            alert('Failed to delete user');
+        }
+    }
+    
+    async function deleteGig(gigId) {
+        if (!confirm('Are you sure you want to delete this gig?')) return;
+        const response = await fetch(`/api/gigs/${gigId}/delete`, { method: 'DELETE' });
+        if (response.ok) {
+            alert('Gig deleted');
+            loadGigs();
+            loadStats();
+        } else {
+            alert('Failed to delete gig');
+        }
+    }
+    
+    async function verifyDeposit(reference) {
+        if (!confirm(`Verify deposit with reference ${reference}? This will credit the user's wallet.`)) return;
+        const response = await fetch('/api/cashplus/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reference: reference })
+        });
+        if (response.ok) {
+            alert('Deposit verified and wallet credited!');
+            loadCashPlusDeposits();
+            loadStats();
+        } else {
+            alert('Failed to verify deposit');
+        }
+    }
+    
+    function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+        document.getElementById(`${tab}-tab`).classList.add('active');
+        
+        if (tab === 'users') loadUsers();
+        if (tab === 'gigs') loadGigs();
+        if (tab === 'reports') loadReports();
+        if (tab === 'cashplus') loadCashPlusDeposits();
+    }
+    
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
+    
+    loadStats();
+    loadUsers();
+</script>
+</body>
+</html>
