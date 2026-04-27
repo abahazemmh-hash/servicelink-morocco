@@ -2,50 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="format-detection" content="telephone=no">
     <title>ServiceLink Morocco</title>
     <style>
+        /* ==================== RESET & BASE ==================== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Prevent font scaling in landscape */
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: #f8fafc;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
         }
 
+        /* Mobile-first container - fills entire screen on mobile */
         .app-container {
-            max-width: 500px;
             width: 100%;
+            max-width: 100% !important;
             min-height: 100vh;
             background: white;
             margin: 0 auto;
             position: relative;
-            box-shadow: 0 0 40px rgba(0,0,0,0.05);
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* For larger tablets, center with max-width */
+        @media (min-width: 768px) {
+            body {
+                background: #e2e8f0;
+            }
+            .app-container {
+                max-width: 450px !important;
+                min-height: 90vh;
+                border-radius: 32px;
+                margin: 20px auto;
+                box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .app-container {
+                max-width: 450px !important;
+            }
         }
 
         /* Language Toggle */
         .lang-toggle {
-            position: absolute;
-            top: 20px;
-            right: 24px;
+            position: fixed;
+            top: 12px;
+            right: 16px;
             display: flex;
             gap: 8px;
-            z-index: 100;
+            z-index: 1000;
+        }
+
+        body.rtl .lang-toggle {
+            right: auto;
+            left: 16px;
         }
 
         .lang-btn {
-            background: none;
+            background: rgba(255,255,255,0.95);
             border: 1px solid #cbd5e1;
             border-radius: 30px;
-            padding: 6px 12px;
-            font-size: 12px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
             color: #64748b;
             transition: all 0.2s;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .lang-btn.active {
@@ -62,18 +109,28 @@
 
         body.rtl .lang-toggle {
             right: auto;
-            left: 24px;
+            left: 16px;
         }
 
         body.rtl .flex-between {
             flex-direction: row-reverse;
         }
 
+        body.rtl .back-btn {
+            flex-direction: row-reverse;
+        }
+
+        body.rtl .phone-row, 
+        body.rtl .verify-row {
+            flex-direction: row-reverse;
+        }
+
         /* Screens */
         .screen {
             display: none;
-            padding: 32px 24px;
+            padding: 20px 16px;
             animation: fadeIn 0.3s ease;
+            flex: 1;
         }
 
         .screen.active {
@@ -85,76 +142,93 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Typography - responsive */
         h1 {
-            font-size: 32px;
+            font-size: clamp(28px, 8vw, 32px);
             font-weight: 700;
             color: #1e293b;
             margin-bottom: 8px;
         }
 
         .subtitle {
-            font-size: 15px;
+            font-size: clamp(13px, 4vw, 15px);
             color: #64748b;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
             line-height: 1.4;
         }
 
         /* Welcome Screen */
         .welcome-logo {
             text-align: center;
-            margin-top: 60px;
+            margin-top: max(60px, 15vh);
             margin-bottom: 40px;
         }
 
         .welcome-logo .logo-icon {
-            font-size: 72px;
+            font-size: clamp(56px, 18vw, 72px);
             margin-bottom: 16px;
         }
 
         .welcome-logo h1 {
-            font-size: 28px;
+            font-size: clamp(24px, 7vw, 28px);
+            margin-bottom: 8px;
+        }
+
+        .greeting {
+            font-size: clamp(14px, 4.5vw, 18px);
+            color: #64748b;
             margin-bottom: 8px;
         }
 
         .auth-buttons {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
             margin-top: 20px;
         }
 
-        .btn-login {
+        .btn-login, .btn-signup, .btn-primary, .btn-secondary {
             width: 100%;
-            padding: 16px;
-            background: #2563eb;
-            color: white;
-            border: none;
+            padding: clamp(14px, 4.5vw, 16px);
             border-radius: 50px;
-            font-size: 16px;
+            font-size: clamp(15px, 4.5vw, 16px);
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            border: none;
+        }
+
+        .btn-login {
+            background: #2563eb;
+            color: white;
         }
 
         .btn-signup {
-            width: 100%;
-            padding: 16px;
             background: transparent;
             color: #2563eb;
             border: 2px solid #2563eb;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            margin-top: 8px;
+        }
+
+        .btn-primary:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
         }
 
         /* Form Styles */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         label {
             display: block;
-            font-size: 14px;
+            font-size: clamp(13px, 4vw, 14px);
             font-weight: 600;
             color: #334155;
             margin-bottom: 8px;
@@ -162,17 +236,26 @@
 
         input, select, textarea {
             width: 100%;
-            padding: 16px;
+            padding: clamp(14px, 4.5vw, 16px);
             border: 2px solid #e2e8f0;
             border-radius: 16px;
-            font-size: 16px;
+            font-size: clamp(15px, 4.5vw, 16px);
             transition: all 0.2s;
             background: white;
+            font-family: inherit;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+
+        /* Touch-friendly inputs */
+        input, select, textarea, button {
+            touch-action: manipulation;
         }
 
         .phone-row, .verify-row {
@@ -191,29 +274,11 @@
             background: #f1f5f9;
             color: #2563eb;
             border: 2px solid #e2e8f0;
-            padding: 16px;
-            font-size: 14px;
+            padding: clamp(14px, 4.5vw, 16px);
+            font-size: clamp(13px, 4vw, 14px);
             font-weight: 600;
             cursor: pointer;
             border-radius: 16px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 16px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 12px;
-        }
-
-        .btn-primary:disabled {
-            background: #94a3b8;
-            cursor: not-allowed;
         }
 
         .back-btn {
@@ -226,13 +291,19 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            padding: 8px 0;
+            width: auto;
+        }
+
+        .back-btn span {
+            font-size: 14px;
         }
 
         .progress {
             display: flex;
             justify-content: center;
             gap: 8px;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
 
         .progress-dot {
@@ -266,23 +337,26 @@
 
         .toast {
             position: fixed;
-            bottom: 30px;
-            left: 20px;
-            right: 20px;
+            bottom: 20px;
+            left: 16px;
+            right: 16px;
             background: #1e293b;
             color: white;
             padding: 14px 20px;
             border-radius: 60px;
-            font-size: 14px;
+            font-size: clamp(13px, 4vw, 14px);
             text-align: center;
             z-index: 1000;
             display: none;
+            max-width: calc(100% - 32px);
+            margin: 0 auto;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
         }
 
         .toast.success { background: #10b981; }
         .toast.error { background: #ef4444; }
 
-        /* Location Permission Bar */
+        /* Location Bar */
         .location-bar {
             background: #f1f5f9;
             padding: 12px 16px;
@@ -291,221 +365,92 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 14px;
+            font-size: clamp(13px, 4vw, 14px);
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .location-bar button {
             background: #2563eb;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 30px;
-            font-size: 12px;
+            font-size: 13px;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         .distance-badge {
             background: #e0f2fe;
             color: #0369a1;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-
-        /* Main App Styles */
-        .flex-between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header {
-            padding: 20px 24px;
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .header h1 {
-            font-size: 24px;
-        }
-
-        .main-content {
-            padding: 24px;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .bottom-nav {
-            display: flex;
-            padding: 12px 20px;
-            border-top: 1px solid #e5e7eb;
-            background: white;
-            gap: 20px;
-            position: sticky;
-            bottom: 0;
-        }
-
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            padding: 8px;
-            background: none;
-            color: #6b7280;
-            border: none;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .nav-item.active {
-            color: #2563eb;
-        }
-
-        .gig-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-
-        .gig-title {
-            font-weight: 700;
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-
-        .gig-meta {
-            font-size: 12px;
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
-
-        .gig-desc {
-            font-size: 14px;
-            color: #4b5563;
-            margin-bottom: 12px;
-        }
-
-        .badge {
-            display: inline-block;
             padding: 4px 10px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 600;
+            margin-left: 8px;
+            white-space: nowrap;
         }
 
-        .badge-open { background: #dbeafe; color: #2563eb; }
-        .badge-accepted { background: #d1fae5; color: #059669; }
-        .badge-completed { background: #f3f4f6; color: #6b7280; }
-
-        .wallet-card {
-            background: linear-gradient(135deg, #1e3a5f, #0f172a);
-            color: white;
-            padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
+        /* Role Cards */
+        .role-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 20px;
         }
 
-        .wallet-balance {
-            font-size: 32px;
-            font-weight: 700;
-        }
-
-        .chat-messages {
-            height: 400px;
-            overflow-y: auto;
-            padding: 16px;
-            background: #f9fafb;
-            border-radius: 16px;
-            margin-bottom: 16px;
-        }
-
-        .message {
-            margin-bottom: 12px;
-            max-width: 80%;
-        }
-
-        .message-sent {
-            margin-left: auto;
-            text-align: right;
-        }
-
-        .message-bubble {
-            display: inline-block;
-            padding: 10px 14px;
-            border-radius: 18px;
-            font-size: 14px;
-        }
-
-        .message-sent .message-bubble {
-            background: #2563eb;
-            color: white;
-        }
-
-        .message-received .message-bubble {
+        .role-card {
             background: white;
-            border: 1px solid #e5e7eb;
-            color: #333;
-        }
-
-        .chat-input-area {
-            display: flex;
-            gap: 8px;
-        }
-
-        .chat-input-area input {
-            flex: 1;
-        }
-
-        .chat-input-area button {
-            width: auto;
-            padding: 14px 20px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 20px 16px;
             cursor: pointer;
-        }
-
-        .switch-auth {
+            transition: all 0.2s ease;
             text-align: center;
-            margin-top: 24px;
+        }
+
+        .role-card.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .role-icon {
+            font-size: clamp(40px, 12vw, 48px);
+            margin-bottom: 10px;
+        }
+
+        .role-title {
+            font-size: clamp(18px, 5.5vw, 22px);
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .role-desc {
+            font-size: clamp(12px, 3.5vw, 14px);
             color: #64748b;
-            font-size: 14px;
         }
 
-        .switch-auth a {
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .profile-header .back-btn {
-            margin-bottom: 0;
-            font-size: 28px;
-        }
-
+        /* Checkbox Group */
         .checkbox-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             margin: 16px 0;
         }
 
         .checkbox-group input {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             margin: 0;
+            padding: 0;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-size: clamp(13px, 4vw, 14px);
+            font-weight: normal;
         }
 
         .forgot-password {
@@ -524,47 +469,224 @@
             text-align: left;
         }
 
-        .role-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-top: 24px;
-        }
-
-        .role-card {
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 24px;
-            padding: 24px 20px;
-            cursor: pointer;
+        .switch-auth {
             text-align: center;
+            margin-top: 24px;
+            color: #64748b;
+            font-size: clamp(13px, 4vw, 14px);
         }
 
-        .role-card.selected {
-            border-color: #2563eb;
+        .switch-auth a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Main App Styles */
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header {
+            padding: 16px 16px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: clamp(20px, 6vw, 24px);
+            margin-bottom: 0;
+        }
+
+        .main-content {
+            padding: 16px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .bottom-nav {
+            display: flex;
+            padding: 10px 16px;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+            gap: 8px;
+            position: sticky;
+            bottom: 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px 4px;
+            background: none;
+            color: #6b7280;
+            border: none;
+            font-size: clamp(11px, 3.5vw, 12px);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 30px;
+        }
+
+        .nav-item.active {
+            color: #2563eb;
             background: #eff6ff;
         }
 
-        .role-icon {
-            font-size: 48px;
+        .gig-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 16px;
             margin-bottom: 12px;
+            transition: transform 0.1s ease;
         }
 
-        .role-title {
-            font-size: 22px;
+        .gig-card:active {
+            transform: scale(0.99);
+        }
+
+        .gig-title {
             font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 6px;
+            font-size: clamp(15px, 4.5vw, 16px);
+            margin-bottom: 4px;
         }
 
-        .role-desc {
-            font-size: 14px;
-            color: #64748b;
+        .gig-meta {
+            font-size: clamp(11px, 3.5vw, 12px);
+            color: #6b7280;
+            margin-bottom: 8px;
         }
 
+        .gig-desc {
+            font-size: clamp(13px, 4vw, 14px);
+            color: #4b5563;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-open { background: #dbeafe; color: #2563eb; }
+        .badge-accepted { background: #d1fae5; color: #059669; }
+        .badge-completed { background: #f3f4f6; color: #6b7280; }
+
+        /* Wallet Card */
+        .wallet-card {
+            background: linear-gradient(135deg, #1e3a5f, #0f172a);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .wallet-balance {
+            font-size: clamp(28px, 8vw, 32px);
+            font-weight: 700;
+        }
+
+        /* Chat */
+        .chat-messages {
+            height: 60vh;
+            overflow-y: auto;
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            max-width: 85%;
+        }
+
+        .message-sent {
+            align-self: flex-end;
+        }
+
+        .message-received {
+            align-self: flex-start;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: clamp(14px, 4.5vw, 15px);
+            word-wrap: break-word;
+        }
+
+        .message-sent .message-bubble {
+            background: #2563eb;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-received .message-bubble {
+            background: white;
+            border: 1px solid #e5e7eb;
+            color: #333;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+        }
+
+        .chat-input-area button {
+            width: auto;
+            padding: 16px 24px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .profile-header .back-btn {
+            margin-bottom: 0;
+            padding: 0;
+        }
+
+        .profile-header h1 {
+            margin-bottom: 0;
+        }
+
+        /* Sort Toggle */
         .sort-toggle {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             margin-bottom: 16px;
             justify-content: flex-end;
         }
@@ -572,16 +694,65 @@
         .sort-btn {
             background: #f1f5f9;
             border: 1px solid #e2e8f0;
-            padding: 8px 16px;
+            padding: 8px 20px;
             border-radius: 30px;
-            font-size: 12px;
+            font-size: 13px;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
         .sort-btn.active {
             background: #2563eb;
             color: white;
             border-color: #2563eb;
+        }
+
+        /* Safe area support for notches */
+        @supports (padding: max(0px)) {
+            .app-container {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+            .bottom-nav {
+                padding-bottom: max(10px, env(safe-area-inset-bottom));
+            }
+            .header {
+                padding-top: max(16px, env(safe-area-inset-top));
+            }
+        }
+
+        /* Landscape optimizations */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .screen {
+                padding: 12px 16px;
+            }
+            .welcome-logo {
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+            .welcome-logo .logo-icon {
+                font-size: 40px;
+            }
+            .chat-messages {
+                height: 45vh;
+            }
+        }
+
+        /* Touch-friendly button sizes */
+        button, .nav-item, .role-card, .gig-card {
+            min-height: 44px;
+        }
+
+        /* Loading spinner inline */
+        .spinner-small {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 6px;
         }
     </style>
 </head>
@@ -613,7 +784,7 @@
 
         <div class="form-group">
             <label data-en="Phone Number" data-ar="رقم الهاتف">Phone Number</label>
-            <input type="tel" id="login-phone" placeholder="+212 6XX-XXXXXX">
+            <input type="tel" id="login-phone" placeholder="+212 6XX-XXXXXX" inputmode="tel">
         </div>
         <div class="form-group">
             <label data-en="Password" data-ar="كلمة المرور">Password</label>
@@ -641,14 +812,14 @@
         <div class="form-group">
             <label data-en="Phone Number" data-ar="رقم الهاتف">Phone Number</label>
             <div class="phone-row">
-                <input type="tel" id="reset-phone" placeholder="+212 6XX-XXXXXX">
+                <input type="tel" id="reset-phone" placeholder="+212 6XX-XXXXXX" inputmode="tel">
                 <button id="reset-send-code-btn" onclick="sendResetCode()" data-en="Send Code" data-ar="إرسال الرمز">Send Code</button>
             </div>
         </div>
         <div class="form-group" id="reset-code-group" style="display: none;">
             <label data-en="Verification Code" data-ar="رمز التحقق">Verification Code</label>
             <div class="verify-row">
-                <input type="text" id="reset-code" placeholder="Enter 6-digit code" maxlength="6">
+                <input type="text" id="reset-code" placeholder="123456" maxlength="6" inputmode="numeric">
                 <button id="reset-verify-btn" onclick="verifyResetCode()" data-en="Verify" data-ar="تحقق">Verify</button>
             </div>
         </div>
@@ -690,12 +861,12 @@
         <h1 data-en="Create Account" data-ar="إنشاء حساب">Create Account</h1>
         <p class="subtitle" id="registration-role-display">Registering as Household</p>
         <div class="form-group"><label data-en="Full Name" data-ar="الاسم الكامل">Full Name</label><input type="text" id="full-name" placeholder="Ahmed Benali"></div>
-        <div class="form-group"><label data-en="ID Card Number" data-ar="رقم بطاقة التعريف">ID Card Number</label><input type="text" id="id-card" placeholder="AB123456"></div>
+        <div class="form-group"><label data-en="ID Card Number" data-ar="رقم بطاقة التعريف">ID Card Number</label><input type="text" id="id-card" placeholder="AB123456" inputmode="text"></div>
         <div class="form-group">
             <label data-en="Phone Number" data-ar="رقم الهاتف">Phone Number</label>
-            <div class="phone-row"><input type="tel" id="phone-number" placeholder="+212 6XX-XXXXXX"><button id="send-code-btn" onclick="sendVerificationCode()" data-en="Send Code" data-ar="إرسال الرمز">Send Code</button></div>
+            <div class="phone-row"><input type="tel" id="phone-number" placeholder="+212 6XX-XXXXXX" inputmode="tel"><button id="send-code-btn" onclick="sendVerificationCode()" data-en="Send Code" data-ar="إرسال الرمز">Send Code</button></div>
         </div>
-        <div class="form-group" id="verification-group" style="display: none;"><label data-en="Verification Code" data-ar="رمز التحقق">Verification Code</label><div class="verify-row"><input type="text" id="verification-code" placeholder="123456" maxlength="6"><button id="verify-btn" onclick="verifyCode()" data-en="Verify" data-ar="تحقق">Verify</button></div></div>
+        <div class="form-group" id="verification-group" style="display: none;"><label data-en="Verification Code" data-ar="رمز التحقق">Verification Code</label><div class="verify-row"><input type="text" id="verification-code" placeholder="123456" maxlength="6" inputmode="numeric"><button id="verify-btn" onclick="verifyCode()" data-en="Verify" data-ar="تحقق">Verify</button></div></div>
         <div class="form-group" id="password-group" style="display: none;"><label data-en="Password" data-ar="كلمة المرور">Password</label><input type="password" id="password" placeholder="••••••••"></div>
         <div class="form-group" id="confirm-group" style="display: none;"><label data-en="Confirm Password" data-ar="تأكيد كلمة المرور">Confirm Password</label><input type="password" id="confirm-password" placeholder="••••••••"></div>
         <button id="create-account-btn" class="btn-primary" onclick="createAccount()" style="display: none;" data-en="Create Account" data-ar="إنشاء حساب">Create Account</button>
@@ -704,19 +875,16 @@
 
     <!-- ==================== HOUSEHOLD MAIN ==================== -->
     <div id="household-main" class="screen">
-        <div class="header flex-between"><h1 data-en="My Gigs" data-ar="مهامي">My Gigs</h1><button onclick="showPostGig()" style="background:#2563eb;color:white;border:none;padding:8px 16px;border-radius:30px;" data-en="+ New" data-ar="+ جديد">+ New</button></div>
+        <div class="header flex-between"><h1 data-en="My Gigs" data-ar="مهامي">My Gigs</h1><button onclick="showPostGig()" style="background:#2563eb;color:white;border:none;padding:10px 20px;border-radius:30px;font-size:14px;font-weight:600;" data-en="+ New" data-ar="+ جديد">+ New</button></div>
         <div class="main-content" id="household-gigs-list"></div>
         <div class="bottom-nav"><button class="nav-item active" onclick="switchHouseholdTab('gigs')"><span data-en="My Gigs" data-ar="مهامي">My Gigs</span></button><button class="nav-item" onclick="switchHouseholdTab('profile')"><span data-en="Profile" data-ar="الملف الشخصي">Profile</span></button></div>
     </div>
 
-    <!-- ==================== POST GIG WITH LOCATION ==================== -->
+    <!-- POST GIG -->
     <div id="post-gig-screen" class="screen">
-        <div class="header"><button onclick="backToHousehold()" style="background:none;border:none;font-size:24px;">←</button><h1 data-en="Post New Gig" data-ar="انشر مهمة جديدة">Post New Gig</h1></div>
+        <div class="header"><button onclick="backToHousehold()" style="background:none;border:none;font-size:24px;padding:8px;">←</button><h1 data-en="Post New Gig" data-ar="انشر مهمة جديدة">Post New Gig</h1></div>
         <div class="main-content">
-            <div class="location-bar" id="location-bar-post" style="display:none;">
-                <span>📍 <span id="location-status" data-en="Enable location to add address" data-ar="فعّل الموقع لإضافة العنوان">Enable location to add address</span></span>
-                <button onclick="getCurrentLocationForPost()" data-en="Enable" data-ar="تفعيل">Enable</button>
-            </div>
+            <div class="location-bar" id="location-bar-post" style="display:none;"><span>📍 <span id="location-status" data-en="Enable location to add address" data-ar="فعّل الموقع لإضافة العنوان">Enable location to add address</span></span><button onclick="getCurrentLocationForPost()" data-en="Enable" data-ar="تفعيل">Enable</button></div>
             <div class="form-group"><label data-en="Title" data-ar="العنوان">Title</label><input type="text" id="gig-title" placeholder="Fix leaky faucet"></div>
             <div class="form-group"><label data-en="Category" data-ar="الفئة">Category</label><select id="gig-category"><option>Plumbing</option><option>Electrical</option><option>Carpentry</option><option>Cleaning</option><option>Painting</option></select></div>
             <div class="form-group"><label data-en="Urgency" data-ar="الإلحاح">Urgency</label><select id="gig-urgency"><option value="normal" data-en="Normal" data-ar="عادي">Normal</option><option value="urgent" data-en="Urgent (24h)" data-ar="عاجل (24 ساعة)">Urgent (24h)</option></select></div>
@@ -726,17 +894,11 @@
         </div>
     </div>
 
-    <!-- ==================== PROFESSIONAL MAIN ==================== -->
+    <!-- PROFESSIONAL MAIN -->
     <div id="professional-main" class="screen">
         <div class="header"><h1 data-en="Find Work" data-ar="ابحث عن عمل">Find Work</h1></div>
-        <div class="location-bar" id="location-bar-pro" style="display:none;">
-            <span>📍 <span id="pro-location-status" data-en="Enable location to see nearby gigs" data-ar="فعّل الموقع لمشاهدة المهام القريبة">Enable location to see nearby gigs</span></span>
-            <button onclick="getCurrentLocationForPro()" data-en="Enable" data-ar="تفعيل">Enable</button>
-        </div>
-        <div class="sort-toggle" id="sort-toggle" style="display:none;">
-            <button class="sort-btn active" onclick="setSortBy('distance')">📍 By Distance</button>
-            <button class="sort-btn" onclick="setSortBy('recent')">🕒 Most Recent</button>
-        </div>
+        <div class="location-bar" id="location-bar-pro" style="display:none;"><span>📍 <span id="pro-location-status" data-en="Enable location to see nearby gigs" data-ar="فعّل الموقع لمشاهدة المهام القريبة">Enable location to see nearby gigs</span></span><button onclick="getCurrentLocationForPro()" data-en="Enable" data-ar="تفعيل">Enable</button></div>
+        <div class="sort-toggle" id="sort-toggle" style="display:none;"><button class="sort-btn active" onclick="setSortBy('distance')">📍 By Distance</button><button class="sort-btn" onclick="setSortBy('recent')">🕒 Most Recent</button></div>
         <div class="main-content" id="pro-available-list"></div>
         <div class="bottom-nav"><button class="nav-item active" onclick="switchProTab('available')"><span data-en="Available" data-ar="متاح">Available</span></button><button class="nav-item" onclick="switchProTab('active')"><span data-en="My Gigs" data-ar="مهامي">My Gigs</span></button><button class="nav-item" onclick="switchProTab('wallet')"><span data-en="Wallet" data-ar="المحفظة">Wallet</span></button><button class="nav-item" onclick="switchProTab('profile')"><span data-en="Profile" data-ar="الملف الشخصي">Profile</span></button></div>
     </div>
@@ -751,19 +913,16 @@
         <div class="main-content"><div class="wallet-card"><div style="opacity:0.8;" data-en="Available Balance" data-ar="الرصيد المتاح">Available Balance</div><div class="wallet-balance" id="wallet-balance">MAD 0</div></div><button class="btn-primary" onclick="fundWalletDemo()" data-en="Deposit MAD 100 (Demo)" data-ar="إيداع 100 درهم (تجريبي)">Deposit MAD 100 (Demo)</button></div>
     </div>
 
-    <!-- ==================== PROFILE ==================== -->
+    <!-- PROFILE -->
     <div id="profile-screen" class="screen">
         <div class="profile-header"><button class="back-btn" onclick="goBackFromProfile()">← <span data-en="Back" data-ar="رجوع">Back</span></button><h1 data-en="Profile" data-ar="الملف الشخصي">Profile</h1></div>
-        <div class="main-content">
-            <div style="text-align:center;"><div style="font-size:64px;">👤</div><h2 id="profile-name"></h2><p id="profile-role" style="color:#6b7280;"></p><p id="profile-phone" style="color:#6b7280;"></p></div>
-            <button class="btn-primary" onclick="logout()" style="background:#dc2626;margin-top:24px;" data-en="Logout" data-ar="تسجيل الخروج">Logout</button>
-        </div>
+        <div class="main-content"><div style="text-align:center;"><div style="font-size:64px;">👤</div><h2 id="profile-name"></h2><p id="profile-role" style="color:#6b7280;"></p><p id="profile-phone" style="color:#6b7280;"></p></div><button class="btn-primary" onclick="logout()" style="background:#dc2626;margin-top:24px;" data-en="Logout" data-ar="تسجيل الخروج">Logout</button></div>
     </div>
 
-    <!-- ==================== CHAT SCREEN ==================== -->
+    <!-- CHAT -->
     <div id="chat-screen" class="screen">
         <div class="header flex-between"><button onclick="closeChat()" style="background:none;border:none;font-size:24px;">←</button><h1 id="chat-title">Chat</h1><div></div></div>
-        <div class="main-content" style="display:flex;flex-direction:column;height:calc(100% - 80px);"><div class="chat-messages" id="chat-messages"></div><div class="chat-input-area"><input type="text" id="chat-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendMessage()"><button onclick="sendMessage()">➤</button></div></div>
+        <div class="main-content" style="display:flex;flex-direction:column;height:calc(100% - 70px);"><div class="chat-messages" id="chat-messages"></div><div class="chat-input-area"><input type="text" id="chat-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendMessage()"><button onclick="sendMessage()">➤</button></div></div>
     </div>
 </div>
 
@@ -837,7 +996,7 @@
             const { latitude, longitude } = position.coords;
             await updateUserLocation(latitude, longitude);
             document.getElementById('location-bar-post').style.display = 'none';
-            showToast(currentLanguage === 'en' ? 'Location enabled! You can now add address.' : 'تم تفعيل الموقع! يمكنك الآن إضافة العنوان.', 'success');
+            showToast(currentLanguage === 'en' ? 'Location enabled!' : 'تم تفعيل الموقع!', 'success');
         }, () => { showToast(currentLanguage === 'en' ? 'Location permission denied' : 'تم رفض إذن الموقع', 'error'); });
     }
 
