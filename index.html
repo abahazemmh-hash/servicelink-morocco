@@ -17,6 +17,57 @@
             min-height: 100vh;
         }
 
+        /* Language Toggle */
+        .lang-toggle {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .lang-btn {
+            background: none;
+            border: 1px solid #cbd5e1;
+            border-radius: 30px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        /* RTL Support */
+        body.rtl {
+            direction: rtl;
+            text-align: right;
+        }
+
+        body.rtl .lang-toggle {
+            right: auto;
+            left: 24px;
+        }
+
+        body.rtl .flex-between {
+            flex-direction: row-reverse;
+        }
+
+        body.rtl .back-btn {
+            flex-direction: row-reverse;
+        }
+
+        body.rtl .phone-row, 
+        body.rtl .verify-row {
+            flex-direction: row-reverse;
+        }
+
         /* Main App Container */
         .app-container {
             max-width: 500px;
@@ -28,7 +79,7 @@
             box-shadow: 0 0 40px rgba(0,0,0,0.05);
         }
 
-        /* ==================== ONBOARDING SCREENS ==================== */
+        /* Screens */
         .screen {
             display: none;
             padding: 32px 24px;
@@ -56,6 +107,104 @@
             color: #64748b;
             margin-bottom: 32px;
             line-height: 1.4;
+        }
+
+        /* Welcome Screen */
+        .welcome-logo {
+            text-align: center;
+            margin-top: 60px;
+            margin-bottom: 40px;
+        }
+
+        .welcome-logo .logo-icon {
+            font-size: 72px;
+            margin-bottom: 16px;
+        }
+
+        .welcome-logo h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .greeting {
+            font-size: 18px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .greeting-ar {
+            font-size: 20px;
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        .auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-signup {
+            width: 100%;
+            padding: 16px;
+            background: transparent;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        /* Remember Me Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-size: 14px;
+            font-weight: normal;
+            color: #64748b;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 8px;
+        }
+
+        .forgot-password a {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        body.rtl .forgot-password {
+            text-align: left;
         }
 
         /* Role Cards */
@@ -128,7 +277,6 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        /* Phone row with button */
         .phone-row, .verify-row {
             display: flex;
             gap: 12px;
@@ -152,7 +300,6 @@
             border-radius: 16px;
         }
 
-        /* Buttons */
         .btn-primary {
             width: 100%;
             padding: 16px;
@@ -172,10 +319,6 @@
             cursor: not-allowed;
         }
 
-        .btn-secondary {
-            background: #10b981;
-        }
-
         .back-btn {
             background: none;
             border: none;
@@ -192,7 +335,6 @@
             font-size: 14px;
         }
 
-        /* Progress dots */
         .progress {
             display: flex;
             justify-content: center;
@@ -214,7 +356,6 @@
             background: #2563eb;
         }
 
-        /* Spinner */
         .spinner {
             display: inline-block;
             width: 18px;
@@ -230,7 +371,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -251,7 +391,7 @@
         .toast.success { background: #10b981; }
         .toast.error { background: #ef4444; }
 
-        /* ==================== MAIN APP STYLES ==================== */
+        /* Main App Styles */
         .flex-between {
             display: flex;
             justify-content: space-between;
@@ -403,113 +543,172 @@
             border-radius: 16px;
             cursor: pointer;
         }
+
+        .switch-auth {
+            text-align: center;
+            margin-top: 24px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .switch-auth a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 <div class="app-container" id="app">
+    <!-- Language Toggle -->
+    <div class="lang-toggle">
+        <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+        <button class="lang-btn" onclick="setLanguage('ar')">AR</button>
+    </div>
 
-    <!-- ==================== ONBOARDING ==================== -->
-    <!-- Role Selection Screen -->
-    <div id="role-screen" class="screen active">
-        <div style="text-align: center; margin-top: 40px;">
-            <div style="font-size: 56px; margin-bottom: 16px;">🔧</div>
-            <h1>مرحباً بك</h1>
-            <p class="subtitle">Choose how you want to use ServiceLink</p>
+    <!-- ==================== WELCOME SCREEN ==================== -->
+    <div id="welcome-screen" class="screen active">
+        <div class="welcome-logo">
+            <div class="logo-icon">🔧</div>
+            <h1>ServiceLink</h1>
+            <div class="greeting"><span class="greeting-en">Welcome</span> <span class="greeting-ar">مرحبًا</span></div>
         </div>
+        <div class="auth-buttons">
+            <button class="btn-login" onclick="showLoginScreen()" data-en="Login" data-ar="تسجيل الدخول">Login</button>
+            <button class="btn-signup" onclick="showSignupRoleScreen()" data-en="Sign Up" data-ar="إنشاء حساب">Sign Up</button>
+        </div>
+    </div>
+
+    <!-- ==================== LOGIN SCREEN ==================== -->
+    <div id="login-screen" class="screen">
+        <button class="back-btn" onclick="goBackToWelcome()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
+        <h1 data-en="Welcome Back" data-ar="مرحبًا بعودتك">Welcome Back</h1>
+        <p class="subtitle" data-en="Login to your account" data-ar="تسجيل الدخول إلى حسابك">Login to your account</p>
+
+        <div class="form-group">
+            <label data-en="Phone Number" data-ar="رقم الهاتف">Phone Number</label>
+            <input type="tel" id="login-phone" placeholder="+212 6XX-XXXXXX">
+        </div>
+        <div class="form-group">
+            <label data-en="Password" data-ar="كلمة المرور">Password</label>
+            <input type="password" id="login-password" placeholder="••••••••">
+        </div>
+        <div class="checkbox-group">
+            <input type="checkbox" id="remember-me" checked>
+            <label for="remember-me" data-en="Remember me" data-ar="تذكرني">Remember me</label>
+        </div>
+        <div class="forgot-password">
+            <a href="#" onclick="showToast('Password reset coming soon', 'info')" data-en="Forgot password?" data-ar="نسيت كلمة المرور؟">Forgot password?</a>
+        </div>
+        <button class="btn-primary" onclick="handleLogin()" data-en="Login" data-ar="تسجيل الدخول">Login</button>
+        <div class="switch-auth">
+            <span data-en="Don't have an account?" data-ar="ليس لديك حساب؟">Don't have an account?</span> 
+            <a onclick="showSignupRoleScreen()" data-en="Sign Up" data-ar="إنشاء حساب">Sign Up</a>
+        </div>
+    </div>
+
+    <!-- ==================== SIGNUP: ROLE SELECTION ==================== -->
+    <div id="signup-role-screen" class="screen">
+        <button class="back-btn" onclick="goBackToWelcome()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
+        <h1 data-en="Sign Up" data-ar="إنشاء حساب">Sign Up</h1>
+        <p class="subtitle" data-en="Choose how you want to use ServiceLink" data-ar="اختر كيف تريد استخدام ServiceLink">Choose how you want to use ServiceLink</p>
 
         <div class="role-grid">
             <div class="role-card" data-role="household" onclick="selectRole('household')">
                 <div class="role-icon">🏠</div>
-                <div class="role-title">Household</div>
-                <div class="role-desc">Post gigs and hire professionals بسهولة</div>
+                <div class="role-title" data-en="Household" data-ar="أسرة">Household</div>
+                <div class="role-desc" data-en="Post gigs and hire professionals" data-ar="انشر المهام واستأجر المحترفين">Post gigs and hire professionals</div>
             </div>
-
             <div class="role-card" data-role="professional" onclick="selectRole('professional')">
                 <div class="role-icon">🛠️</div>
-                <div class="role-title">Professional</div>
-                <div class="role-desc">Find work and get paid 💰</div>
+                <div class="role-title" data-en="Professional" data-ar="محترف">Professional</div>
+                <div class="role-desc" data-en="Find work and get paid" data-ar="ابحث عن عمل وتقاضى">Find work and get paid</div>
             </div>
         </div>
-
-        <button id="continue-btn" class="btn-primary" onclick="goToRegistration()" disabled>Continue</button>
+        <button id="signup-continue-btn" class="btn-primary" onclick="goToRegistrationForm()" disabled data-en="Continue" data-ar="استمر">Continue</button>
     </div>
 
-    <!-- Registration Screen -->
+    <!-- ==================== SIGNUP: REGISTRATION FORM ==================== -->
     <div id="registration-screen" class="screen">
-        <button class="back-btn" onclick="goBackToRole()">← <span>Back</span></button>
+        <button class="back-btn" onclick="goBackToSignupRole()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
         <div class="progress">
             <div class="progress-dot active"></div>
             <div class="progress-dot"></div>
             <div class="progress-dot"></div>
         </div>
-        <h1>Create Account</h1>
-        <p class="subtitle" id="registration-role-display">Registering as Household</p>
+        <h1 data-en="Create Account" data-ar="إنشاء حساب">Create Account</h1>
+        <p class="subtitle" id="registration-role-display" data-en="Registering as Household" data-ar="التسجيل كأسرة">Registering as Household</p>
 
         <div class="form-group">
-            <label>Full Name</label>
+            <label data-en="Full Name" data-ar="الاسم الكامل">Full Name</label>
             <input type="text" id="full-name" placeholder="Ahmed Benali">
         </div>
 
         <div class="form-group">
-            <label>ID Card Number</label>
+            <label data-en="ID Card Number" data-ar="رقم بطاقة التعريف">ID Card Number</label>
             <input type="text" id="id-card" placeholder="AB123456">
         </div>
 
         <div class="form-group">
-            <label>Phone Number</label>
+            <label data-en="Phone Number" data-ar="رقم الهاتف">Phone Number</label>
             <div class="phone-row">
                 <input type="tel" id="phone-number" placeholder="+212 6XX-XXXXXX">
-                <button id="send-code-btn" onclick="sendVerificationCode()">Send Code</button>
+                <button id="send-code-btn" onclick="sendVerificationCode()" data-en="Send Code" data-ar="إرسال الرمز">Send Code</button>
             </div>
         </div>
 
         <div class="form-group" id="verification-group" style="display: none;">
-            <label>Verification Code</label>
+            <label data-en="Verification Code" data-ar="رمز التحقق">Verification Code</label>
             <div class="verify-row">
-                <input type="text" id="verification-code" placeholder="Enter 6-digit code" maxlength="6">
-                <button id="verify-btn" onclick="verifyCode()">Verify</button>
+                <input type="text" id="verification-code" placeholder="123456" maxlength="6">
+                <button id="verify-btn" onclick="verifyCode()" data-en="Verify" data-ar="تحقق">Verify</button>
             </div>
         </div>
 
         <div class="form-group" id="password-group" style="display: none;">
-            <label>Password</label>
-            <input type="password" id="password" placeholder="Create a strong password">
+            <label data-en="Password" data-ar="كلمة المرور">Password</label>
+            <input type="password" id="password" placeholder="••••••••">
         </div>
 
         <div class="form-group" id="confirm-group" style="display: none;">
-            <label>Confirm Password</label>
-            <input type="password" id="confirm-password" placeholder="Confirm your password">
+            <label data-en="Confirm Password" data-ar="تأكيد كلمة المرور">Confirm Password</label>
+            <input type="password" id="confirm-password" placeholder="••••••••">
         </div>
 
-        <button id="create-account-btn" class="btn-primary" onclick="createAccount()" style="display: none;">Create Account</button>
+        <button id="create-account-btn" class="btn-primary" onclick="createAccount()" style="display: none;" data-en="Create Account" data-ar="إنشاء حساب">Create Account</button>
+        <div class="switch-auth">
+            <span data-en="Already have an account?" data-ar="لديك حساب بالفعل؟">Already have an account?</span> 
+            <a onclick="showLoginScreen()" data-en="Login" data-ar="تسجيل الدخول">Login</a>
+        </div>
     </div>
 
     <!-- ==================== MAIN APP SCREENS ==================== -->
     <!-- Household Main -->
     <div id="household-main" class="screen">
         <div class="header flex-between">
-            <h1>My Gigs</h1>
-            <button onclick="showPostGig()" style="background: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 30px;">+ New</button>
+            <h1 data-en="My Gigs" data-ar="مهامي">My Gigs</h1>
+            <button onclick="showPostGig()" style="background: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 30px;" data-en="+ New" data-ar="+ جديد">+ New</button>
         </div>
         <div class="main-content" id="household-gigs-list"></div>
         <div class="bottom-nav">
-            <button class="nav-item active" onclick="switchHouseholdTab('gigs')">📋 My Gigs</button>
-            <button class="nav-item" onclick="switchHouseholdTab('profile')">👤 Profile</button>
+            <button class="nav-item active" onclick="switchHouseholdTab('gigs')"><span data-en="My Gigs" data-ar="مهامي">My Gigs</span></button>
+            <button class="nav-item" onclick="switchHouseholdTab('profile')"><span data-en="Profile" data-ar="الملف الشخصي">Profile</span></button>
         </div>
     </div>
 
     <div id="post-gig-screen" class="screen">
         <div class="header">
             <button onclick="backToHousehold()" style="background: none; border: none; font-size: 24px;">←</button>
-            <h1>Post New Gig</h1>
+            <h1 data-en="Post New Gig" data-ar="انشر مهمة جديدة">Post New Gig</h1>
         </div>
         <div class="main-content">
             <div class="form-group">
-                <label>Title</label>
-                <input type="text" id="gig-title" placeholder="e.g., Fix leaky faucet">
+                <label data-en="Title" data-ar="العنوان">Title</label>
+                <input type="text" id="gig-title" placeholder="Fix leaky faucet">
             </div>
             <div class="form-group">
-                <label>Category</label>
+                <label data-en="Category" data-ar="الفئة">Category</label>
                 <select id="gig-category">
                     <option>Plumbing</option>
                     <option>Electrical</option>
@@ -519,53 +718,53 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Urgency</label>
+                <label data-en="Urgency" data-ar="الإلحاح">Urgency</label>
                 <select id="gig-urgency">
-                    <option value="normal">Normal</option>
-                    <option value="urgent">Urgent (24h)</option>
+                    <option value="normal" data-en="Normal" data-ar="عادي">Normal</option>
+                    <option value="urgent" data-en="Urgent (24h)" data-ar="عاجل (24 ساعة)">Urgent (24h)</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Description</label>
+                <label data-en="Description" data-ar="الوصف">Description</label>
                 <textarea id="gig-desc" rows="4" placeholder="Describe what needs to be done..."></textarea>
             </div>
-            <button class="btn-primary" onclick="postGig()">Post Gig</button>
+            <button class="btn-primary" onclick="postGig()" data-en="Post Gig" data-ar="انشر المهمة">Post Gig</button>
         </div>
     </div>
 
     <!-- Professional Main -->
     <div id="professional-main" class="screen">
         <div class="header">
-            <h1>Find Work</h1>
+            <h1 data-en="Find Work" data-ar="ابحث عن عمل">Find Work</h1>
         </div>
         <div class="main-content" id="pro-available-list"></div>
         <div class="bottom-nav">
-            <button class="nav-item active" onclick="switchProTab('available')">🔍 Available</button>
-            <button class="nav-item" onclick="switchProTab('active')">📋 My Gigs</button>
-            <button class="nav-item" onclick="switchProTab('wallet')">💰 Wallet</button>
-            <button class="nav-item" onclick="switchProTab('profile')">👤 Profile</button>
+            <button class="nav-item active" onclick="switchProTab('available')"><span data-en="Available" data-ar="متاح">Available</span></button>
+            <button class="nav-item" onclick="switchProTab('active')"><span data-en="My Gigs" data-ar="مهامي">My Gigs</span></button>
+            <button class="nav-item" onclick="switchProTab('wallet')"><span data-en="Wallet" data-ar="المحفظة">Wallet</span></button>
+            <button class="nav-item" onclick="switchProTab('profile')"><span data-en="Profile" data-ar="الملف الشخصي">Profile</span></button>
         </div>
     </div>
 
     <div id="pro-active-screen" class="screen">
-        <div class="header"><h1>My Active Gigs</h1></div>
+        <div class="header"><h1 data-en="My Active Gigs" data-ar="مهامي النشطة">My Active Gigs</h1></div>
         <div class="main-content" id="pro-active-list"></div>
     </div>
 
     <div id="pro-wallet-screen" class="screen">
-        <div class="header"><h1>My Wallet</h1></div>
+        <div class="header"><h1 data-en="My Wallet" data-ar="محفظتي">My Wallet</h1></div>
         <div class="main-content">
             <div class="wallet-card">
-                <div style="opacity: 0.8;">Available Balance</div>
+                <div style="opacity: 0.8;" data-en="Available Balance" data-ar="الرصيد المتاح">Available Balance</div>
                 <div class="wallet-balance" id="wallet-balance">MAD 0</div>
             </div>
-            <button class="btn-primary" onclick="fundWalletDemo()">Deposit MAD 100 (Demo)</button>
+            <button class="btn-primary" onclick="fundWalletDemo()" data-en="Deposit MAD 100 (Demo)" data-ar="إيداع 100 درهم (تجريبي)">Deposit MAD 100 (Demo)</button>
         </div>
     </div>
 
     <!-- Profile Screen -->
     <div id="profile-screen" class="screen">
-        <div class="header"><h1>Profile</h1></div>
+        <div class="header"><h1 data-en="Profile" data-ar="الملف الشخصي">Profile</h1></div>
         <div class="main-content">
             <div style="text-align: center;">
                 <div style="font-size: 64px;">👤</div>
@@ -573,7 +772,7 @@
                 <p id="profile-role" style="color: #6b7280;"></p>
                 <p id="profile-phone" style="color: #6b7280;"></p>
             </div>
-            <button class="btn-primary" onclick="logout()" style="background: #dc2626; margin-top: 24px;">Logout</button>
+            <button class="btn-primary" onclick="logout()" style="background: #dc2626; margin-top: 24px;" data-en="Logout" data-ar="تسجيل الخروج">Logout</button>
         </div>
     </div>
 
@@ -598,6 +797,41 @@
 <div id="toast" class="toast"></div>
 
 <script>
+    // ==================== LANGUAGE SUPPORT ====================
+    let currentLanguage = 'en';
+
+    function setLanguage(lang) {
+        currentLanguage = lang;
+        document.body.classList.toggle('rtl', lang === 'ar');
+        
+        // Update all elements with data-en and data-ar
+        document.querySelectorAll('[data-en]').forEach(el => {
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.placeholder = el.getAttribute(`data-${lang}`);
+            } else if (el.tagName === 'BUTTON' && el.getAttribute(`data-${lang}`)) {
+                el.textContent = el.getAttribute(`data-${lang}`);
+            } else if (el.getAttribute(`data-${lang}`)) {
+                el.textContent = el.getAttribute(`data-${lang}`);
+            }
+        });
+        
+        // Update language toggle buttons
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if ((lang === 'en' && btn.textContent === 'EN') || (lang === 'ar' && btn.textContent === 'AR')) {
+                btn.classList.add('active');
+            }
+        });
+        
+        localStorage.setItem('language', lang);
+    }
+
+    // Load saved language
+    const savedLanguage = localStorage.getItem('language');
+    if (savedLanguage) {
+        setLanguage(savedLanguage);
+    }
+
     // ==================== GLOBAL STATE ====================
     let currentUser = null;
     let selectedRole = null;
@@ -620,37 +854,68 @@
         document.getElementById(screenId).classList.add('active');
     }
 
-    // ==================== ONBOARDING ====================
+    // ==================== NAVIGATION ====================
+    function goBackToWelcome() {
+        showScreen('welcome-screen');
+    }
+
+    function showLoginScreen() {
+        showScreen('login-screen');
+        document.getElementById('login-phone').value = '';
+        document.getElementById('login-password').value = '';
+        document.getElementById('remember-me').checked = true;
+    }
+
+    function showSignupRoleScreen() {
+        selectedRole = null;
+        document.querySelectorAll('.role-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        document.getElementById('signup-continue-btn').disabled = true;
+        showScreen('signup-role-screen');
+    }
+
     function selectRole(role) {
         selectedRole = role;
         document.querySelectorAll('.role-card').forEach(card => {
             card.classList.remove('selected');
             if (card.getAttribute('data-role') === role) card.classList.add('selected');
         });
-        document.getElementById('continue-btn').disabled = false;
+        document.getElementById('signup-continue-btn').disabled = false;
     }
 
-    function goToRegistration() {
+    function goToRegistrationForm() {
         if (!selectedRole) return;
         isPhoneVerified = false;
         document.getElementById('verification-group').style.display = 'none';
         document.getElementById('password-group').style.display = 'none';
         document.getElementById('confirm-group').style.display = 'none';
         document.getElementById('create-account-btn').style.display = 'none';
-        document.getElementById('registration-role-display').innerHTML = selectedRole === 'household' ? '🏠 Registering as Household' : '🛠️ Registering as Professional';
+        const roleText = selectedRole === 'household' ? (currentLanguage === 'en' ? 'Registering as Household' : 'التسجيل كأسرة') : (currentLanguage === 'en' ? 'Registering as Professional' : 'التسجيل كمحترف');
+        document.getElementById('registration-role-display').innerHTML = roleText;
+        // Reset form fields
+        document.getElementById('full-name').value = '';
+        document.getElementById('id-card').value = '';
+        document.getElementById('phone-number').value = '';
+        document.getElementById('verification-code').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('confirm-password').value = '';
+        document.getElementById('send-code-btn').disabled = false;
+        document.getElementById('send-code-btn').innerHTML = currentLanguage === 'en' ? 'Send Code' : 'إرسال الرمز';
         showScreen('registration-screen');
     }
 
-    function goBackToRole() {
-        showScreen('role-screen');
+    function goBackToSignupRole() {
+        showScreen('signup-role-screen');
     }
 
+    // ==================== AUTHENTICATION ====================
     async function sendVerificationCode() {
         const phone = document.getElementById('phone-number').value.trim();
-        if (!phone) { showToast('Enter phone number', 'error'); return; }
+        if (!phone) { showToast(currentLanguage === 'en' ? 'Enter phone number' : 'أدخل رقم الهاتف', 'error'); return; }
         const btn = document.getElementById('send-code-btn');
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span> Sending...';
+        btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Sending...' : 'جاري الإرسال...');
         
         try {
             const response = await fetch('/api/send-code', {
@@ -660,34 +925,33 @@
             const data = await response.json();
             if (data.success) {
                 storedVerificationCode = data.testMode ? '123456' : null;
-                showToast(data.testMode ? 'Test Mode: Code 123456' : 'Code sent!', 'success');
+                showToast(data.testMode ? (currentLanguage === 'en' ? 'Test Mode: Code 123456' : 'وضع الاختبار: الرمز 123456') : (currentLanguage === 'en' ? 'Code sent!' : 'تم إرسال الرمز!'), 'success');
                 document.getElementById('verification-group').style.display = 'block';
             } else {
-                showToast('Failed to send code', 'error');
+                showToast(currentLanguage === 'en' ? 'Failed to send code' : 'فشل إرسال الرمز', 'error');
             }
         } catch (err) {
-            // Demo fallback
             storedVerificationCode = '123456';
-            showToast('Demo Mode: Use code 123456', 'success');
+            showToast(currentLanguage === 'en' ? 'Demo Mode: Use code 123456' : 'وضع العرض: استخدم الرمز 123456', 'success');
             document.getElementById('verification-group').style.display = 'block';
         }
         btn.disabled = false;
-        btn.innerHTML = 'Send Code';
+        btn.innerHTML = currentLanguage === 'en' ? 'Send Code' : 'إرسال الرمز';
     }
 
     async function verifyCode() {
         const code = document.getElementById('verification-code').value.trim();
-        if (!code) { showToast('Enter verification code', 'error'); return; }
+        if (!code) { showToast(currentLanguage === 'en' ? 'Enter verification code' : 'أدخل رمز التحقق', 'error'); return; }
         if (code === '123456' || code === storedVerificationCode) {
             isPhoneVerified = true;
-            showToast('Phone verified!', 'success');
+            showToast(currentLanguage === 'en' ? 'Phone verified!' : 'تم التحقق من الهاتف!', 'success');
             document.getElementById('password-group').style.display = 'block';
             document.getElementById('confirm-group').style.display = 'block';
             document.getElementById('create-account-btn').style.display = 'block';
             document.getElementById('verify-btn').disabled = true;
-            document.getElementById('verify-btn').innerHTML = 'Verified ✓';
+            document.getElementById('verify-btn').innerHTML = currentLanguage === 'en' ? 'Verified ✓' : 'تم التحقق ✓';
         } else {
-            showToast('Invalid code', 'error');
+            showToast(currentLanguage === 'en' ? 'Invalid code' : 'رمز غير صالح', 'error');
         }
     }
 
@@ -698,15 +962,15 @@
         const password = document.getElementById('password').value;
         const confirm = document.getElementById('confirm-password').value;
         
-        if (!name) { showToast('Enter full name', 'error'); return; }
-        if (!idCard) { showToast('Enter ID card number', 'error'); return; }
-        if (!isPhoneVerified) { showToast('Verify phone first', 'error'); return; }
-        if (!password || password.length < 4) { showToast('Password must be at least 4 characters', 'error'); return; }
-        if (password !== confirm) { showToast('Passwords do not match', 'error'); return; }
+        if (!name) { showToast(currentLanguage === 'en' ? 'Enter full name' : 'أدخل الاسم الكامل', 'error'); return; }
+        if (!idCard) { showToast(currentLanguage === 'en' ? 'Enter ID card number' : 'أدخل رقم بطاقة التعريف', 'error'); return; }
+        if (!isPhoneVerified) { showToast(currentLanguage === 'en' ? 'Verify phone first' : 'تحقق من الهاتف أولاً', 'error'); return; }
+        if (!password || password.length < 4) { showToast(currentLanguage === 'en' ? 'Password must be at least 4 characters' : 'يجب أن تتكون كلمة المرور من 4 أحرف على الأقل', 'error'); return; }
+        if (password !== confirm) { showToast(currentLanguage === 'en' ? 'Passwords do not match' : 'كلمات المرور غير متطابقة', 'error'); return; }
         
         const btn = document.getElementById('create-account-btn');
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span> Creating...';
+        btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Creating...' : 'جاري الإنشاء...');
         
         try {
             const response = await fetch('/api/verify-register', {
@@ -716,22 +980,74 @@
             const data = await response.json();
             if (data.success) {
                 currentUser = data.user;
-                localStorage.setItem('user', JSON.stringify(currentUser));
-                localStorage.setItem('onboarded', 'true');
-                showToast('Account created!', 'success');
+                const rememberMe = document.getElementById('remember-me')?.checked !== false;
+                if (rememberMe) {
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                }
+                showToast(currentLanguage === 'en' ? 'Account created!' : 'تم إنشاء الحساب!', 'success');
                 enterApp();
             } else {
-                showToast(data.error || 'Registration failed', 'error');
+                showToast(data.error || (currentLanguage === 'en' ? 'Registration failed' : 'فشل التسجيل'), 'error');
             }
         } catch (err) {
-            // Demo fallback
             currentUser = { id: 'user_' + Date.now(), name, phone, role: selectedRole, balance: 0 };
-            localStorage.setItem('user', JSON.stringify(currentUser));
-            localStorage.setItem('onboarded', 'true');
-            showToast('Account created (Demo Mode)!', 'success');
+            const rememberMe = document.getElementById('remember-me')?.checked !== false;
+            if (rememberMe) {
+                localStorage.setItem('user', JSON.stringify(currentUser));
+            }
+            showToast(currentLanguage === 'en' ? 'Account created (Demo Mode)!' : 'تم إنشاء الحساب (وضع العرض)!', 'success');
             enterApp();
         }
         btn.disabled = false;
+    }
+
+    async function handleLogin() {
+        const phone = document.getElementById('login-phone').value.trim();
+        const password = document.getElementById('login-password').value;
+        const rememberMe = document.getElementById('remember-me').checked;
+        
+        if (!phone || !password) {
+            showToast(currentLanguage === 'en' ? 'Please fill all fields' : 'يرجى ملء جميع الحقول', 'error');
+            return;
+        }
+        
+        const btn = document.querySelector('#login-screen .btn-primary');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Logging in...' : 'جاري تسجيل الدخول...');
+        
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, password })
+            });
+            const data = await response.json();
+            if (data.success) {
+                currentUser = data.user;
+                if (rememberMe) {
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                } else {
+                    sessionStorage.setItem('user', JSON.stringify(currentUser));
+                }
+                showToast(currentLanguage === 'en' ? `Welcome back, ${currentUser.name}!` : `مرحبًا بعودتك، ${currentUser.name}!`, 'success');
+                enterApp();
+            } else {
+                showToast(data.error || (currentLanguage === 'en' ? 'Invalid credentials' : 'بيانات غير صحيحة'), 'error');
+            }
+        } catch (err) {
+            showToast(currentLanguage === 'en' ? 'Server error. Try again.' : 'خطأ في الخادم. حاول مرة أخرى.', 'error');
+        }
+        btn.disabled = false;
+        btn.innerHTML = currentLanguage === 'en' ? 'Login' : 'تسجيل الدخول';
+    }
+
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
+        if (messageInterval) clearInterval(messageInterval);
+        showScreen('welcome-screen');
+        const msg = currentLanguage === 'en' ? 'Logged out successfully' : 'تم تسجيل الخروج بنجاح';
+        showToast(msg, 'success');
     }
 
     // ==================== MAIN APP ====================
@@ -748,40 +1064,37 @@
         loadProfile();
     }
 
-    function logout() {
-        currentUser = null;
-        localStorage.removeItem('user');
-        showScreen('role-screen');
-        document.getElementById('continue-btn').disabled = true;
-        selectedRole = null;
-        document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
-    }
-
-    // Check saved session
-    const savedUser = localStorage.getItem('user');
-    const onboarded = localStorage.getItem('onboarded');
-    if (savedUser && onboarded) {
-        currentUser = JSON.parse(savedUser);
-        enterApp();
+    // Check saved session on load (priority: localStorage then sessionStorage)
+    const savedUserSession = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (savedUserSession) {
+        try {
+            currentUser = JSON.parse(savedUserSession);
+            if (currentUser && currentUser.id) {
+                enterApp();
+            }
+        } catch(e) {
+            console.log('No saved session');
+        }
     }
 
     // Household functions
     async function loadHouseholdGigs() {
+        if (!currentUser) return;
         try {
             const res = await fetch('/api/gigs');
             const gigs = await res.json();
             const myGigs = gigs.filter(g => g.household_id === currentUser.id);
             const container = document.getElementById('household-gigs-list');
-            if (myGigs.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px;">No gigs yet.</div>'; return; }
+            if (myGigs.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No gigs yet.' : 'لا توجد مهام بعد.'}</div>`; return; }
             container.innerHTML = myGigs.map(g => `
                 <div class="gig-card">
                     <div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div><span class="badge badge-${g.status || 'open'}">${g.status || 'open'}</span></div>
                     <div class="gig-meta">${escapeHtml(g.category)}</div>
                     <div class="gig-desc">${escapeHtml(g.description)}</div>
-                    ${g.status === 'accepted' ? `<button class="btn-primary" style="margin-top:8px; background:#10b981;" onclick="markComplete('${g.id}')">✅ Mark Complete</button><button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" style="margin-top:8px;">💬 Chat</button>` : ''}
+                    ${g.status === 'accepted' ? `<button class="btn-primary" style="margin-top:8px; background:#10b981;" onclick="markComplete('${g.id}')">✅ ${currentLanguage === 'en' ? 'Mark Complete' : 'تأكيد الإكمال'}</button><button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" style="margin-top:8px;">💬 ${currentLanguage === 'en' ? 'Chat' : 'محادثة'}</button>` : ''}
                 </div>
             `).join('');
-        } catch(e) { showToast('Error loading gigs'); }
+        } catch(e) { showToast(currentLanguage === 'en' ? 'Error loading gigs' : 'خطأ في تحميل المهام'); }
     }
 
     function showPostGig() { showScreen('post-gig-screen'); }
@@ -792,77 +1105,83 @@
         const category = document.getElementById('gig-category').value;
         const urgency = document.getElementById('gig-urgency').value;
         const description = document.getElementById('gig-desc').value.trim();
-        if (!title || !description) { showToast('Fill all fields', 'error'); return; }
+        if (!title || !description) { showToast(currentLanguage === 'en' ? 'Fill all fields' : 'املأ جميع الحقول', 'error'); return; }
         const newGig = { id: 'gig_' + Date.now(), title, category, urgency, description, household_id: currentUser.id, household_name: currentUser.name, created_at: Date.now() };
         try {
             await fetch('/api/gigs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newGig) });
-            showToast('Gig posted!');
+            showToast(currentLanguage === 'en' ? 'Gig posted!' : 'تم نشر المهمة!');
             backToHousehold();
-        } catch(e) { showToast('Error posting gig'); }
+        } catch(e) { showToast(currentLanguage === 'en' ? 'Error posting gig' : 'خطأ في نشر المهمة'); }
     }
 
     // Professional functions
     async function loadProAvailableGigs() {
+        if (!currentUser) return;
         try {
             const res = await fetch('/api/gigs');
             const gigs = await res.json();
             const available = gigs.filter(g => g.status === 'open' && g.household_id !== currentUser.id);
             const container = document.getElementById('pro-available-list');
-            if (available.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px;">No gigs available</div>'; return; }
+            if (available.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No gigs available' : 'لا توجد مهام متاحة'}</div>`; return; }
             container.innerHTML = available.map(g => `
                 <div class="gig-card">
                     <div class="gig-title">${escapeHtml(g.title)}</div>
-                    <div class="gig-meta">${escapeHtml(g.category)} • by ${escapeHtml(g.household_name)}</div>
+                    <div class="gig-meta">${escapeHtml(g.category)} • ${currentLanguage === 'en' ? 'by' : 'بواسطة'} ${escapeHtml(g.household_name)}</div>
                     <div class="gig-desc">${escapeHtml(g.description)}</div>
-                    <button class="btn-primary" onclick="acceptGig('${g.id}')">Accept Gig</button>
+                    <button class="btn-primary" onclick="acceptGig('${g.id}')">${currentLanguage === 'en' ? 'Accept Gig' : 'قبول المهمة'}</button>
                 </div>
             `).join('');
-        } catch(e) { showToast('Error loading gigs'); }
+        } catch(e) { showToast(currentLanguage === 'en' ? 'Error loading gigs' : 'خطأ في تحميل المهام'); }
     }
 
     async function loadProActiveGigs() {
+        if (!currentUser) return;
         try {
             const res = await fetch('/api/gigs');
             const gigs = await res.json();
             const active = gigs.filter(g => g.status === 'accepted' && g.professional_id === currentUser.id);
             const container = document.getElementById('pro-active-list');
-            if (active.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px;">No active gigs</div>'; return; }
+            if (active.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No active gigs' : 'لا توجد مهام نشطة'}</div>`; return; }
             container.innerHTML = active.map(g => `
                 <div class="gig-card">
-                    <div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div><span class="badge badge-accepted">Active</span></div>
-                    <div class="gig-meta">Client: ${escapeHtml(g.household_name)}</div>
+                    <div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div><span class="badge badge-accepted">${currentLanguage === 'en' ? 'Active' : 'نشط'}</span></div>
+                    <div class="gig-meta">${currentLanguage === 'en' ? 'Client' : 'العميل'}: ${escapeHtml(g.household_name)}</div>
                     <div class="gig-desc">${escapeHtml(g.description)}</div>
-                    <button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" style="margin-bottom:8px;">💬 Chat</button>
-                    <button class="btn-primary" style="background:#10b981;" onclick="markComplete('${g.id}')">✅ Mark Complete</button>
+                    <button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" style="margin-bottom:8px;">💬 ${currentLanguage === 'en' ? 'Chat' : 'محادثة'}</button>
+                    <button class="btn-primary" style="background:#10b981;" onclick="markComplete('${g.id}')">✅ ${currentLanguage === 'en' ? 'Mark Complete' : 'تأكيد الإكمال'}</button>
                 </div>
             `).join('');
-        } catch(e) { showToast('Error loading active gigs'); }
+        } catch(e) { showToast(currentLanguage === 'en' ? 'Error loading active gigs' : 'خطأ في تحميل المهام النشطة'); }
     }
 
     async function acceptGig(gigId) {
         try {
             const res = await fetch(`/api/gigs/${gigId}/accept`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ professional_id: currentUser.id, professional_name: currentUser.name }) });
-            if (res.ok) { showToast('Gig accepted!'); loadProAvailableGigs(); loadProActiveGigs(); }
-            else showToast('Failed', 'error');
-        } catch(e) { showToast('Error', 'error'); }
+            if (res.ok) { 
+                showToast(currentLanguage === 'en' ? 'Gig accepted!' : 'تم قبول المهمة!');
+                loadProAvailableGigs(); 
+                loadProActiveGigs(); 
+            }
+            else showToast(currentLanguage === 'en' ? 'Failed' : 'فشل', 'error');
+        } catch(e) { showToast(currentLanguage === 'en' ? 'Error' : 'خطأ', 'error'); }
     }
 
     async function markComplete(gigId) {
         try {
             await fetch(`/api/gigs/${gigId}/complete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id }) });
-            showToast('Marked complete!');
+            showToast(currentLanguage === 'en' ? 'Marked complete!' : 'تم تأكيد الإكمال!');
             if (currentUser.role === 'household') loadHouseholdGigs();
             else loadProActiveGigs();
-        } catch(e) { showToast('Error'); }
+        } catch(e) { showToast(currentLanguage === 'en' ? 'Error' : 'خطأ'); }
     }
 
     async function fundWalletDemo() {
         try {
             await fetch('/api/wallet/fund', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id, amount: 100 }) });
             currentUser.balance = (currentUser.balance || 0) + 100;
-            showToast('MAD 100 deposited!');
+            showToast(currentLanguage === 'en' ? 'MAD 100 deposited!' : 'تم إيداع 100 درهم!');
             loadWallet();
-        } catch(e) { showToast('Error'); }
+        } catch(e) { showToast(currentLanguage === 'en' ? 'Error' : 'خطأ'); }
     }
 
     async function loadWallet() {
@@ -884,7 +1203,7 @@
 
     function loadProfile() {
         document.getElementById('profile-name').innerText = currentUser.name;
-        document.getElementById('profile-role').innerText = currentUser.role === 'household' ? '🏠 Household' : '🛠️ Professional';
+        document.getElementById('profile-role').innerText = currentUser.role === 'household' ? (currentLanguage === 'en' ? '🏠 Household' : '🏠 أسرة') : (currentLanguage === 'en' ? '🛠️ Professional' : '🛠️ محترف');
         document.getElementById('profile-phone').innerText = currentUser.phone;
     }
 
@@ -911,7 +1230,7 @@
             const res = await fetch(`/api/gigs/${currentChatGig.id}/messages`);
             const messages = await res.json();
             const container = document.getElementById('chat-messages');
-            if (messages.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px;">No messages yet</div>'; return; }
+            if (messages.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No messages yet' : 'لا توجد رسائل بعد'}</div>`; return; }
             container.innerHTML = messages.map(msg => `
                 <div class="message ${msg.sender_id === currentUser.id ? 'message-sent' : 'message-received'}">
                     <div class="message-bubble">
@@ -936,7 +1255,7 @@
             });
             input.value = '';
             await loadMessages();
-        } catch(e) { showToast('Error sending message'); }
+        } catch(e) { showToast(currentLanguage === 'en' ? 'Error sending message' : 'خطأ في إرسال الرسالة'); }
     }
 
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
