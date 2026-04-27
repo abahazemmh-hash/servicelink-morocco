@@ -2,16 +2,30 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
+const bcrypt = require('bcrypt');
+const twilio = require('twilio');
 
-// Initialize database
+// ==================== TWILIO CONFIG ====================
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const TWILIO_VERIFY_SERVICE_SID = process.env.TWILIO_VERIFY_SERVICE_SID;
+
+if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_VERIFY_SERVICE_SID) {
+    console.error('❌ Missing Twilio credentials in environment variables');
+}
+
+const client = TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN ? twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN) : null;
+
+// ==================== DATABASE ====================
 const db = new sqlite3.Database('servicelink.db');
 
-// Create tables
 db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         phone TEXT UNIQUE NOT NULL,
+        password_hash TEXT,
+        is_verified INTEGER DEFAULT 0,
         role TEXT NOT NULL,
         bio TEXT,
         skills TEXT,
@@ -56,9 +70,40 @@ db.serialize(() => {
         verified_at INTEGER
     )`);
 
-    console.log('✅ Database ready');
+    console.log('✅ Database ready with password support');
 });
 
+// ==================== TWILIO HELPER FUNCTIONS ====================
+async function sendVerificationCode(phone) {
+    if (!client) {
+        console.log(`⚠️ [NO TWILIO] Would send code to ${phone}`);
+        return { success: true, testMode: true };
+    }
+    try {
+        const verification = await client.verify.v2.services(TWILIO_VERIFY_SERVICE_SID)
+            .verifications.create({ to: phone, channel: 'sms' });
+        return { success: true, status: verification.status };
+    } catch (error) {
+        console.error('Twilio send error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+async function checkVerificationCode(phone, code) {
+    if (!client) {
+        return { success: code && code.length === 6 };
+    }
+    try {
+        const verificationCheck = await client.verify.v2.services(TWILIO_VERIFY_SERVICE_SID)
+            .verificationChecks.create({ to: phone, code: code });
+        return { success: verificationCheck.status === 'approved' };
+    } catch (error) {
+        console.error('Twilio verify error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// ==================== SERVER ====================
 const server = http.createServer((req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE');
@@ -72,7 +117,7 @@ const server = http.createServer((req, res) => {
 
     console.log(`📡 ${req.method} ${req.url}`);
 
-    // Serve HTML files
+    // ==================== SERVE HTML ====================
     if (req.url === '/' || req.url === '/index.html') {
         fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
             if (err) {
@@ -99,9 +144,127 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // ==================== API ROUTES ====================
+    // ==================== AUTH ENDPOINTS ====================
+    
+    if (req.url === '/api/send-code' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', async () => {
+            try {
+                const { phone } = JSON.parse(body);
+                const result = await sendVerificationCode(phone);
+                if (result.success) {
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true, testMode: result.testMode, message: 'Code sent' }));
+                } else {
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: false, error: result.error }));
+                }
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+    
+    if (req.url === '/api/verify-register' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', async () => {
+            try {
+                const { phone, code, name, password, role } = JSON.parse(body);
+                const verification = await checkVerificationCode(phone, code);
+                if (!verification.success) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: 'Invalid or expired code' }));
+                    return;
+                }
+                const password_hash = await bcrypt.hash(password, 10);
+                const userId = 'user_' + Date.now();
+                db.get('SELECT * FROM users WHERE phone = ?', [phone], (err, existing) => {
+                    if (existing) {
+                        db.run(`UPDATE users SET id = ?, name = ?, password_hash = ?, role = ?, is_verified = 1 WHERE phone = ?`,
+                            [userId, name, password_hash, role, phone]);
+                    } else {
+                        db.run(`INSERT INTO users (id, name, phone, password_hash, role, is_verified, created_at, balance) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                            [userId, name, phone, password_hash, role, 1, Date.now(), role === 'professional' ? 0 : 0]);
+                    }
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true, user: { id: userId, name, phone, role } }));
+                });
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+    
+    if (req.url === '/api/login' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', async () => {
+            try {
+                const { phone, password } = JSON.parse(body);
+                db.get('SELECT * FROM users WHERE phone = ? AND is_verified = 1', [phone], async (err, user) => {
+                    if (err || !user) {
+                        res.writeHead(401, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Invalid phone or password' }));
+                        return;
+                    }
+                    const match = await bcrypt.compare(password, user.password_hash);
+                    if (!match) {
+                        res.writeHead(401, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Invalid phone or password' }));
+                        return;
+                    }
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true, user: { id: user.id, name: user.name, phone: user.phone, role: user.role, balance: user.balance } }));
+                });
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+    
+    if (req.url.startsWith('/api/user-exists?phone=') && req.method === 'GET') {
+        const phone = decodeURIComponent(req.url.split('=')[1]);
+        db.get('SELECT id, name, phone, role, is_verified FROM users WHERE phone = ?', [phone], (err, user) => {
+            if (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            } else {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ exists: !!user, isVerified: user?.is_verified === 1, user: user || null }));
+            }
+        });
+        return;
+    }
+    
+    if (req.url === '/api/reset-password' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', async () => {
+            try {
+                const { phone, newPassword } = JSON.parse(body);
+                const hashedPassword = await bcrypt.hash(newPassword, 10);
+                db.run('UPDATE users SET password_hash = ? WHERE phone = ?', [hashedPassword, phone]);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
 
-    // GET all gigs
+    // ==================== GIGS ENDPOINTS ====================
+    
     if (req.url === '/api/gigs' && req.method === 'GET') {
         db.all('SELECT * FROM gigs ORDER BY created_at DESC', (err, rows) => {
             if (err) {
@@ -115,7 +278,6 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // POST create gig
     if (req.url === '/api/gigs' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => body += chunk);
@@ -135,42 +297,6 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // POST create user
-    if (req.url === '/api/users' && req.method === 'POST') {
-        let body = '';
-        req.on('data', chunk => body += chunk);
-        req.on('end', () => {
-            try {
-                const user = JSON.parse(body);
-                db.run(`INSERT OR REPLACE INTO users (id, name, phone, role, bio, skills, balance, created_at) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [user.id, user.name, user.phone, user.role, user.bio || '', user.skills || '', user.balance || 0, user.created_at]);
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: true, user: user }));
-            } catch (err) {
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: err.message }));
-            }
-        });
-        return;
-    }
-
-    // GET user by phone
-    if (req.url.startsWith('/api/users?phone=') && req.method === 'GET') {
-        const phone = decodeURIComponent(req.url.split('=')[1]);
-        db.get('SELECT * FROM users WHERE phone = ?', [phone], (err, row) => {
-            if (err) {
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: err.message }));
-            } else {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(row || null));
-            }
-        });
-        return;
-    }
-
-    // POST accept gig
     if (req.url.match(/^\/api\/gigs\/.+\/accept$/) && req.method === 'POST') {
         const gigId = req.url.split('/')[3];
         let body = '';
@@ -190,7 +316,46 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // POST fund wallet (demo)
+    if (req.url.match(/^\/api\/gigs\/.+\/complete$/) && req.method === 'POST') {
+        const gigId = req.url.split('/')[3];
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { user_id } = JSON.parse(body);
+                db.get('SELECT * FROM gigs WHERE id = ?', [gigId], (err, gig) => {
+                    if (err || !gig) {
+                        res.writeHead(404, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Gig not found' }));
+                        return;
+                    }
+                    let completedBy = [];
+                    if (gig.completed_by && gig.completed_by !== '[]') {
+                        try { completedBy = JSON.parse(gig.completed_by); } catch(e) { completedBy = []; }
+                    }
+                    if (!completedBy.includes(user_id)) completedBy.push(user_id);
+                    if (completedBy.length === 2) {
+                        db.run('UPDATE users SET balance = balance - 10 WHERE id = ?', [gig.professional_id]);
+                        db.run(`UPDATE gigs SET status = 'completed', completed_by = ?, completed_at = ? WHERE id = ?`,
+                            [JSON.stringify(completedBy), Date.now(), gigId]);
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ success: true, completed: true }));
+                    } else {
+                        db.run(`UPDATE gigs SET completed_by = ? WHERE id = ?`, [JSON.stringify(completedBy), gigId]);
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ success: true, completed: false }));
+                    }
+                });
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+
+    // ==================== WALLET ENDPOINTS ====================
+    
     if (req.url === '/api/wallet/fund' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => body += chunk);
@@ -208,21 +373,8 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // GET all users (admin)
-    if (req.url === '/api/users/all' && req.method === 'GET') {
-        db.all('SELECT id, name, phone, role, balance, created_at FROM users ORDER BY created_at DESC', (err, rows) => {
-            if (err) {
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: err.message }));
-            } else {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(rows));
-            }
-        });
-        return;
-    }
-
-    // GET messages
+    // ==================== MESSAGES ENDPOINTS ====================
+    
     if (req.url.match(/^\/api\/gigs\/.+\/messages$/) && req.method === 'GET') {
         const gigId = req.url.split('/')[3];
         db.all('SELECT * FROM messages WHERE gig_id = ? ORDER BY created_at ASC', [gigId], (err, rows) => {
@@ -237,7 +389,6 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // POST send message
     if (req.url.match(/^\/api\/gigs\/.+\/messages$/) && req.method === 'POST') {
         const gigId = req.url.split('/')[3];
         let body = '';
@@ -258,7 +409,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // 404 for anything else
+    // 404
     res.writeHead(404);
     res.end('Not found');
 });
@@ -266,5 +417,7 @@ const server = http.createServer((req, res) => {
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
     console.log(`✅ Server running on port ${port}`);
-    console.log(`✅ API available at /api/gigs`);
+    console.log(`✅ Reset password endpoint ready`);
+    if (client) console.log(`✅ Twilio Verify active`);
+    else console.log(`⚠️ Twilio not configured (test mode active)`);
 });

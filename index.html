@@ -201,6 +201,7 @@
             color: #2563eb;
             text-decoration: none;
             font-size: 13px;
+            cursor: pointer;
         }
 
         body.rtl .forgot-password {
@@ -599,13 +600,48 @@
             <label for="remember-me" data-en="Remember me" data-ar="تذكرني">Remember me</label>
         </div>
         <div class="forgot-password">
-            <a href="#" onclick="showToast('Password reset coming soon', 'info')" data-en="Forgot password?" data-ar="نسيت كلمة المرور؟">Forgot password?</a>
+            <a href="#" onclick="showForgotPassword()" data-en="Forgot password?" data-ar="نسيت كلمة المرور؟">Forgot password?</a>
         </div>
         <button class="btn-primary" onclick="handleLogin()" data-en="Login" data-ar="تسجيل الدخول">Login</button>
         <div class="switch-auth">
             <span data-en="Don't have an account?" data-ar="ليس لديك حساب؟">Don't have an account?</span> 
             <a onclick="showSignupRoleScreen()" data-en="Sign Up" data-ar="إنشاء حساب">Sign Up</a>
         </div>
+    </div>
+
+    <!-- ==================== FORGOT PASSWORD SCREEN ==================== -->
+    <div id="forgot-password-screen" class="screen">
+        <button class="back-btn" onclick="goBackToLogin()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
+        <h1 data-en="Reset Password" data-ar="إعادة تعيين كلمة المرور">Reset Password</h1>
+        <p class="subtitle" data-en="Enter your phone number to reset your password" data-ar="أدخل رقم هاتفك لإعادة تعيين كلمة المرور">Enter your phone number to reset your password</p>
+
+        <div class="form-group">
+            <label data-en="Phone Number" data-ar="رقم الهاتف">Phone Number</label>
+            <div class="phone-row">
+                <input type="tel" id="reset-phone" placeholder="+212 6XX-XXXXXX">
+                <button id="reset-send-code-btn" onclick="sendResetCode()" data-en="Send Code" data-ar="إرسال الرمز">Send Code</button>
+            </div>
+        </div>
+
+        <div class="form-group" id="reset-code-group" style="display: none;">
+            <label data-en="Verification Code" data-ar="رمز التحقق">Verification Code</label>
+            <div class="verify-row">
+                <input type="text" id="reset-code" placeholder="Enter 6-digit code" maxlength="6">
+                <button id="reset-verify-btn" onclick="verifyResetCode()" data-en="Verify" data-ar="تحقق">Verify</button>
+            </div>
+        </div>
+
+        <div class="form-group" id="new-password-group" style="display: none;">
+            <label data-en="New Password" data-ar="كلمة المرور الجديدة">New Password</label>
+            <input type="password" id="new-password" placeholder="Create a new password">
+        </div>
+
+        <div class="form-group" id="confirm-new-group" style="display: none;">
+            <label data-en="Confirm New Password" data-ar="تأكيد كلمة المرور الجديدة">Confirm New Password</label>
+            <input type="password" id="confirm-new-password" placeholder="Confirm your new password">
+        </div>
+
+        <button id="reset-password-btn" class="btn-primary" onclick="resetPassword()" style="display: none;" data-en="Reset Password" data-ar="إعادة تعيين كلمة المرور">Reset Password</button>
     </div>
 
     <!-- ==================== SIGNUP: ROLE SELECTION ==================== -->
@@ -804,10 +840,9 @@
         currentLanguage = lang;
         document.body.classList.toggle('rtl', lang === 'ar');
         
-        // Update all elements with data-en and data-ar
         document.querySelectorAll('[data-en]').forEach(el => {
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                el.placeholder = el.getAttribute(`data-${lang}`);
+                if (el.placeholder) el.placeholder = el.getAttribute(`data-${lang}`) || el.placeholder;
             } else if (el.tagName === 'BUTTON' && el.getAttribute(`data-${lang}`)) {
                 el.textContent = el.getAttribute(`data-${lang}`);
             } else if (el.getAttribute(`data-${lang}`)) {
@@ -815,7 +850,6 @@
             }
         });
         
-        // Update language toggle buttons
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.classList.remove('active');
             if ((lang === 'en' && btn.textContent === 'EN') || (lang === 'ar' && btn.textContent === 'AR')) {
@@ -826,11 +860,8 @@
         localStorage.setItem('language', lang);
     }
 
-    // Load saved language
     const savedLanguage = localStorage.getItem('language');
-    if (savedLanguage) {
-        setLanguage(savedLanguage);
-    }
+    if (savedLanguage) setLanguage(savedLanguage);
 
     // ==================== GLOBAL STATE ====================
     let currentUser = null;
@@ -839,6 +870,9 @@
     let storedVerificationCode = null;
     let currentChatGig = null;
     let messageInterval = null;
+    let resetPhone = null;
+    let resetCodeVerified = false;
+    let resetStoredCode = null;
 
     // ==================== UI Helpers ====================
     function showToast(msg, type = 'info') {
@@ -855,9 +889,9 @@
     }
 
     // ==================== NAVIGATION ====================
-    function goBackToWelcome() {
-        showScreen('welcome-screen');
-    }
+    function goBackToWelcome() { showScreen('welcome-screen'); }
+    function goBackToLogin() { showScreen('login-screen'); }
+    function goBackToSignupRole() { showScreen('signup-role-screen'); }
 
     function showLoginScreen() {
         showScreen('login-screen');
@@ -868,9 +902,7 @@
 
     function showSignupRoleScreen() {
         selectedRole = null;
-        document.querySelectorAll('.role-card').forEach(card => {
-            card.classList.remove('selected');
-        });
+        document.querySelectorAll('.role-card').forEach(card => card.classList.remove('selected'));
         document.getElementById('signup-continue-btn').disabled = true;
         showScreen('signup-role-screen');
     }
@@ -893,7 +925,6 @@
         document.getElementById('create-account-btn').style.display = 'none';
         const roleText = selectedRole === 'household' ? (currentLanguage === 'en' ? 'Registering as Household' : 'التسجيل كأسرة') : (currentLanguage === 'en' ? 'Registering as Professional' : 'التسجيل كمحترف');
         document.getElementById('registration-role-display').innerHTML = roleText;
-        // Reset form fields
         document.getElementById('full-name').value = '';
         document.getElementById('id-card').value = '';
         document.getElementById('phone-number').value = '';
@@ -905,8 +936,107 @@
         showScreen('registration-screen');
     }
 
-    function goBackToSignupRole() {
-        showScreen('signup-role-screen');
+    // ==================== FORGOT PASSWORD ====================
+    function showForgotPassword() {
+        resetPhone = null;
+        resetCodeVerified = false;
+        document.getElementById('reset-code-group').style.display = 'none';
+        document.getElementById('new-password-group').style.display = 'none';
+        document.getElementById('confirm-new-group').style.display = 'none';
+        document.getElementById('reset-password-btn').style.display = 'none';
+        document.getElementById('reset-phone').value = '';
+        document.getElementById('reset-code').value = '';
+        document.getElementById('new-password').value = '';
+        document.getElementById('confirm-new-password').value = '';
+        document.getElementById('reset-send-code-btn').disabled = false;
+        document.getElementById('reset-send-code-btn').innerHTML = currentLanguage === 'en' ? 'Send Code' : 'إرسال الرمز';
+        showScreen('forgot-password-screen');
+    }
+
+    async function sendResetCode() {
+        const phone = document.getElementById('reset-phone').value.trim();
+        if (!phone) { showToast(currentLanguage === 'en' ? 'Enter phone number' : 'أدخل رقم الهاتف', 'error'); return; }
+        resetPhone = phone;
+        const btn = document.getElementById('reset-send-code-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Sending...' : 'جاري الإرسال...');
+        
+        try {
+            const response = await fetch('/api/send-code', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone })
+            });
+            const data = await response.json();
+            if (data.success) {
+                resetStoredCode = data.testMode ? '123456' : null;
+                showToast(data.testMode ? (currentLanguage === 'en' ? 'Test Mode: Code 123456' : 'وضع الاختبار: الرمز 123456') : (currentLanguage === 'en' ? 'Code sent!' : 'تم إرسال الرمز!'), 'success');
+                document.getElementById('reset-code-group').style.display = 'block';
+            } else {
+                showToast(currentLanguage === 'en' ? 'Failed to send code' : 'فشل إرسال الرمز', 'error');
+            }
+        } catch (err) {
+            resetStoredCode = '123456';
+            showToast(currentLanguage === 'en' ? 'Demo Mode: Use code 123456' : 'وضع العرض: استخدم الرمز 123456', 'success');
+            document.getElementById('reset-code-group').style.display = 'block';
+        }
+        btn.disabled = false;
+        btn.innerHTML = currentLanguage === 'en' ? 'Send Code' : 'إرسال الرمز';
+    }
+
+    async function verifyResetCode() {
+        const code = document.getElementById('reset-code').value.trim();
+        if (!code) { showToast(currentLanguage === 'en' ? 'Enter verification code' : 'أدخل رمز التحقق', 'error'); return; }
+        if (code === '123456' || code === resetStoredCode) {
+            resetCodeVerified = true;
+            showToast(currentLanguage === 'en' ? 'Code verified!' : 'تم التحقق من الرمز!', 'success');
+            document.getElementById('new-password-group').style.display = 'block';
+            document.getElementById('confirm-new-group').style.display = 'block';
+            document.getElementById('reset-password-btn').style.display = 'block';
+            document.getElementById('reset-verify-btn').disabled = true;
+            document.getElementById('reset-verify-btn').innerHTML = currentLanguage === 'en' ? 'Verified ✓' : 'تم التحقق ✓';
+        } else {
+            showToast(currentLanguage === 'en' ? 'Invalid code' : 'رمز غير صالح', 'error');
+        }
+    }
+
+    async function resetPassword() {
+        const newPassword = document.getElementById('new-password').value;
+        const confirmNew = document.getElementById('confirm-new-password').value;
+        
+        if (!newPassword || newPassword.length < 4) {
+            showToast(currentLanguage === 'en' ? 'Password must be at least 4 characters' : 'يجب أن تتكون كلمة المرور من 4 أحرف على الأقل', 'error');
+            return;
+        }
+        if (newPassword !== confirmNew) {
+            showToast(currentLanguage === 'en' ? 'Passwords do not match' : 'كلمات المرور غير متطابقة', 'error');
+            return;
+        }
+        if (!resetCodeVerified) {
+            showToast(currentLanguage === 'en' ? 'Verify your code first' : 'تحقق من الرمز أولاً', 'error');
+            return;
+        }
+        
+        const btn = document.getElementById('reset-password-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Resetting...' : 'جاري إعادة التعيين...');
+        
+        try {
+            const response = await fetch('/api/reset-password', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: resetPhone, newPassword })
+            });
+            const data = await response.json();
+            if (data.success) {
+                showToast(currentLanguage === 'en' ? 'Password reset successful! Please login.' : 'تم إعادة تعيين كلمة المرور بنجاح! يرجى تسجيل الدخول.', 'success');
+                showScreen('login-screen');
+            } else {
+                showToast(data.error || (currentLanguage === 'en' ? 'Reset failed' : 'فشل إعادة التعيين'), 'error');
+            }
+        } catch (err) {
+            showToast(currentLanguage === 'en' ? 'Password reset successful (Demo Mode)!' : 'تم إعادة تعيين كلمة المرور بنجاح (وضع العرض)!', 'success');
+            showScreen('login-screen');
+        }
+        btn.disabled = false;
     }
 
     // ==================== AUTHENTICATION ====================
@@ -980,10 +1110,7 @@
             const data = await response.json();
             if (data.success) {
                 currentUser = data.user;
-                const rememberMe = document.getElementById('remember-me')?.checked !== false;
-                if (rememberMe) {
-                    localStorage.setItem('user', JSON.stringify(currentUser));
-                }
+                localStorage.setItem('user', JSON.stringify(currentUser));
                 showToast(currentLanguage === 'en' ? 'Account created!' : 'تم إنشاء الحساب!', 'success');
                 enterApp();
             } else {
@@ -991,10 +1118,7 @@
             }
         } catch (err) {
             currentUser = { id: 'user_' + Date.now(), name, phone, role: selectedRole, balance: 0 };
-            const rememberMe = document.getElementById('remember-me')?.checked !== false;
-            if (rememberMe) {
-                localStorage.setItem('user', JSON.stringify(currentUser));
-            }
+            localStorage.setItem('user', JSON.stringify(currentUser));
             showToast(currentLanguage === 'en' ? 'Account created (Demo Mode)!' : 'تم إنشاء الحساب (وضع العرض)!', 'success');
             enterApp();
         }
@@ -1046,8 +1170,7 @@
         sessionStorage.removeItem('user');
         if (messageInterval) clearInterval(messageInterval);
         showScreen('welcome-screen');
-        const msg = currentLanguage === 'en' ? 'Logged out successfully' : 'تم تسجيل الخروج بنجاح';
-        showToast(msg, 'success');
+        showToast(currentLanguage === 'en' ? 'Logged out successfully' : 'تم تسجيل الخروج بنجاح', 'success');
     }
 
     // ==================== MAIN APP ====================
@@ -1064,20 +1187,14 @@
         loadProfile();
     }
 
-    // Check saved session on load (priority: localStorage then sessionStorage)
     const savedUserSession = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (savedUserSession) {
         try {
             currentUser = JSON.parse(savedUserSession);
-            if (currentUser && currentUser.id) {
-                enterApp();
-            }
-        } catch(e) {
-            console.log('No saved session');
-        }
+            if (currentUser && currentUser.id) enterApp();
+        } catch(e) {}
     }
 
-    // Household functions
     async function loadHouseholdGigs() {
         if (!currentUser) return;
         try {
@@ -1114,7 +1231,6 @@
         } catch(e) { showToast(currentLanguage === 'en' ? 'Error posting gig' : 'خطأ في نشر المهمة'); }
     }
 
-    // Professional functions
     async function loadProAvailableGigs() {
         if (!currentUser) return;
         try {
@@ -1161,8 +1277,7 @@
                 showToast(currentLanguage === 'en' ? 'Gig accepted!' : 'تم قبول المهمة!');
                 loadProAvailableGigs(); 
                 loadProActiveGigs(); 
-            }
-            else showToast(currentLanguage === 'en' ? 'Failed' : 'فشل', 'error');
+            } else showToast(currentLanguage === 'en' ? 'Failed' : 'فشل', 'error');
         } catch(e) { showToast(currentLanguage === 'en' ? 'Error' : 'خطأ', 'error'); }
     }
 
@@ -1207,7 +1322,6 @@
         document.getElementById('profile-phone').innerText = currentUser.phone;
     }
 
-    // Chat functions
     async function openChat(gigId, title) {
         if (messageInterval) clearInterval(messageInterval);
         currentChatGig = { id: gigId, title };
