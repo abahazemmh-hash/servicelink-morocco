@@ -501,6 +501,244 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
+        // ==================== PROFILE ENDPOINTS ====================
+    
+    // Get full professional profile for household viewing
+    if (req.url.match(/^\/api\/professionals\/.+\/profile$/) && req.method === 'GET') {
+        const professionalId = req.url.split('/')[3];
+        const profile = {};
+        
+        // Get user basic info
+        db.get('SELECT id, name, phone, bio, skills, profile_picture, lat, lng FROM users WHERE id = ? AND role = "professional"', [professionalId], (err, user) => {
+            if (err || !user) {
+                res.writeHead(404, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'Professional not found' }));
+                return;
+            }
+            profile.user = user;
+            
+            // Get education
+            db.all('SELECT * FROM education WHERE user_id = ? ORDER BY created_at DESC', [professionalId], (err, edu) => {
+                profile.education = edu || [];
+                
+                // Get work experience
+                db.all('SELECT * FROM work_experience WHERE user_id = ? ORDER BY created_at DESC', [professionalId], (err, work) => {
+                    profile.workExperience = work || [];
+                    
+                    // Get certifications
+                    db.all('SELECT * FROM certifications WHERE user_id = ? ORDER BY created_at DESC', [professionalId], (err, certs) => {
+                        profile.certifications = certs || [];
+                        
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify(profile));
+                    });
+                });
+            });
+        });
+        return;
+    }
+    
+    // Get current user's full profile (for professional)
+    if (req.url === '/api/my-profile' && req.method === 'GET') {
+        const userId = req.url.split('?')[1]?.split('=')[1];
+        if (!userId) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'User ID required' }));
+            return;
+        }
+        
+        const profile = {};
+        db.get('SELECT id, name, phone, bio, skills, profile_picture, profile_completed FROM users WHERE id = ?', [userId], (err, user) => {
+            if (err || !user) {
+                res.writeHead(404, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'User not found' }));
+                return;
+            }
+            profile.user = user;
+            
+            db.all('SELECT * FROM education WHERE user_id = ? ORDER BY created_at DESC', [userId], (err, edu) => {
+                profile.education = edu || [];
+                db.all('SELECT * FROM work_experience WHERE user_id = ? ORDER BY created_at DESC', [userId], (err, work) => {
+                    profile.workExperience = work || [];
+                    db.all('SELECT * FROM certifications WHERE user_id = ? ORDER BY created_at DESC', [userId], (err, certs) => {
+                        profile.certifications = certs || [];
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify(profile));
+                    });
+                });
+            });
+        });
+        return;
+    }
+    
+    // Update user profile (basic info)
+    if (req.url === '/api/update-profile' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { user_id, bio, skills, profile_picture, profile_completed } = JSON.parse(body);
+                db.run(`UPDATE users SET bio = ?, skills = ?, profile_picture = ?, profile_completed = ? WHERE id = ?`,
+                    [bio || '', skills || '', profile_picture || '', profile_completed ? 1 : 0, user_id]);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+    
+    // Add education
+    if (req.url === '/api/add-education' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { user_id, degree, institution, year } = JSON.parse(body);
+                const id = 'edu_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+                db.run(`INSERT INTO education (id, user_id, degree, institution, year, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+                    [id, user_id, degree, institution, year || '', Date.now()]);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true, id }));
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+    
+    // Delete education
+    if (req.url.match(/^\/api\/delete-education\/.+/)) {
+        const eduId = req.url.split('/')[3];
+        db.run('DELETE FROM education WHERE id = ?', [eduId]);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true }));
+        return;
+    }
+    
+    // Add work experience
+    if (req.url === '/api/add-work' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { user_id, title, company, start_year, end_year, description } = JSON.parse(body);
+                const id = 'work_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+                db.run(`INSERT INTO work_experience (id, user_id, title, company, start_year, end_year, description, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [id, user_id, title, company, start_year || '', end_year || '', description || '', Date.now()]);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true, id }));
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+    
+    // Delete work experience
+    if (req.url.match(/^\/api\/delete-work\/.+/)) {
+        const workId = req.url.split('/')[3];
+        db.run('DELETE FROM work_experience WHERE id = ?', [workId]);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true }));
+        return;
+    }
+    
+    // Add certification
+    if (req.url === '/api/add-certification' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { user_id, name, issuer, year, document_url } = JSON.parse(body);
+                const id = 'cert_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+                db.run(`INSERT INTO certifications (id, user_id, name, issuer, year, document_url, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                    [id, user_id, name, issuer, year || '', document_url || '', Date.now()]);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true, id }));
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+    
+    // Delete certification
+    if (req.url.match(/^\/api\/delete-certification\/.+/)) {
+        const certId = req.url.split('/')[3];
+        db.run('DELETE FROM certifications WHERE id = ?', [certId]);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true }));
+        return;
+    }
+    
+    // Apply to gig (submit bid)
+    if (req.url === '/api/apply-to-gig' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { gig_id, professional_id, bid_amount, message } = JSON.parse(body);
+                const id = 'app_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+                db.run(`INSERT INTO gig_applications (id, gig_id, professional_id, bid_amount, message, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                    [id, gig_id, professional_id, bid_amount || null, message || '', 'pending', Date.now()]);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+    
+    // Get applications for a gig (household view)
+    if (req.url.match(/^\/api\/gig-applications\/.+/)) {
+        const gigId = req.url.split('/')[3];
+        db.all(`
+            SELECT a.*, u.name, u.phone, u.bio, u.skills, u.profile_picture, u.lat, u.lng
+            FROM gig_applications a
+            JOIN users u ON a.professional_id = u.id
+            WHERE a.gig_id = ? AND a.status = 'pending'
+            ORDER BY a.created_at DESC
+        `, [gigId], (err, rows) => {
+            if (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            } else {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(rows));
+            }
+        });
+        return;
+    }
+    
+    // Select a professional for a gig (household)
+    if (req.url === '/api/select-professional' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { gig_id, professional_id } = JSON.parse(body);
+                db.get('SELECT * FROM users WHERE id = ?', [professional_id], (err, pro) => {
+                    db.run(`UPDATE gigs SET status = 'accepted', professional_id = ?, professional_name = ? WHERE id = ?`,
+                        [professional_id, pro.name, gig_id]);
+                    db.run(`UPDATE gig_applications SET status = 'accepted' WHERE gig_id = ? AND professional_id = ?`, [gig_id, professional_id]);
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true }));
+                });
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
 
     // 404
     res.writeHead(404);
