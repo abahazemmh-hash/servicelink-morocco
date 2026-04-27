@@ -408,6 +408,99 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
+        // ==================== LOCATION ENDPOINTS ====================
+    
+    // Update user location
+    if (req.url === '/api/users/location' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { user_id, lat, lng } = JSON.parse(body);
+                db.run('UPDATE users SET lat = ?, lng = ?, location_updated_at = ? WHERE id = ?',
+                    [lat, lng, Date.now(), user_id]);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: true }));
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+    
+    // Get gigs with distance calculation (for professionals)
+    if (req.url === '/api/gigs/nearby' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { lat, lng, maxDistance = 50 } = JSON.parse(body); // maxDistance in km
+                
+                // Haversine formula to calculate distance
+                db.all(`
+                    SELECT *, 
+                        (6371 * acos(
+                            cos(radians(?)) * cos(radians(lat)) * 
+                            cos(radians(lng) - radians(?)) + 
+                            sin(radians(?)) * sin(radians(lat))
+                        )) AS distance
+                    FROM gigs 
+                    WHERE status = 'open' AND lat IS NOT NULL AND lng IS NOT NULL
+                    HAVING distance < ?
+                    ORDER BY distance ASC
+                `, [lat, lng, lat, maxDistance], (err, rows) => {
+                    if (err) {
+                        res.writeHead(500, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: err.message }));
+                    } else {
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify(rows));
+                    }
+                });
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+    
+    // Get nearby professionals for a household (when viewing applications)
+    if (req.url === '/api/professionals/nearby' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { lat, lng, maxDistance = 50 } = JSON.parse(body);
+                
+                db.all(`
+                    SELECT id, name, phone, role, bio, skills, balance,
+                        (6371 * acos(
+                            cos(radians(?)) * cos(radians(lat)) * 
+                            cos(radians(lng) - radians(?)) + 
+                            sin(radians(?)) * sin(radians(lat))
+                        )) AS distance
+                    FROM users 
+                    WHERE role = 'professional' AND lat IS NOT NULL AND lng IS NOT NULL
+                    HAVING distance < ?
+                    ORDER BY distance ASC
+                `, [lat, lng, lat, maxDistance], (err, rows) => {
+                    if (err) {
+                        res.writeHead(500, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: err.message }));
+                    } else {
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify(rows));
+                    }
+                });
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
 
     // 404
     res.writeHead(404);
