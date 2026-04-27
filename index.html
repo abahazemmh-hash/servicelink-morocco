@@ -6,10 +6,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#2563eb">
-    <meta name="format-detection" content="telephone=no">
     <title>ServiceLink Morocco</title>
     <style>
-        /* ==================== RESET & BASE ==================== */
         * {
             margin: 0;
             padding: 0;
@@ -17,10 +15,8 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Prevent font scaling in landscape */
         html {
             -webkit-text-size-adjust: 100%;
-            text-size-adjust: 100%;
         }
 
         body {
@@ -30,43 +26,23 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
         }
 
-        /* Mobile-first container - fills entire screen on mobile */
         .app-container {
             width: 100%;
-            max-width: 100% !important;
+            max-width: 100%;
             min-height: 100vh;
             background: white;
             margin: 0 auto;
-            position: relative;
-            box-shadow: none;
             display: flex;
             flex-direction: column;
         }
 
-        /* For larger tablets, center with max-width */
         @media (min-width: 768px) {
-            body {
-                background: #e2e8f0;
-            }
-            .app-container {
-                max-width: 450px !important;
-                min-height: 90vh;
-                border-radius: 32px;
-                margin: 20px auto;
-                box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-            }
+            body { background: #e2e8f0; }
+            .app-container { max-width: 450px; min-height: 90vh; border-radius: 32px; margin: 20px auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
         }
 
-        @media (min-width: 1024px) {
-            .app-container {
-                max-width: 450px !important;
-            }
-        }
-
-        /* Language Toggle */
         .lang-toggle {
             position: fixed;
             top: 12px;
@@ -76,10 +52,7 @@
             z-index: 1000;
         }
 
-        body.rtl .lang-toggle {
-            right: auto;
-            left: 16px;
-        }
+        body.rtl .lang-toggle { right: auto; left: 16px; }
 
         .lang-btn {
             background: rgba(255,255,255,0.95);
@@ -90,102 +63,27 @@
             font-weight: 600;
             cursor: pointer;
             color: #64748b;
-            transition: all 0.2s;
             backdrop-filter: blur(4px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        .lang-btn.active {
-            background: #2563eb;
-            border-color: #2563eb;
-            color: white;
-        }
+        .lang-btn.active { background: #2563eb; border-color: #2563eb; color: white; }
 
-        /* RTL Support */
-        body.rtl {
-            direction: rtl;
-            text-align: right;
-        }
+        body.rtl { direction: rtl; text-align: right; }
+        body.rtl .flex-between { flex-direction: row-reverse; }
+        body.rtl .back-btn { flex-direction: row-reverse; }
+        body.rtl .phone-row, body.rtl .verify-row { flex-direction: row-reverse; }
 
-        body.rtl .lang-toggle {
-            right: auto;
-            left: 16px;
-        }
+        .screen { display: none; padding: 20px 16px; animation: fadeIn 0.3s ease; flex: 1; }
+        .screen.active { display: block; }
 
-        body.rtl .flex-between {
-            flex-direction: row-reverse;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        body.rtl .back-btn {
-            flex-direction: row-reverse;
-        }
+        h1 { font-size: clamp(28px, 8vw, 32px); font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+        .subtitle { font-size: clamp(13px, 4vw, 15px); color: #64748b; margin-bottom: 24px; line-height: 1.4; }
 
-        body.rtl .phone-row, 
-        body.rtl .verify-row {
-            flex-direction: row-reverse;
-        }
-
-        /* Screens */
-        .screen {
-            display: none;
-            padding: 20px 16px;
-            animation: fadeIn 0.3s ease;
-            flex: 1;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Typography - responsive */
-        h1 {
-            font-size: clamp(28px, 8vw, 32px);
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            font-size: clamp(13px, 4vw, 15px);
-            color: #64748b;
-            margin-bottom: 24px;
-            line-height: 1.4;
-        }
-
-        /* Welcome Screen */
-        .welcome-logo {
-            text-align: center;
-            margin-top: max(60px, 15vh);
-            margin-bottom: 40px;
-        }
-
-        .welcome-logo .logo-icon {
-            font-size: clamp(56px, 18vw, 72px);
-            margin-bottom: 16px;
-        }
-
-        .welcome-logo h1 {
-            font-size: clamp(24px, 7vw, 28px);
-            margin-bottom: 8px;
-        }
-
-        .greeting {
-            font-size: clamp(14px, 4.5vw, 18px);
-            color: #64748b;
-            margin-bottom: 8px;
-        }
-
-        .auth-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-top: 20px;
-        }
+        .welcome-logo { text-align: center; margin-top: max(60px, 15vh); margin-bottom: 40px; }
+        .welcome-logo .logo-icon { font-size: clamp(56px, 18vw, 72px); margin-bottom: 16px; }
+        .auth-buttons { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
 
         .btn-login, .btn-signup, .btn-primary, .btn-secondary {
             width: 100%;
@@ -194,566 +92,119 @@
             font-size: clamp(15px, 4.5vw, 16px);
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
             text-align: center;
             border: none;
         }
+        .btn-login { background: #2563eb; color: white; }
+        .btn-signup { background: transparent; color: #2563eb; border: 2px solid #2563eb; }
+        .btn-primary { background: #2563eb; color: white; margin-top: 8px; }
+        .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+        .btn-outline { background: transparent; border: 2px solid #2563eb; color: #2563eb; }
 
-        .btn-login {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-signup {
-            background: transparent;
-            color: #2563eb;
-            border: 2px solid #2563eb;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-            margin-top: 8px;
-        }
-
-        .btn-primary:disabled {
-            background: #94a3b8;
-            cursor: not-allowed;
-        }
-
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            font-size: clamp(13px, 4vw, 14px);
-            font-weight: 600;
-            color: #334155;
-            margin-bottom: 8px;
-        }
-
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: clamp(13px, 4vw, 14px); font-weight: 600; color: #334155; margin-bottom: 8px; }
         input, select, textarea {
             width: 100%;
             padding: clamp(14px, 4.5vw, 16px);
             border: 2px solid #e2e8f0;
             border-radius: 16px;
             font-size: clamp(15px, 4.5vw, 16px);
-            transition: all 0.2s;
             background: white;
             font-family: inherit;
-            -webkit-appearance: none;
-            appearance: none;
         }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
 
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-        }
+        .phone-row, .verify-row { display: flex; gap: 12px; align-items: center; }
+        .phone-row input, .verify-row input { flex: 2; }
+        .phone-row button, .verify-row button { flex: 1; white-space: nowrap; background: #f1f5f9; color: #2563eb; border: 2px solid #e2e8f0; padding: clamp(14px, 4.5vw, 16px); font-size: clamp(13px, 4vw, 14px); font-weight: 600; cursor: pointer; border-radius: 16px; }
 
-        /* Touch-friendly inputs */
-        input, select, textarea, button {
-            touch-action: manipulation;
-        }
+        .back-btn { background: none; border: none; font-size: 28px; cursor: pointer; margin-bottom: 16px; color: #64748b; display: flex; align-items: center; gap: 8px; padding: 8px 0; width: auto; }
+        .progress { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
+        .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
+        .progress-dot.active { width: 24px; border-radius: 4px; background: #2563eb; }
 
-        .phone-row, .verify-row {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
+        .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .phone-row input, .verify-row input {
-            flex: 2;
-        }
-
-        .phone-row button, .verify-row button {
-            flex: 1;
-            white-space: nowrap;
-            background: #f1f5f9;
-            color: #2563eb;
-            border: 2px solid #e2e8f0;
-            padding: clamp(14px, 4.5vw, 16px);
-            font-size: clamp(13px, 4vw, 14px);
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 16px;
-        }
-
-        .back-btn {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            margin-bottom: 16px;
-            color: #64748b;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 0;
-            width: auto;
-        }
-
-        .back-btn span {
-            font-size: 14px;
-        }
-
-        .progress {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-
-        .progress-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #cbd5e1;
-            transition: all 0.2s;
-        }
-
-        .progress-dot.active {
-            width: 24px;
-            border-radius: 4px;
-            background: #2563eb;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 2px solid #fff;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-            margin-right: 8px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 16px;
-            right: 16px;
-            background: #1e293b;
-            color: white;
-            padding: 14px 20px;
-            border-radius: 60px;
-            font-size: clamp(13px, 4vw, 14px);
-            text-align: center;
-            z-index: 1000;
-            display: none;
-            max-width: calc(100% - 32px);
-            margin: 0 auto;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
-        }
-
+        .toast { position: fixed; bottom: 20px; left: 16px; right: 16px; background: #1e293b; color: white; padding: 14px 20px; border-radius: 60px; font-size: clamp(13px, 4vw, 14px); text-align: center; z-index: 1000; display: none; margin: 0 auto; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); }
         .toast.success { background: #10b981; }
         .toast.error { background: #ef4444; }
 
-        /* Location Bar */
-        .location-bar {
-            background: #f1f5f9;
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: clamp(13px, 4vw, 14px);
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+        .role-grid { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
+        .role-card { background: white; border: 2px solid #e2e8f0; border-radius: 20px; padding: 20px 16px; cursor: pointer; text-align: center; }
+        .role-card.selected { border-color: #2563eb; background: #eff6ff; }
+        .role-icon { font-size: clamp(40px, 12vw, 48px); margin-bottom: 10px; }
+        .role-title { font-size: clamp(18px, 5.5vw, 22px); font-weight: 700; margin-bottom: 4px; }
 
-        .location-bar button {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 13px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin: 16px 0; }
+        .checkbox-group input { width: 20px; height: 20px; margin: 0; }
+        .forgot-password { text-align: right; margin-top: 8px; }
+        .forgot-password a { color: #2563eb; text-decoration: none; font-size: 13px; cursor: pointer; }
+        body.rtl .forgot-password { text-align: left; }
 
-        .distance-badge {
-            background: #e0f2fe;
-            color: #0369a1;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 8px;
-            white-space: nowrap;
-        }
+        .switch-auth { text-align: center; margin-top: 24px; color: #64748b; font-size: clamp(13px, 4vw, 14px); }
+        .switch-auth a { color: #2563eb; text-decoration: none; font-weight: 600; cursor: pointer; }
 
-        /* Role Cards */
-        .role-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-top: 20px;
-        }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .header { padding: 16px; background: white; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 100; }
+        .header h1 { font-size: clamp(20px, 6vw, 24px); margin-bottom: 0; }
+        .main-content { padding: 16px; flex: 1; overflow-y: auto; }
+        .bottom-nav { display: flex; padding: 10px 16px; border-top: 1px solid #e5e7eb; background: white; gap: 8px; position: sticky; bottom: 0; z-index: 100; }
+        .nav-item { flex: 1; text-align: center; padding: 10px 4px; background: none; color: #6b7280; border: none; font-size: clamp(11px, 3.5vw, 12px); cursor: pointer; border-radius: 30px; }
+        .nav-item.active { color: #2563eb; background: #eff6ff; }
 
-        .role-card {
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 20px;
-            padding: 20px 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .role-card.selected {
-            border-color: #2563eb;
-            background: #eff6ff;
-        }
-
-        .role-icon {
-            font-size: clamp(40px, 12vw, 48px);
-            margin-bottom: 10px;
-        }
-
-        .role-title {
-            font-size: clamp(18px, 5.5vw, 22px);
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-
-        .role-desc {
-            font-size: clamp(12px, 3.5vw, 14px);
-            color: #64748b;
-        }
-
-        /* Checkbox Group */
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 16px 0;
-        }
-
-        .checkbox-group input {
-            width: 20px;
-            height: 20px;
-            margin: 0;
-            padding: 0;
-        }
-
-        .checkbox-group label {
-            margin: 0;
-            font-size: clamp(13px, 4vw, 14px);
-            font-weight: normal;
-        }
-
-        .forgot-password {
-            text-align: right;
-            margin-top: 8px;
-        }
-
-        .forgot-password a {
-            color: #2563eb;
-            text-decoration: none;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        body.rtl .forgot-password {
-            text-align: left;
-        }
-
-        .switch-auth {
-            text-align: center;
-            margin-top: 24px;
-            color: #64748b;
-            font-size: clamp(13px, 4vw, 14px);
-        }
-
-        .switch-auth a {
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* Main App Styles */
-        .flex-between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .header {
-            padding: 16px 16px;
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header h1 {
-            font-size: clamp(20px, 6vw, 24px);
-            margin-bottom: 0;
-        }
-
-        .main-content {
-            padding: 16px;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .bottom-nav {
-            display: flex;
-            padding: 10px 16px;
-            border-top: 1px solid #e5e7eb;
-            background: white;
-            gap: 8px;
-            position: sticky;
-            bottom: 0;
-            z-index: 100;
-        }
-
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            padding: 10px 4px;
-            background: none;
-            color: #6b7280;
-            border: none;
-            font-size: clamp(11px, 3.5vw, 12px);
-            cursor: pointer;
-            transition: all 0.2s;
-            border-radius: 30px;
-        }
-
-        .nav-item.active {
-            color: #2563eb;
-            background: #eff6ff;
-        }
-
-        .gig-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            transition: transform 0.1s ease;
-        }
-
-        .gig-card:active {
-            transform: scale(0.99);
-        }
-
-        .gig-title {
-            font-weight: 700;
-            font-size: clamp(15px, 4.5vw, 16px);
-            margin-bottom: 4px;
-        }
-
-        .gig-meta {
-            font-size: clamp(11px, 3.5vw, 12px);
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
-
-        .gig-desc {
-            font-size: clamp(13px, 4vw, 14px);
-            color: #4b5563;
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
+        .gig-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+        .gig-title { font-weight: 700; font-size: clamp(15px, 4.5vw, 16px); margin-bottom: 4px; }
+        .gig-meta { font-size: clamp(11px, 3.5vw, 12px); color: #6b7280; margin-bottom: 8px; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .badge-open { background: #dbeafe; color: #2563eb; }
         .badge-accepted { background: #d1fae5; color: #059669; }
         .badge-completed { background: #f3f4f6; color: #6b7280; }
+        .badge-pending { background: #fef3c7; color: #d97706; }
 
-        /* Wallet Card */
-        .wallet-card {
-            background: linear-gradient(135deg, #1e3a5f, #0f172a);
-            color: white;
-            padding: 20px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-        }
+        .wallet-card { background: linear-gradient(135deg, #1e3a5f, #0f172a); color: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+        .wallet-balance { font-size: clamp(28px, 8vw, 32px); font-weight: 700; }
 
-        .wallet-balance {
-            font-size: clamp(28px, 8vw, 32px);
-            font-weight: 700;
-        }
+        .chat-messages { height: 60vh; overflow-y: auto; padding: 16px; background: #f9fafb; border-radius: 20px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .message { max-width: 85%; }
+        .message-sent { align-self: flex-end; }
+        .message-received { align-self: flex-start; }
+        .message-bubble { display: inline-block; padding: 12px 16px; border-radius: 20px; font-size: clamp(14px, 4.5vw, 15px); }
+        .message-sent .message-bubble { background: #2563eb; color: white; border-bottom-right-radius: 4px; }
+        .message-received .message-bubble { background: white; border: 1px solid #e5e7eb; color: #333; border-bottom-left-radius: 4px; }
+        .chat-input-area { display: flex; gap: 12px; align-items: center; }
+        .chat-input-area input { flex: 1; }
+        .chat-input-area button { width: auto; padding: 16px 24px; background: #2563eb; color: white; border: none; border-radius: 30px; cursor: pointer; font-weight: 600; }
 
-        /* Chat */
-        .chat-messages {
-            height: 60vh;
-            overflow-y: auto;
-            padding: 16px;
-            background: #f9fafb;
-            border-radius: 20px;
-            margin-bottom: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+        .profile-header .back-btn { margin-bottom: 0; padding: 0; }
+        .profile-picture { width: 100px; height: 100px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 48px; margin: 0 auto 16px; overflow: hidden; cursor: pointer; border: 3px solid #2563eb; }
+        .profile-picture img { width: 100%; height: 100%; object-fit: cover; }
 
-        .message {
-            max-width: 85%;
-        }
+        .section-card { background: #f8fafc; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .entry-item { background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; border: 1px solid #e2e8f0; }
+        .entry-title { font-weight: 600; }
+        .entry-sub { font-size: 13px; color: #64748b; margin-top: 4px; }
+        .delete-icon { color: #ef4444; font-size: 20px; cursor: pointer; background: none; border: none; }
 
-        .message-sent {
-            align-self: flex-end;
-        }
+        .applicant-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid #e2e8f0; }
+        .applicant-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .applicant-avatar { width: 50px; height: 50px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 24px; }
 
-        .message-received {
-            align-self: flex-start;
-        }
+        .location-bar { background: #f1f5f9; padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .distance-badge { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
 
-        .message-bubble {
-            display: inline-block;
-            padding: 12px 16px;
-            border-radius: 20px;
-            font-size: clamp(14px, 4.5vw, 15px);
-            word-wrap: break-word;
-        }
+        .sort-toggle { display: flex; gap: 10px; margin-bottom: 16px; justify-content: flex-end; }
+        .sort-btn { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 8px 20px; border-radius: 30px; font-size: 13px; cursor: pointer; }
+        .sort-btn.active { background: #2563eb; color: white; border-color: #2563eb; }
 
-        .message-sent .message-bubble {
-            background: #2563eb;
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message-received .message-bubble {
-            background: white;
-            border: 1px solid #e5e7eb;
-            color: #333;
-            border-bottom-left-radius: 4px;
-        }
-
-        .chat-input-area {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .chat-input-area input {
-            flex: 1;
-        }
-
-        .chat-input-area button {
-            width: auto;
-            padding: 16px 24px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        /* Profile Header */
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .profile-header .back-btn {
-            margin-bottom: 0;
-            padding: 0;
-        }
-
-        .profile-header h1 {
-            margin-bottom: 0;
-        }
-
-        /* Sort Toggle */
-        .sort-toggle {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
-            justify-content: flex-end;
-        }
-
-        .sort-btn {
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .sort-btn.active {
-            background: #2563eb;
-            color: white;
-            border-color: #2563eb;
-        }
-
-        /* Safe area support for notches */
         @supports (padding: max(0px)) {
-            .app-container {
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
-            }
-            .bottom-nav {
-                padding-bottom: max(10px, env(safe-area-inset-bottom));
-            }
-            .header {
-                padding-top: max(16px, env(safe-area-inset-top));
-            }
+            .app-container { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+            .bottom-nav { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
         }
 
-        /* Landscape optimizations */
-        @media (orientation: landscape) and (max-height: 500px) {
-            .screen {
-                padding: 12px 16px;
-            }
-            .welcome-logo {
-                margin-top: 20px;
-                margin-bottom: 20px;
-            }
-            .welcome-logo .logo-icon {
-                font-size: 40px;
-            }
-            .chat-messages {
-                height: 45vh;
-            }
-        }
-
-        /* Touch-friendly button sizes */
-        button, .nav-item, .role-card, .gig-card {
-            min-height: 44px;
-        }
-
-        /* Loading spinner inline */
-        .spinner-small {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid #fff;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-            margin-right: 6px;
-        }
+        button, .nav-item, .role-card, .gig-card { min-height: 44px; }
     </style>
 </head>
 <body>
@@ -763,196 +214,207 @@
         <button class="lang-btn" onclick="setLanguage('ar')">AR</button>
     </div>
 
-    <!-- ==================== WELCOME SCREEN ==================== -->
+    <!-- WELCOME SCREEN -->
     <div id="welcome-screen" class="screen active">
-        <div class="welcome-logo">
-            <div class="logo-icon">🔧</div>
-            <h1>ServiceLink</h1>
-            <div class="greeting"><span class="greeting-en">Welcome</span> <span class="greeting-ar">مرحبًا</span></div>
-        </div>
-        <div class="auth-buttons">
-            <button class="btn-login" onclick="showLoginScreen()" data-en="Login" data-ar="تسجيل الدخول">Login</button>
-            <button class="btn-signup" onclick="showSignupRoleScreen()" data-en="Sign Up" data-ar="إنشاء حساب">Sign Up</button>
-        </div>
+        <div class="welcome-logo"><div class="logo-icon">🔧</div><h1>ServiceLink</h1><div class="greeting">Welcome مرحبًا</div></div>
+        <div class="auth-buttons"><button class="btn-login" onclick="showLoginScreen()">Login</button><button class="btn-signup" onclick="showSignupRoleScreen()">Sign Up</button></div>
     </div>
 
-    <!-- ==================== LOGIN SCREEN ==================== -->
+    <!-- LOGIN SCREEN -->
     <div id="login-screen" class="screen">
-        <button class="back-btn" onclick="goBackToWelcome()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
-        <h1 data-en="Welcome Back" data-ar="مرحبًا بعودتك">Welcome Back</h1>
-        <p class="subtitle" data-en="Login to your account" data-ar="تسجيل الدخول إلى حسابك">Login to your account</p>
-
-        <div class="form-group">
-            <label data-en="Phone Number" data-ar="رقم الهاتف">Phone Number</label>
-            <input type="tel" id="login-phone" placeholder="+212 6XX-XXXXXX" inputmode="tel">
-        </div>
-        <div class="form-group">
-            <label data-en="Password" data-ar="كلمة المرور">Password</label>
-            <input type="password" id="login-password" placeholder="••••••••">
-        </div>
-        <div class="checkbox-group">
-            <input type="checkbox" id="remember-me" checked>
-            <label for="remember-me" data-en="Remember me" data-ar="تذكرني">Remember me</label>
-        </div>
-        <div class="forgot-password">
-            <a href="#" onclick="showForgotPassword()" data-en="Forgot password?" data-ar="نسيت كلمة المرور؟">Forgot password?</a>
-        </div>
-        <button class="btn-primary" onclick="handleLogin()" data-en="Login" data-ar="تسجيل الدخول">Login</button>
-        <div class="switch-auth">
-            <span data-en="Don't have an account?" data-ar="ليس لديك حساب؟">Don't have an account?</span> 
-            <a onclick="showSignupRoleScreen()" data-en="Sign Up" data-ar="إنشاء حساب">Sign Up</a>
-        </div>
+        <button class="back-btn" onclick="goBackToWelcome()">← Back</button>
+        <h1>Welcome Back</h1><p class="subtitle">Login to your account</p>
+        <div class="form-group"><label>Phone Number</label><input type="tel" id="login-phone" placeholder="+212 6XX-XXXXXX"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="login-password" placeholder="••••••••"></div>
+        <div class="checkbox-group"><input type="checkbox" id="remember-me" checked><label>Remember me</label></div>
+        <div class="forgot-password"><a href="#" onclick="showForgotPassword()">Forgot password?</a></div>
+        <button class="btn-primary" onclick="handleLogin()">Login</button>
+        <div class="switch-auth">Don't have an account? <a onclick="showSignupRoleScreen()">Sign Up</a></div>
     </div>
 
-    <!-- ==================== FORGOT PASSWORD SCREEN ==================== -->
+    <!-- FORGOT PASSWORD -->
     <div id="forgot-password-screen" class="screen">
-        <button class="back-btn" onclick="goBackToLogin()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
-        <h1 data-en="Reset Password" data-ar="إعادة تعيين كلمة المرور">Reset Password</h1>
-        <p class="subtitle" data-en="Enter your phone number to reset your password" data-ar="أدخل رقم هاتفك لإعادة تعيين كلمة المرور">Enter your phone number to reset your password</p>
-        <div class="form-group">
-            <label data-en="Phone Number" data-ar="رقم الهاتف">Phone Number</label>
-            <div class="phone-row">
-                <input type="tel" id="reset-phone" placeholder="+212 6XX-XXXXXX" inputmode="tel">
-                <button id="reset-send-code-btn" onclick="sendResetCode()" data-en="Send Code" data-ar="إرسال الرمز">Send Code</button>
-            </div>
-        </div>
-        <div class="form-group" id="reset-code-group" style="display: none;">
-            <label data-en="Verification Code" data-ar="رمز التحقق">Verification Code</label>
-            <div class="verify-row">
-                <input type="text" id="reset-code" placeholder="123456" maxlength="6" inputmode="numeric">
-                <button id="reset-verify-btn" onclick="verifyResetCode()" data-en="Verify" data-ar="تحقق">Verify</button>
-            </div>
-        </div>
-        <div class="form-group" id="new-password-group" style="display: none;">
-            <label data-en="New Password" data-ar="كلمة المرور الجديدة">New Password</label>
-            <input type="password" id="new-password" placeholder="Create a new password">
-        </div>
-        <div class="form-group" id="confirm-new-group" style="display: none;">
-            <label data-en="Confirm New Password" data-ar="تأكيد كلمة المرور الجديدة">Confirm New Password</label>
-            <input type="password" id="confirm-new-password" placeholder="Confirm your new password">
-        </div>
-        <button id="reset-password-btn" class="btn-primary" onclick="resetPassword()" style="display: none;" data-en="Reset Password" data-ar="إعادة تعيين كلمة المرور">Reset Password</button>
+        <button class="back-btn" onclick="goBackToLogin()">← Back</button>
+        <h1>Reset Password</h1><p class="subtitle">Enter your phone number</p>
+        <div class="form-group"><div class="phone-row"><input type="tel" id="reset-phone" placeholder="+212 6XX-XXXXXX"><button id="reset-send-code-btn" onclick="sendResetCode()">Send Code</button></div></div>
+        <div class="form-group" id="reset-code-group" style="display:none;"><div class="verify-row"><input type="text" id="reset-code" placeholder="123456" maxlength="6"><button id="reset-verify-btn" onclick="verifyResetCode()">Verify</button></div></div>
+        <div class="form-group" id="new-password-group" style="display:none;"><input type="password" id="new-password" placeholder="New password"></div>
+        <div class="form-group" id="confirm-new-group" style="display:none;"><input type="password" id="confirm-new-password" placeholder="Confirm password"></div>
+        <button id="reset-password-btn" class="btn-primary" onclick="resetPassword()" style="display:none;">Reset Password</button>
     </div>
 
-    <!-- ==================== SIGNUP: ROLE SELECTION ==================== -->
+    <!-- SIGNUP ROLE -->
     <div id="signup-role-screen" class="screen">
-        <button class="back-btn" onclick="goBackToWelcome()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
-        <h1 data-en="Sign Up" data-ar="إنشاء حساب">Sign Up</h1>
-        <p class="subtitle" data-en="Choose how you want to use ServiceLink" data-ar="اختر كيف تريد استخدام ServiceLink">Choose how you want to use ServiceLink</p>
+        <button class="back-btn" onclick="goBackToWelcome()">← Back</button>
+        <h1>Sign Up</h1><p class="subtitle">Choose your role</p>
         <div class="role-grid">
-            <div class="role-card" data-role="household" onclick="selectRole('household')">
-                <div class="role-icon">🏠</div>
-                <div class="role-title" data-en="Household" data-ar="أسرة">Household</div>
-                <div class="role-desc" data-en="Post gigs and hire professionals" data-ar="انشر المهام واستأجر المحترفين">Post gigs and hire professionals</div>
-            </div>
-            <div class="role-card" data-role="professional" onclick="selectRole('professional')">
-                <div class="role-icon">🛠️</div>
-                <div class="role-title" data-en="Professional" data-ar="محترف">Professional</div>
-                <div class="role-desc" data-en="Find work and get paid" data-ar="ابحث عن عمل وتقاضى">Find work and get paid</div>
-            </div>
+            <div class="role-card" data-role="household" onclick="selectRole('household')"><div class="role-icon">🏠</div><div class="role-title">Household</div><div class="role-desc">Post gigs and hire professionals</div></div>
+            <div class="role-card" data-role="professional" onclick="selectRole('professional')"><div class="role-icon">🛠️</div><div class="role-title">Professional</div><div class="role-desc">Find work and get paid</div></div>
         </div>
-        <button id="signup-continue-btn" class="btn-primary" onclick="goToRegistrationForm()" disabled data-en="Continue" data-ar="استمر">Continue</button>
+        <button id="signup-continue-btn" class="btn-primary" onclick="goToRegistrationForm()" disabled>Continue</button>
     </div>
 
-    <!-- ==================== SIGNUP: REGISTRATION ==================== -->
+    <!-- SIGNUP REGISTRATION -->
     <div id="registration-screen" class="screen">
-        <button class="back-btn" onclick="goBackToSignupRole()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
+        <button class="back-btn" onclick="goBackToSignupRole()">← Back</button>
         <div class="progress"><div class="progress-dot active"></div><div class="progress-dot"></div><div class="progress-dot"></div></div>
-        <h1 data-en="Create Account" data-ar="إنشاء حساب">Create Account</h1>
-        <p class="subtitle" id="registration-role-display">Registering as Household</p>
-        <div class="form-group"><label data-en="Full Name" data-ar="الاسم الكامل">Full Name</label><input type="text" id="full-name" placeholder="Ahmed Benali"></div>
-        <div class="form-group"><label data-en="ID Card Number" data-ar="رقم بطاقة التعريف">ID Card Number</label><input type="text" id="id-card" placeholder="AB123456" inputmode="text"></div>
-        <div class="form-group">
-            <label data-en="Phone Number" data-ar="رقم الهاتف">Phone Number</label>
-            <div class="phone-row"><input type="tel" id="phone-number" placeholder="+212 6XX-XXXXXX" inputmode="tel"><button id="send-code-btn" onclick="sendVerificationCode()" data-en="Send Code" data-ar="إرسال الرمز">Send Code</button></div>
-        </div>
-        <div class="form-group" id="verification-group" style="display: none;"><label data-en="Verification Code" data-ar="رمز التحقق">Verification Code</label><div class="verify-row"><input type="text" id="verification-code" placeholder="123456" maxlength="6" inputmode="numeric"><button id="verify-btn" onclick="verifyCode()" data-en="Verify" data-ar="تحقق">Verify</button></div></div>
-        <div class="form-group" id="password-group" style="display: none;"><label data-en="Password" data-ar="كلمة المرور">Password</label><input type="password" id="password" placeholder="••••••••"></div>
-        <div class="form-group" id="confirm-group" style="display: none;"><label data-en="Confirm Password" data-ar="تأكيد كلمة المرور">Confirm Password</label><input type="password" id="confirm-password" placeholder="••••••••"></div>
-        <button id="create-account-btn" class="btn-primary" onclick="createAccount()" style="display: none;" data-en="Create Account" data-ar="إنشاء حساب">Create Account</button>
-        <div class="switch-auth"><span data-en="Already have an account?" data-ar="لديك حساب بالفعل؟">Already have an account?</span> <a onclick="showLoginScreen()" data-en="Login" data-ar="تسجيل الدخول">Login</a></div>
+        <h1>Create Account</h1><p class="subtitle" id="registration-role-display">Registering as Household</p>
+        <div class="form-group"><label>Full Name</label><input type="text" id="full-name" placeholder="Ahmed Benali"></div>
+        <div class="form-group"><label>ID Card Number</label><input type="text" id="id-card" placeholder="AB123456"></div>
+        <div class="form-group"><div class="phone-row"><input type="tel" id="phone-number" placeholder="+212 6XX-XXXXXX"><button id="send-code-btn" onclick="sendVerificationCode()">Send Code</button></div></div>
+        <div class="form-group" id="verification-group" style="display:none;"><div class="verify-row"><input type="text" id="verification-code" placeholder="123456" maxlength="6"><button id="verify-btn" onclick="verifyCode()">Verify</button></div></div>
+        <div class="form-group" id="password-group" style="display:none;"><input type="password" id="password" placeholder="Password"></div>
+        <div class="form-group" id="confirm-group" style="display:none;"><input type="password" id="confirm-password" placeholder="Confirm password"></div>
+        <button id="create-account-btn" class="btn-primary" onclick="createAccount()" style="display:none;">Create Account</button>
+        <div class="switch-auth">Already have an account? <a onclick="showLoginScreen()">Login</a></div>
     </div>
 
-    <!-- ==================== HOUSEHOLD MAIN ==================== -->
+    <!-- PROFILE COMPLETION (PROFESSIONAL) -->
+    <div id="profile-completion-screen" class="screen">
+        <button class="back-btn" onclick="skipProfileCompletion()">← Skip for now</button>
+        <h1>Complete Your Profile</h1><p class="subtitle">Help households trust you</p>
+        
+        <div class="form-group"><label>Profile Picture</label>
+            <div class="profile-picture" onclick="document.getElementById('profile-pic-input').click()">
+                <span id="profile-pic-preview">📷</span>
+            </div>
+            <input type="file" id="profile-pic-input" accept="image/*" style="display:none" onchange="previewProfilePicture(event)">
+        </div>
+        
+        <div class="form-group"><label>Bio / About You</label><textarea id="profile-bio" rows="3" placeholder="Tell households about your experience..."></textarea></div>
+        <div class="form-group"><label>Skills (comma separated)</label><input type="text" id="profile-skills" placeholder="Plumbing, Electrical, Carpentry"></div>
+        
+        <div class="section-card"><div class="section-title">🎓 Education</div><div id="education-list"></div><button class="btn-outline" style="width:auto;padding:8px 16px;" onclick="showAddEducationModal()">+ Add Education</button></div>
+        
+        <div class="section-card"><div class="section-title">💼 Work Experience</div><div id="work-list"></div><button class="btn-outline" style="width:auto;padding:8px 16px;" onclick="showAddWorkModal()">+ Add Experience</button></div>
+        
+        <div class="section-card"><div class="section-title">📜 Certifications</div><div id="cert-list"></div><button class="btn-outline" style="width:auto;padding:8px 16px;" onclick="showAddCertModal()">+ Add Certification</button></div>
+        
+        <button class="btn-primary" onclick="saveCompleteProfile()">Save Profile</button>
+    </div>
+
+    <!-- ADD EDUCATION MODAL -->
+    <div id="edu-modal" class="modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:24px;padding:24px;margin:20px;max-width:400px;"><h3>Add Education</h3>
+            <div class="form-group"><input type="text" id="edu-degree" placeholder="Degree / Certification"></div>
+            <div class="form-group"><input type="text" id="edu-institution" placeholder="Institution"></div>
+            <div class="form-group"><input type="text" id="edu-year" placeholder="Year (optional)"></div>
+            <button class="btn-primary" onclick="addEducation()">Save</button>
+            <button class="btn-outline" onclick="closeModal('edu-modal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ADD WORK MODAL -->
+    <div id="work-modal" class="modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:24px;padding:24px;margin:20px;max-width:400px;"><h3>Add Work Experience</h3>
+            <div class="form-group"><input type="text" id="work-title" placeholder="Job Title"></div>
+            <div class="form-group"><input type="text" id="work-company" placeholder="Company"></div>
+            <div class="form-group"><input type="text" id="work-start" placeholder="Start Year"></div>
+            <div class="form-group"><input type="text" id="work-end" placeholder="End Year (or Present)"></div>
+            <div class="form-group"><textarea id="work-desc" rows="2" placeholder="Description (optional)"></textarea></div>
+            <button class="btn-primary" onclick="addWork()">Save</button>
+            <button class="btn-outline" onclick="closeModal('work-modal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ADD CERT MODAL -->
+    <div id="cert-modal" class="modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:24px;padding:24px;margin:20px;max-width:400px;"><h3>Add Certification</h3>
+            <div class="form-group"><input type="text" id="cert-name" placeholder="Certification Name"></div>
+            <div class="form-group"><input type="text" id="cert-issuer" placeholder="Issuing Organization"></div>
+            <div class="form-group"><input type="text" id="cert-year" placeholder="Year"></div>
+            <button class="btn-primary" onclick="addCertification()">Save</button>
+            <button class="btn-outline" onclick="closeModal('cert-modal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- APPLY TO GIG MODAL -->
+    <div id="apply-modal" class="modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:24px;padding:24px;margin:20px;max-width:400px;"><h3>Apply to Gig</h3>
+            <div class="form-group"><label>Bid Amount (MAD)</label><input type="number" id="bid-amount" placeholder="e.g., 200"></div>
+            <div class="form-group"><label>Message to Household</label><textarea id="bid-message" rows="3" placeholder="Why should they hire you?"></textarea></div>
+            <button class="btn-primary" onclick="submitApplication()">Submit Application</button>
+            <button class="btn-outline" onclick="closeModal('apply-modal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- VIEW APPLICANTS SCREEN -->
+    <div id="applicants-screen" class="screen">
+        <div class="header"><button onclick="backToHousehold()" style="background:none;border:none;font-size:24px;">←</button><h1>Applicants</h1></div>
+        <div class="main-content" id="applicants-list"></div>
+    </div>
+
+    <!-- HOUSEHOLD MAIN -->
     <div id="household-main" class="screen">
-        <div class="header flex-between"><h1 data-en="My Gigs" data-ar="مهامي">My Gigs</h1><button onclick="showPostGig()" style="background:#2563eb;color:white;border:none;padding:10px 20px;border-radius:30px;font-size:14px;font-weight:600;" data-en="+ New" data-ar="+ جديد">+ New</button></div>
+        <div class="header flex-between"><h1>My Gigs</h1><button onclick="showPostGig()" style="background:#2563eb;color:white;border:none;padding:10px 20px;border-radius:30px;">+ New</button></div>
         <div class="main-content" id="household-gigs-list"></div>
-        <div class="bottom-nav"><button class="nav-item active" onclick="switchHouseholdTab('gigs')"><span data-en="My Gigs" data-ar="مهامي">My Gigs</span></button><button class="nav-item" onclick="switchHouseholdTab('profile')"><span data-en="Profile" data-ar="الملف الشخصي">Profile</span></button></div>
+        <div class="bottom-nav"><button class="nav-item active" onclick="switchHouseholdTab('gigs')">My Gigs</button><button class="nav-item" onclick="switchHouseholdTab('profile')">Profile</button></div>
     </div>
 
     <!-- POST GIG -->
     <div id="post-gig-screen" class="screen">
-        <div class="header"><button onclick="backToHousehold()" style="background:none;border:none;font-size:24px;padding:8px;">←</button><h1 data-en="Post New Gig" data-ar="انشر مهمة جديدة">Post New Gig</h1></div>
+        <div class="header"><button onclick="backToHousehold()" style="background:none;border:none;font-size:24px;">←</button><h1>Post New Gig</h1></div>
         <div class="main-content">
-            <div class="location-bar" id="location-bar-post" style="display:none;"><span>📍 <span id="location-status" data-en="Enable location to add address" data-ar="فعّل الموقع لإضافة العنوان">Enable location to add address</span></span><button onclick="getCurrentLocationForPost()" data-en="Enable" data-ar="تفعيل">Enable</button></div>
-            <div class="form-group"><label data-en="Title" data-ar="العنوان">Title</label><input type="text" id="gig-title" placeholder="Fix leaky faucet"></div>
-            <div class="form-group"><label data-en="Category" data-ar="الفئة">Category</label><select id="gig-category"><option>Plumbing</option><option>Electrical</option><option>Carpentry</option><option>Cleaning</option><option>Painting</option></select></div>
-            <div class="form-group"><label data-en="Urgency" data-ar="الإلحاح">Urgency</label><select id="gig-urgency"><option value="normal" data-en="Normal" data-ar="عادي">Normal</option><option value="urgent" data-en="Urgent (24h)" data-ar="عاجل (24 ساعة)">Urgent (24h)</option></select></div>
-            <div class="form-group"><label data-en="Address" data-ar="العنوان">Address</label><input type="text" id="gig-address" placeholder="Street, city, area"></div>
-            <div class="form-group"><label data-en="Description" data-ar="الوصف">Description</label><textarea id="gig-desc" rows="4" placeholder="Describe what needs to be done..."></textarea></div>
-            <button class="btn-primary" onclick="postGigWithLocation()" data-en="Post Gig" data-ar="انشر المهمة">Post Gig</button>
+            <div class="location-bar" id="location-bar-post" style="display:none;"><span>📍 Enable location to add address</span><button onclick="getCurrentLocationForPost()">Enable</button></div>
+            <div class="form-group"><label>Title</label><input type="text" id="gig-title" placeholder="Fix leaky faucet"></div>
+            <div class="form-group"><label>Category</label><select id="gig-category"><option>Plumbing</option><option>Electrical</option><option>Carpentry</option><option>Cleaning</option><option>Painting</option></select></div>
+            <div class="form-group"><label>Urgency</label><select id="gig-urgency"><option value="normal">Normal</option><option value="urgent">Urgent (24h)</option></select></div>
+            <div class="form-group"><label>Address</label><input type="text" id="gig-address" placeholder="Street, city, area"></div>
+            <div class="form-group"><label>Description</label><textarea id="gig-desc" rows="4" placeholder="Describe what needs to be done..."></textarea></div>
+            <button class="btn-primary" onclick="postGigWithLocation()">Post Gig</button>
         </div>
     </div>
 
     <!-- PROFESSIONAL MAIN -->
     <div id="professional-main" class="screen">
-        <div class="header"><h1 data-en="Find Work" data-ar="ابحث عن عمل">Find Work</h1></div>
-        <div class="location-bar" id="location-bar-pro" style="display:none;"><span>📍 <span id="pro-location-status" data-en="Enable location to see nearby gigs" data-ar="فعّل الموقع لمشاهدة المهام القريبة">Enable location to see nearby gigs</span></span><button onclick="getCurrentLocationForPro()" data-en="Enable" data-ar="تفعيل">Enable</button></div>
+        <div class="header"><h1>Find Work</h1></div>
+        <div class="location-bar" id="location-bar-pro" style="display:none;"><span>📍 Enable location to see nearby gigs</span><button onclick="getCurrentLocationForPro()">Enable</button></div>
         <div class="sort-toggle" id="sort-toggle" style="display:none;"><button class="sort-btn active" onclick="setSortBy('distance')">📍 By Distance</button><button class="sort-btn" onclick="setSortBy('recent')">🕒 Most Recent</button></div>
         <div class="main-content" id="pro-available-list"></div>
-        <div class="bottom-nav"><button class="nav-item active" onclick="switchProTab('available')"><span data-en="Available" data-ar="متاح">Available</span></button><button class="nav-item" onclick="switchProTab('active')"><span data-en="My Gigs" data-ar="مهامي">My Gigs</span></button><button class="nav-item" onclick="switchProTab('wallet')"><span data-en="Wallet" data-ar="المحفظة">Wallet</span></button><button class="nav-item" onclick="switchProTab('profile')"><span data-en="Profile" data-ar="الملف الشخصي">Profile</span></button></div>
+        <div class="bottom-nav"><button class="nav-item active" onclick="switchProTab('available')">Available</button><button class="nav-item" onclick="switchProTab('active')">My Gigs</button><button class="nav-item" onclick="switchProTab('wallet')">Wallet</button><button class="nav-item" onclick="switchProTab('profile')">Profile</button></div>
     </div>
 
-    <div id="pro-active-screen" class="screen">
-        <div class="header"><button onclick="goBackFromActiveToPro()" style="background:none;border:none;font-size:24px;">←</button><h1 data-en="My Active Gigs" data-ar="مهامي النشطة">My Active Gigs</h1></div>
-        <div class="main-content" id="pro-active-list"></div>
-    </div>
+    <div id="pro-active-screen" class="screen"><div class="header"><button onclick="goBackFromActiveToPro()" style="background:none;border:none;font-size:24px;">←</button><h1>My Active Gigs</h1></div><div class="main-content" id="pro-active-list"></div></div>
+    <div id="pro-wallet-screen" class="screen"><div class="header"><button onclick="goBackFromWalletToPro()" style="background:none;border:none;font-size:24px;">←</button><h1>My Wallet</h1></div><div class="main-content"><div class="wallet-card"><div>Available Balance</div><div class="wallet-balance" id="wallet-balance">MAD 0</div></div><button class="btn-primary" onclick="fundWalletDemo()">Deposit MAD 100 (Demo)</button></div></div>
 
-    <div id="pro-wallet-screen" class="screen">
-        <div class="header"><button onclick="goBackFromWalletToPro()" style="background:none;border:none;font-size:24px;">←</button><h1 data-en="My Wallet" data-ar="محفظتي">My Wallet</h1></div>
-        <div class="main-content"><div class="wallet-card"><div style="opacity:0.8;" data-en="Available Balance" data-ar="الرصيد المتاح">Available Balance</div><div class="wallet-balance" id="wallet-balance">MAD 0</div></div><button class="btn-primary" onclick="fundWalletDemo()" data-en="Deposit MAD 100 (Demo)" data-ar="إيداع 100 درهم (تجريبي)">Deposit MAD 100 (Demo)</button></div>
-    </div>
-
-    <!-- PROFILE -->
+    <!-- PROFILE SCREEN -->
     <div id="profile-screen" class="screen">
-        <div class="profile-header"><button class="back-btn" onclick="goBackFromProfile()">← <span data-en="Back" data-ar="رجوع">Back</span></button><h1 data-en="Profile" data-ar="الملف الشخصي">Profile</h1></div>
-        <div class="main-content"><div style="text-align:center;"><div style="font-size:64px;">👤</div><h2 id="profile-name"></h2><p id="profile-role" style="color:#6b7280;"></p><p id="profile-phone" style="color:#6b7280;"></p></div><button class="btn-primary" onclick="logout()" style="background:#dc2626;margin-top:24px;" data-en="Logout" data-ar="تسجيل الخروج">Logout</button></div>
+        <div class="profile-header"><button class="back-btn" onclick="goBackFromProfile()">← Back</button><h1>Profile</h1></div>
+        <div class="main-content">
+            <div class="profile-picture" onclick="document.getElementById('edit-profile-pic').click()"><span id="profile-view-pic">👤</span></div>
+            <input type="file" id="edit-profile-pic" accept="image/*" style="display:none" onchange="updateProfilePicture(event)">
+            <h2 id="profile-name"></h2><p id="profile-role"></p><p id="profile-phone"></p>
+            <div class="section-card"><div class="section-title">📝 About</div><p id="profile-bio-view"></p><div class="section-title">🔧 Skills</div><p id="profile-skills-view"></p></div>
+            <div class="section-card"><div class="section-title">🎓 Education</div><div id="profile-education-view"></div></div>
+            <div class="section-card"><div class="section-title">💼 Work Experience</div><div id="profile-work-view"></div></div>
+            <div class="section-card"><div class="section-title">📜 Certifications</div><div id="profile-cert-view"></div></div>
+            <button class="btn-primary" onclick="editProfile()">Edit Profile</button>
+            <button class="btn-primary" onclick="logout()" style="background:#dc2626;margin-top:12px;">Logout</button>
+        </div>
     </div>
 
-    <!-- CHAT -->
+    <!-- CHAT SCREEN -->
     <div id="chat-screen" class="screen">
         <div class="header flex-between"><button onclick="closeChat()" style="background:none;border:none;font-size:24px;">←</button><h1 id="chat-title">Chat</h1><div></div></div>
         <div class="main-content" style="display:flex;flex-direction:column;height:calc(100% - 70px);"><div class="chat-messages" id="chat-messages"></div><div class="chat-input-area"><input type="text" id="chat-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendMessage()"><button onclick="sendMessage()">➤</button></div></div>
+    </div>
+
+    <!-- HOUSEHOLD PROFILE VIEW (when viewing applicant) -->
+    <div id="household-profile-view" class="screen">
+        <div class="header"><button onclick="backToApplicants()" style="background:none;border:none;font-size:24px;">←</button><h1>Professional Profile</h1></div>
+        <div class="main-content" id="household-profile-content"></div>
     </div>
 </div>
 
 <div id="toast" class="toast"></div>
 
 <script>
-    // ==================== LANGUAGE SUPPORT ====================
+    // ==================== LANGUAGE ====================
     let currentLanguage = 'en';
-    function setLanguage(lang) {
-        currentLanguage = lang;
-        document.body.classList.toggle('rtl', lang === 'ar');
-        document.querySelectorAll('[data-en]').forEach(el => {
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                if (el.placeholder) el.placeholder = el.getAttribute(`data-${lang}`) || el.placeholder;
-            } else if (el.tagName === 'BUTTON' && el.getAttribute(`data-${lang}`)) {
-                el.textContent = el.getAttribute(`data-${lang}`);
-            } else if (el.getAttribute(`data-${lang}`)) {
-                el.textContent = el.getAttribute(`data-${lang}`);
-            }
-        });
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if ((lang === 'en' && btn.textContent === 'EN') || (lang === 'ar' && btn.textContent === 'AR')) btn.classList.add('active');
-        });
-        localStorage.setItem('language', lang);
-    }
-    const savedLanguage = localStorage.getItem('language');
-    if (savedLanguage) setLanguage(savedLanguage);
+    function setLanguage(lang) { currentLanguage = lang; document.body.classList.toggle('rtl', lang === 'ar'); localStorage.setItem('language', lang); }
+    if (localStorage.getItem('language')) setLanguage(localStorage.getItem('language'));
 
-    // ==================== GLOBAL STATE ====================
+    // ==================== STATE ====================
     let currentUser = null;
     let selectedRole = null;
     let isPhoneVerified = false;
@@ -962,69 +424,21 @@
     let resetPhone = null, resetCodeVerified = false, resetStoredCode = null;
     let userLocation = null;
     let currentSort = 'distance';
+    let currentGigForApply = null;
+    let currentApplicantsGigId = null;
+    let tempEducation = [], tempWork = [], tempCertifications = [];
 
     // ==================== UI HELPERS ====================
-    function showToast(msg, type = 'info') {
-        const toast = document.getElementById('toast');
-        toast.textContent = msg;
-        toast.className = `toast ${type === 'success' ? 'success' : (type === 'error' ? 'error' : '')}`;
-        toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 3000);
-    }
-    function showScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-    }
+    function showToast(msg, type = 'info') { const toast = document.getElementById('toast'); toast.textContent = msg; toast.className = `toast ${type}`; toast.style.display = 'block'; setTimeout(() => toast.style.display = 'none', 3000); }
+    function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    // ==================== LOCATION FUNCTIONS ====================
-    async function updateUserLocation(lat, lng) {
-        try {
-            await fetch('/api/users/location', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: currentUser.id, lat, lng })
-            });
-            userLocation = { lat, lng };
-            localStorage.setItem('userLocation', JSON.stringify(userLocation));
-            return true;
-        } catch(e) { return false; }
-    }
-
-    function getCurrentLocationForPost() {
-        if (!navigator.geolocation) { showToast(currentLanguage === 'en' ? 'Geolocation not supported' : 'تحديد الموقع غير مدعوم', 'error'); return; }
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const { latitude, longitude } = position.coords;
-            await updateUserLocation(latitude, longitude);
-            document.getElementById('location-bar-post').style.display = 'none';
-            showToast(currentLanguage === 'en' ? 'Location enabled!' : 'تم تفعيل الموقع!', 'success');
-        }, () => { showToast(currentLanguage === 'en' ? 'Location permission denied' : 'تم رفض إذن الموقع', 'error'); });
-    }
-
-    function getCurrentLocationForPro() {
-        if (!navigator.geolocation) { showToast(currentLanguage === 'en' ? 'Geolocation not supported' : 'تحديد الموقع غير مدعوم', 'error'); return; }
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const { latitude, longitude } = position.coords;
-            await updateUserLocation(latitude, longitude);
-            document.getElementById('location-bar-pro').style.display = 'none';
-            document.getElementById('sort-toggle').style.display = 'flex';
-            showToast(currentLanguage === 'en' ? 'Location enabled! Sorting by distance.' : 'تم تفعيل الموقع! الترتيب حسب المسافة.', 'success');
-            loadProAvailableGigs();
-        }, () => { showToast(currentLanguage === 'en' ? 'Location permission denied' : 'تم رفض إذن الموقع', 'error'); });
-    }
-
-    function setSortBy(sort) {
-        currentSort = sort;
-        document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
-        if (sort === 'distance') document.querySelector('.sort-btn:first-child').classList.add('active');
-        else document.querySelector('.sort-btn:last-child').classList.add('active');
-        loadProAvailableGigs();
-    }
-
-    function formatDistance(km) {
-        if (!km) return '';
-        if (km < 1) return `${Math.round(km * 1000)}m away`;
-        return `${km.toFixed(1)}km away`;
-    }
+    // ==================== LOCATION ====================
+    async function updateUserLocation(lat, lng) { try { await fetch('/api/users/location', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id, lat, lng }) }); userLocation = { lat, lng }; localStorage.setItem('userLocation', JSON.stringify(userLocation)); return true; } catch(e) { return false; } }
+    function getCurrentLocationForPost() { if (!navigator.geolocation) return; navigator.geolocation.getCurrentPosition(async (position) => { await updateUserLocation(position.coords.latitude, position.coords.longitude); document.getElementById('location-bar-post').style.display = 'none'; showToast('Location enabled!'); }, () => showToast('Location permission denied', 'error')); }
+    function getCurrentLocationForPro() { if (!navigator.geolocation) return; navigator.geolocation.getCurrentPosition(async (position) => { await updateUserLocation(position.coords.latitude, position.coords.longitude); document.getElementById('location-bar-pro').style.display = 'none'; document.getElementById('sort-toggle').style.display = 'flex'; showToast('Location enabled!'); loadProAvailableGigs(); }, () => showToast('Location permission denied', 'error')); }
+    function setSortBy(sort) { currentSort = sort; document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active')); if (sort === 'distance') document.querySelector('.sort-btn:first-child').classList.add('active'); else document.querySelector('.sort-btn:last-child').classList.add('active'); loadProAvailableGigs(); }
+    function formatDistance(km) { if (!km) return ''; if (km < 1) return `${Math.round(km * 1000)}m away`; return `${km.toFixed(1)}km away`; }
 
     // ==================== NAVIGATION ====================
     function goBackToWelcome() { showScreen('welcome-screen'); }
@@ -1033,265 +447,88 @@
     function goBackFromProfile() { if (currentUser?.role === 'household') showScreen('household-main'); else showScreen('professional-main'); }
     function goBackFromActiveToPro() { showScreen('professional-main'); loadProAvailableGigs(); loadProActiveGigs(); }
     function goBackFromWalletToPro() { showScreen('professional-main'); }
+    function backToApplicants() { showScreen('applicants-screen'); }
 
-    function showLoginScreen() {
-        showScreen('login-screen');
-        document.getElementById('login-phone').value = '';
-        document.getElementById('login-password').value = '';
-        document.getElementById('remember-me').checked = true;
-    }
+    function showLoginScreen() { showScreen('login-screen'); document.getElementById('login-phone').value = ''; document.getElementById('login-password').value = ''; document.getElementById('remember-me').checked = true; }
+    function showSignupRoleScreen() { selectedRole = null; document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected')); document.getElementById('signup-continue-btn').disabled = true; showScreen('signup-role-screen'); }
+    function selectRole(role) { selectedRole = role; document.querySelectorAll('.role-card').forEach(c => { c.classList.remove('selected'); if (c.getAttribute('data-role') === role) c.classList.add('selected'); }); document.getElementById('signup-continue-btn').disabled = false; }
 
-    function showSignupRoleScreen() {
-        selectedRole = null;
-        document.querySelectorAll('.role-card').forEach(card => card.classList.remove('selected'));
-        document.getElementById('signup-continue-btn').disabled = true;
-        showScreen('signup-role-screen');
-    }
+    // ==================== AUTH ====================
+    async function sendVerificationCode() { const phone = document.getElementById('phone-number').value.trim(); if (!phone) { showToast('Enter phone number', 'error'); return; } const btn = document.getElementById('send-code-btn'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Sending...'; try { const res = await fetch('/api/send-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) }); const data = await res.json(); if (data.success) { storedVerificationCode = data.testMode ? '123456' : null; showToast(data.testMode ? 'Test Mode: Code 123456' : 'Code sent!', 'success'); document.getElementById('verification-group').style.display = 'block'; } else showToast('Failed to send code', 'error'); } catch(e) { storedVerificationCode = '123456'; showToast('Demo Mode: Use code 123456', 'success'); document.getElementById('verification-group').style.display = 'block'; } btn.disabled = false; btn.innerHTML = 'Send Code'; }
+    async function verifyCode() { const code = document.getElementById('verification-code').value.trim(); if (!code) { showToast('Enter verification code', 'error'); return; } if (code === '123456' || code === storedVerificationCode) { isPhoneVerified = true; showToast('Phone verified!', 'success'); document.getElementById('password-group').style.display = 'block'; document.getElementById('confirm-group').style.display = 'block'; document.getElementById('create-account-btn').style.display = 'block'; document.getElementById('verify-btn').disabled = true; document.getElementById('verify-btn').innerHTML = 'Verified ✓'; } else showToast('Invalid code', 'error'); }
+    function goToRegistrationForm() { if (!selectedRole) return; isPhoneVerified = false; document.getElementById('verification-group').style.display = 'none'; document.getElementById('password-group').style.display = 'none'; document.getElementById('confirm-group').style.display = 'none'; document.getElementById('create-account-btn').style.display = 'none'; document.getElementById('registration-role-display').innerHTML = selectedRole === 'household' ? 'Registering as Household' : 'Registering as Professional'; document.getElementById('full-name').value = ''; document.getElementById('id-card').value = ''; document.getElementById('phone-number').value = ''; document.getElementById('verification-code').value = ''; document.getElementById('password').value = ''; document.getElementById('confirm-password').value = ''; document.getElementById('send-code-btn').disabled = false; document.getElementById('send-code-btn').innerHTML = 'Send Code'; showScreen('registration-screen'); }
+    async function createAccount() { const name = document.getElementById('full-name').value.trim(); const idCard = document.getElementById('id-card').value.trim(); const phone = document.getElementById('phone-number').value.trim(); const password = document.getElementById('password').value; const confirm = document.getElementById('confirm-password').value; if (!name) { showToast('Enter full name', 'error'); return; } if (!idCard) { showToast('Enter ID card number', 'error'); return; } if (!isPhoneVerified) { showToast('Verify phone first', 'error'); return; } if (!password || password.length < 4) { showToast('Password must be at least 4 characters', 'error'); return; } if (password !== confirm) { showToast('Passwords do not match', 'error'); return; } const btn = document.getElementById('create-account-btn'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Creating...'; try { const res = await fetch('/api/verify-register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, code: document.getElementById('verification-code').value, name, password, role: selectedRole }) }); const data = await res.json(); if (data.success) { currentUser = data.user; localStorage.setItem('user', JSON.stringify(currentUser)); showToast('Account created!', 'success'); enterApp(); } else showToast(data.error || 'Registration failed', 'error'); } catch(e) { currentUser = { id: 'user_' + Date.now(), name, phone, role: selectedRole, balance: 0 }; localStorage.setItem('user', JSON.stringify(currentUser)); showToast('Account created (Demo Mode)!', 'success'); enterApp(); } btn.disabled = false; }
+    async function handleLogin() { const phone = document.getElementById('login-phone').value.trim(); const password = document.getElementById('login-password').value; const rememberMe = document.getElementById('remember-me').checked; if (!phone || !password) { showToast('Fill all fields', 'error'); return; } const btn = document.querySelector('#login-screen .btn-primary'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Logging in...'; try { const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, password }) }); const data = await res.json(); if (data.success) { currentUser = data.user; if (rememberMe) localStorage.setItem('user', JSON.stringify(currentUser)); else sessionStorage.setItem('user', JSON.stringify(currentUser)); showToast(`Welcome back, ${currentUser.name}!`, 'success'); enterApp(); } else showToast(data.error || 'Invalid credentials', 'error'); } catch(e) { showToast('Server error', 'error'); } btn.disabled = false; btn.innerHTML = 'Login'; }
+    function logout() { currentUser = null; localStorage.removeItem('user'); sessionStorage.removeItem('user'); if (messageInterval) clearInterval(messageInterval); showScreen('welcome-screen'); showToast('Logged out successfully', 'success'); }
 
-    function selectRole(role) {
-        selectedRole = role;
-        document.querySelectorAll('.role-card').forEach(card => {
-            card.classList.remove('selected');
-            if (card.getAttribute('data-role') === role) card.classList.add('selected');
-        });
-        document.getElementById('signup-continue-btn').disabled = false;
+    // ==================== PROFILE COMPLETION ====================
+    async function loadProfileData() {
+        const res = await fetch(`/api/my-profile?userId=${currentUser.id}`); const data = await res.json();
+        document.getElementById('profile-bio').value = data.user.bio || '';
+        document.getElementById('profile-skills').value = data.user.skills || '';
+        tempEducation = data.education || [];
+        tempWork = data.workExperience || [];
+        tempCertifications = data.certifications || [];
+        renderEducationList(); renderWorkList(); renderCertList();
     }
-
-    function goToRegistrationForm() {
-        if (!selectedRole) return;
-        isPhoneVerified = false;
-        document.getElementById('verification-group').style.display = 'none';
-        document.getElementById('password-group').style.display = 'none';
-        document.getElementById('confirm-group').style.display = 'none';
-        document.getElementById('create-account-btn').style.display = 'none';
-        const roleText = selectedRole === 'household' ? (currentLanguage === 'en' ? 'Registering as Household' : 'التسجيل كأسرة') : (currentLanguage === 'en' ? 'Registering as Professional' : 'التسجيل كمحترف');
-        document.getElementById('registration-role-display').innerHTML = roleText;
-        document.getElementById('full-name').value = '';
-        document.getElementById('id-card').value = '';
-        document.getElementById('phone-number').value = '';
-        document.getElementById('verification-code').value = '';
-        document.getElementById('password').value = '';
-        document.getElementById('confirm-password').value = '';
-        document.getElementById('send-code-btn').disabled = false;
-        document.getElementById('send-code-btn').innerHTML = currentLanguage === 'en' ? 'Send Code' : 'إرسال الرمز';
-        showScreen('registration-screen');
-    }
-
-    // ==================== AUTHENTICATION ====================
-    async function sendVerificationCode() {
-        const phone = document.getElementById('phone-number').value.trim();
-        if (!phone) { showToast(currentLanguage === 'en' ? 'Enter phone number' : 'أدخل رقم الهاتف', 'error'); return; }
-        const btn = document.getElementById('send-code-btn');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Sending...' : 'جاري الإرسال...');
-        try {
-            const response = await fetch('/api/send-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) });
-            const data = await response.json();
-            if (data.success) {
-                storedVerificationCode = data.testMode ? '123456' : null;
-                showToast(data.testMode ? (currentLanguage === 'en' ? 'Test Mode: Code 123456' : 'وضع الاختبار: الرمز 123456') : (currentLanguage === 'en' ? 'Code sent!' : 'تم إرسال الرمز!'), 'success');
-                document.getElementById('verification-group').style.display = 'block';
-            } else { showToast(currentLanguage === 'en' ? 'Failed to send code' : 'فشل إرسال الرمز', 'error'); }
-        } catch (err) {
-            storedVerificationCode = '123456';
-            showToast(currentLanguage === 'en' ? 'Demo Mode: Use code 123456' : 'وضع العرض: استخدم الرمز 123456', 'success');
-            document.getElementById('verification-group').style.display = 'block';
-        }
-        btn.disabled = false;
-        btn.innerHTML = currentLanguage === 'en' ? 'Send Code' : 'إرسال الرمز';
-    }
-
-    async function verifyCode() {
-        const code = document.getElementById('verification-code').value.trim();
-        if (!code) { showToast(currentLanguage === 'en' ? 'Enter verification code' : 'أدخل رمز التحقق', 'error'); return; }
-        if (code === '123456' || code === storedVerificationCode) {
-            isPhoneVerified = true;
-            showToast(currentLanguage === 'en' ? 'Phone verified!' : 'تم التحقق من الهاتف!', 'success');
-            document.getElementById('password-group').style.display = 'block';
-            document.getElementById('confirm-group').style.display = 'block';
-            document.getElementById('create-account-btn').style.display = 'block';
-            document.getElementById('verify-btn').disabled = true;
-            document.getElementById('verify-btn').innerHTML = currentLanguage === 'en' ? 'Verified ✓' : 'تم التحقق ✓';
-        } else { showToast(currentLanguage === 'en' ? 'Invalid code' : 'رمز غير صالح', 'error'); }
-    }
-
-    async function createAccount() {
-        const name = document.getElementById('full-name').value.trim();
-        const idCard = document.getElementById('id-card').value.trim();
-        const phone = document.getElementById('phone-number').value.trim();
-        const password = document.getElementById('password').value;
-        const confirm = document.getElementById('confirm-password').value;
-        if (!name) { showToast(currentLanguage === 'en' ? 'Enter full name' : 'أدخل الاسم الكامل', 'error'); return; }
-        if (!idCard) { showToast(currentLanguage === 'en' ? 'Enter ID card number' : 'أدخل رقم بطاقة التعريف', 'error'); return; }
-        if (!isPhoneVerified) { showToast(currentLanguage === 'en' ? 'Verify phone first' : 'تحقق من الهاتف أولاً', 'error'); return; }
-        if (!password || password.length < 4) { showToast(currentLanguage === 'en' ? 'Password must be at least 4 characters' : 'يجب أن تتكون كلمة المرور من 4 أحرف على الأقل', 'error'); return; }
-        if (password !== confirm) { showToast(currentLanguage === 'en' ? 'Passwords do not match' : 'كلمات المرور غير متطابقة', 'error'); return; }
-        const btn = document.getElementById('create-account-btn');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Creating...' : 'جاري الإنشاء...');
-        try {
-            const response = await fetch('/api/verify-register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, code: document.getElementById('verification-code').value, name, password, role: selectedRole }) });
-            const data = await response.json();
-            if (data.success) {
-                currentUser = data.user;
-                localStorage.setItem('user', JSON.stringify(currentUser));
-                showToast(currentLanguage === 'en' ? 'Account created!' : 'تم إنشاء الحساب!', 'success');
-                enterApp();
-            } else { showToast(data.error || (currentLanguage === 'en' ? 'Registration failed' : 'فشل التسجيل'), 'error'); }
-        } catch (err) {
-            currentUser = { id: 'user_' + Date.now(), name, phone, role: selectedRole, balance: 0 };
-            localStorage.setItem('user', JSON.stringify(currentUser));
-            showToast(currentLanguage === 'en' ? 'Account created (Demo Mode)!' : 'تم إنشاء الحساب (وضع العرض)!', 'success');
-            enterApp();
-        }
-        btn.disabled = false;
-    }
-
-    async function handleLogin() {
-        const phone = document.getElementById('login-phone').value.trim();
-        const password = document.getElementById('login-password').value;
-        const rememberMe = document.getElementById('remember-me').checked;
-        if (!phone || !password) { showToast(currentLanguage === 'en' ? 'Please fill all fields' : 'يرجى ملء جميع الحقول', 'error'); return; }
-        const btn = document.querySelector('#login-screen .btn-primary');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Logging in...' : 'جاري تسجيل الدخول...');
-        try {
-            const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, password }) });
-            const data = await response.json();
-            if (data.success) {
-                currentUser = data.user;
-                if (rememberMe) localStorage.setItem('user', JSON.stringify(currentUser));
-                else sessionStorage.setItem('user', JSON.stringify(currentUser));
-                showToast(currentLanguage === 'en' ? `Welcome back, ${currentUser.name}!` : `مرحبًا بعودتك، ${currentUser.name}!`, 'success');
-                enterApp();
-            } else { showToast(data.error || (currentLanguage === 'en' ? 'Invalid credentials' : 'بيانات غير صحيحة'), 'error'); }
-        } catch (err) { showToast(currentLanguage === 'en' ? 'Server error. Try again.' : 'خطأ في الخادم. حاول مرة أخرى.', 'error'); }
-        btn.disabled = false;
-        btn.innerHTML = currentLanguage === 'en' ? 'Login' : 'تسجيل الدخول';
-    }
-
-    function logout() {
-        currentUser = null;
-        localStorage.removeItem('user');
-        sessionStorage.removeItem('user');
-        if (messageInterval) clearInterval(messageInterval);
-        showScreen('welcome-screen');
-        showToast(currentLanguage === 'en' ? 'Logged out successfully' : 'تم تسجيل الخروج بنجاح', 'success');
-    }
+    function renderEducationList() { const container = document.getElementById('education-list'); if (tempEducation.length === 0) { container.innerHTML = '<p style="color:#64748b;">No education added yet</p>'; return; } container.innerHTML = tempEducation.map(e => `<div class="entry-item"><div class="flex-between"><div><div class="entry-title">${escapeHtml(e.degree)}</div><div class="entry-sub">${escapeHtml(e.institution)} ${e.year ? `(${e.year})` : ''}</div></div><button class="delete-icon" onclick="tempEducation = tempEducation.filter(i => i.id !== '${e.id}'); renderEducationList();">🗑️</button></div></div>`).join(''); }
+    function renderWorkList() { const container = document.getElementById('work-list'); if (tempWork.length === 0) { container.innerHTML = '<p style="color:#64748b;">No work experience added yet</p>'; return; } container.innerHTML = tempWork.map(w => `<div class="entry-item"><div class="flex-between"><div><div class="entry-title">${escapeHtml(w.title)} at ${escapeHtml(w.company)}</div><div class="entry-sub">${w.start_year || ''} - ${w.end_year || 'Present'}</div></div><button class="delete-icon" onclick="tempWork = tempWork.filter(i => i.id !== '${w.id}'); renderWorkList();">🗑️</button></div></div>`).join(''); }
+    function renderCertList() { const container = document.getElementById('cert-list'); if (tempCertifications.length === 0) { container.innerHTML = '<p style="color:#64748b;">No certifications added yet</p>'; return; } container.innerHTML = tempCertifications.map(c => `<div class="entry-item"><div class="flex-between"><div><div class="entry-title">${escapeHtml(c.name)}</div><div class="entry-sub">${escapeHtml(c.issuer)} ${c.year ? `(${c.year})` : ''}</div></div><button class="delete-icon" onclick="tempCertifications = tempCertifications.filter(i => i.id !== '${c.id}'); renderCertList();">🗑️</button></div></div>`).join(''); }
+    async function saveCompleteProfile() { const bio = document.getElementById('profile-bio').value; const skills = document.getElementById('profile-skills').value; await fetch('/api/update-profile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id, bio, skills, profile_picture: localStorage.getItem('profile_pic'), profile_completed: true }) }); for (let e of tempEducation) { if (!e.id.startsWith('edu_')) { await fetch('/api/add-education', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id, degree: e.degree, institution: e.institution, year: e.year }) }); } } for (let w of tempWork) { if (!w.id.startsWith('work_')) { await fetch('/api/add-work', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id, title: w.title, company: w.company, start_year: w.start_year, end_year: w.end_year, description: w.description }) }); } } for (let c of tempCertifications) { if (!c.id.startsWith('cert_')) { await fetch('/api/add-certification', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id, name: c.name, issuer: c.issuer, year: c.year }) }); } } showToast('Profile saved!', 'success'); if (currentUser.role === 'professional') showScreen('professional-main'); else showScreen('household-main'); }
+    function skipProfileCompletion() { if (currentUser.role === 'professional') showScreen('professional-main'); else showScreen('household-main'); }
+    function showAddEducationModal() { document.getElementById('edu-degree').value = ''; document.getElementById('edu-institution').value = ''; document.getElementById('edu-year').value = ''; document.getElementById('edu-modal').style.display = 'flex'; }
+    function addEducation() { const degree = document.getElementById('edu-degree').value.trim(); const institution = document.getElementById('edu-institution').value.trim(); const year = document.getElementById('edu-year').value.trim(); if (!degree || !institution) { showToast('Fill required fields', 'error'); return; } tempEducation.push({ id: 'tmp_' + Date.now(), degree, institution, year }); renderEducationList(); closeModal('edu-modal'); }
+    function showAddWorkModal() { document.getElementById('work-title').value = ''; document.getElementById('work-company').value = ''; document.getElementById('work-start').value = ''; document.getElementById('work-end').value = ''; document.getElementById('work-desc').value = ''; document.getElementById('work-modal').style.display = 'flex'; }
+    function addWork() { const title = document.getElementById('work-title').value.trim(); const company = document.getElementById('work-company').value.trim(); const start_year = document.getElementById('work-start').value.trim(); const end_year = document.getElementById('work-end').value.trim(); const description = document.getElementById('work-desc').value.trim(); if (!title || !company) { showToast('Fill required fields', 'error'); return; } tempWork.push({ id: 'tmp_' + Date.now(), title, company, start_year, end_year, description }); renderWorkList(); closeModal('work-modal'); }
+    function showAddCertModal() { document.getElementById('cert-name').value = ''; document.getElementById('cert-issuer').value = ''; document.getElementById('cert-year').value = ''; document.getElementById('cert-modal').style.display = 'flex'; }
+    function addCertification() { const name = document.getElementById('cert-name').value.trim(); const issuer = document.getElementById('cert-issuer').value.trim(); const year = document.getElementById('cert-year').value.trim(); if (!name || !issuer) { showToast('Fill required fields', 'error'); return; } tempCertifications.push({ id: 'tmp_' + Date.now(), name, issuer, year }); renderCertList(); closeModal('cert-modal'); }
+    function previewProfilePicture(event) { const file = event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = function(e) { document.getElementById('profile-pic-preview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`; localStorage.setItem('profile_pic', e.target.result); }; reader.readAsDataURL(file); } }
 
     // ==================== MAIN APP ====================
-    function enterApp() {
-        const savedLocation = localStorage.getItem('userLocation');
-        if (savedLocation) userLocation = JSON.parse(savedLocation);
-        if (currentUser.role === 'household') {
-            showScreen('household-main');
-            loadHouseholdGigs();
-            if (!userLocation) document.getElementById('location-bar-post').style.display = 'flex';
-        } else {
-            showScreen('professional-main');
-            if (!userLocation) document.getElementById('location-bar-pro').style.display = 'flex';
-            else document.getElementById('sort-toggle').style.display = 'flex';
-            loadProAvailableGigs();
-            loadProActiveGigs();
-            loadWallet();
-        }
-        loadProfile();
-    }
+    function enterApp() { const savedLocation = localStorage.getItem('userLocation'); if (savedLocation) userLocation = JSON.parse(savedLocation); if (currentUser.role === 'household') { showScreen('household-main'); loadHouseholdGigs(); if (!userLocation) document.getElementById('location-bar-post').style.display = 'flex'; } else { checkProfileCompletion(); } loadProfileView(); }
+    async function checkProfileCompletion() { const res = await fetch(`/api/my-profile?userId=${currentUser.id}`); const data = await res.json(); if (!data.user.profile_completed) { await loadProfileData(); showScreen('profile-completion-screen'); } else { showScreen('professional-main'); loadProAvailableGigs(); loadProActiveGigs(); loadWallet(); } }
+    async function loadProfileView() { const res = await fetch(`/api/my-profile?userId=${currentUser.id}`); const data = await res.json(); document.getElementById('profile-name').innerText = data.user.name; document.getElementById('profile-role').innerText = currentUser.role === 'household' ? '🏠 Household' : '🛠️ Professional'; document.getElementById('profile-phone').innerText = data.user.phone; document.getElementById('profile-bio-view').innerText = data.user.bio || 'Not provided'; document.getElementById('profile-skills-view').innerText = data.user.skills || 'Not provided'; document.getElementById('profile-education-view').innerHTML = (data.education || []).map(e => `<div class="entry-item"><div class="entry-title">${escapeHtml(e.degree)}</div><div class="entry-sub">${escapeHtml(e.institution)} ${e.year ? `(${e.year})` : ''}</div></div>`).join('') || '<p>No education added</p>'; document.getElementById('profile-work-view').innerHTML = (data.workExperience || []).map(w => `<div class="entry-item"><div class="entry-title">${escapeHtml(w.title)} at ${escapeHtml(w.company)}</div><div class="entry-sub">${w.start_year || ''} - ${w.end_year || 'Present'}</div><div class="entry-sub">${escapeHtml(w.description || '')}</div></div>`).join('') || '<p>No work experience added</p>'; document.getElementById('profile-cert-view').innerHTML = (data.certifications || []).map(c => `<div class="entry-item"><div class="entry-title">${escapeHtml(c.name)}</div><div class="entry-sub">${escapeHtml(c.issuer)} ${c.year ? `(${c.year})` : ''}</div></div>`).join('') || '<p>No certifications added</p>'; if (data.user.profile_picture) document.getElementById('profile-view-pic').innerHTML = `<img src="${data.user.profile_picture}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`; }
+    function editProfile() { showScreen('profile-completion-screen'); loadProfileData(); }
 
-    const savedUserSession = localStorage.getItem('user') || sessionStorage.getItem('user');
-    if (savedUserSession) { try { currentUser = JSON.parse(savedUserSession); if (currentUser?.id) enterApp(); } catch(e) {} }
-
-    async function loadHouseholdGigs() {
-        if (!currentUser) return;
-        try { const res = await fetch('/api/gigs'); const gigs = await res.json(); const myGigs = gigs.filter(g => g.household_id === currentUser.id); const container = document.getElementById('household-gigs-list');
-            if (myGigs.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No gigs yet.' : 'لا توجد مهام بعد.'}</div>`; return; }
-            container.innerHTML = myGigs.map(g => `<div class="gig-card"><div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div><span class="badge badge-${g.status || 'open'}">${g.status || 'open'}</span></div><div class="gig-meta">${escapeHtml(g.category)}</div><div class="gig-desc">${escapeHtml(g.description)}</div>${g.status === 'accepted' ? `<button class="btn-primary" style="margin-top:8px; background:#10b981;" onclick="markComplete('${g.id}')">✅ ${currentLanguage === 'en' ? 'Mark Complete' : 'تأكيد الإكمال'}</button><button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" style="margin-top:8px;">💬 ${currentLanguage === 'en' ? 'Chat' : 'محادثة'}</button>` : ''}</div>`).join('');
-        } catch(e) { showToast(currentLanguage === 'en' ? 'Error loading gigs' : 'خطأ في تحميل المهام'); }
-    }
-
+    // Household gigs with applicants button
+    async function loadHouseholdGigs() { if (!currentUser) return; try { const res = await fetch('/api/gigs'); const gigs = await res.json(); const myGigs = gigs.filter(g => g.household_id === currentUser.id); const container = document.getElementById('household-gigs-list'); if (myGigs.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px;">No gigs yet.</div>'; return; } container.innerHTML = myGigs.map(g => `<div class="gig-card"><div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div><span class="badge badge-${g.status || 'open'}">${g.status || 'open'}</span></div><div class="gig-meta">${escapeHtml(g.category)}</div><div class="gig-desc">${escapeHtml(g.description)}</div><div class="flex-between"><button onclick="viewApplicants('${g.id}')" class="btn-outline" style="width:auto;padding:8px 16px;">👥 View Applicants</button>${g.status === 'open' ? `<button onclick="showPostGig()" style="background:#2563eb;color:white;border:none;padding:8px 16px;border-radius:30px;">Edit</button>` : ''}</div>${g.status === 'accepted' ? `<button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" class="btn-primary" style="margin-top:8px;">💬 Chat</button>` : ''}</div>`).join(''); } catch(e) { showToast('Error loading gigs'); } }
     function showPostGig() { showScreen('post-gig-screen'); if (!userLocation) document.getElementById('location-bar-post').style.display = 'flex'; else document.getElementById('location-bar-post').style.display = 'none'; }
     function backToHousehold() { showScreen('household-main'); loadHouseholdGigs(); }
+    async function postGigWithLocation() { const title = document.getElementById('gig-title').value.trim(); const category = document.getElementById('gig-category').value; const urgency = document.getElementById('gig-urgency').value; const address = document.getElementById('gig-address').value.trim(); const description = document.getElementById('gig-desc').value.trim(); if (!title || !description) { showToast('Fill all fields', 'error'); return; } const newGig = { id: 'gig_' + Date.now(), title, category, urgency, description, address, household_id: currentUser.id, household_name: currentUser.name, created_at: Date.now(), lat: userLocation?.lat || null, lng: userLocation?.lng || null }; try { await fetch('/api/gigs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newGig) }); showToast('Gig posted!'); backToHousehold(); } catch(e) { showToast('Error posting gig'); } }
+    async function viewApplicants(gigId) { currentApplicantsGigId = gigId; const res = await fetch(`/api/gig-applications/${gigId}`); const applicants = await res.json(); const container = document.getElementById('applicants-list'); if (applicants.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px;">No applicants yet.</div>'; } else { container.innerHTML = applicants.map(a => `<div class="applicant-card"><div class="applicant-header"><div class="applicant-avatar">${a.profile_picture ? `<img src="${a.profile_picture}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : '👤'}</div><div><h3>${escapeHtml(a.name)}</h3><p>💬 ${escapeHtml(a.message || 'No message')}</p><p>💰 Bid: ${a.bid_amount ? `${a.bid_amount} MAD` : 'Negotiable'}</p><p>📍 ${a.lat && a.lng && userLocation ? formatDistance(calculateDistance(userLocation.lat, userLocation.lng, a.lat, a.lng)) : 'Location available after application'}</p></div></div><div class="flex-between"><button class="btn-outline" onclick="viewProfessionalProfile('${a.professional_id}', '${gigId}')">📋 View Full Profile</button><button class="btn-primary" onclick="selectProfessional('${gigId}', '${a.professional_id}')" style="width:auto;padding:8px 16px;">✅ Hire</button></div></div>`).join(''); } showScreen('applicants-screen'); }
+    function calculateDistance(lat1, lon1, lat2, lon2) { const R = 6371; const dLat = (lat2 - lat1) * Math.PI / 180; const dLon = (lon2 - lon1) * Math.PI / 180; const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2); const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); return R * c; }
+    async function viewProfessionalProfile(professionalId, gigId) { const res = await fetch(`/api/professionals/${professionalId}/profile`); const profile = await res.json(); const container = document.getElementById('household-profile-content'); container.innerHTML = `<div class="profile-picture" style="width:100px;height:100px;">${profile.user.profile_picture ? `<img src="${profile.user.profile_picture}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : '👤'}</div><h2>${escapeHtml(profile.user.name)}</h2><div class="section-card"><div class="section-title">📝 About</div><p>${escapeHtml(profile.user.bio || 'Not provided')}</p></div><div class="section-card"><div class="section-title">🔧 Skills</div><p>${escapeHtml(profile.user.skills || 'Not provided')}</p></div><div class="section-card"><div class="section-title">🎓 Education</div>${(profile.education || []).map(e => `<div class="entry-item"><div class="entry-title">${escapeHtml(e.degree)}</div><div class="entry-sub">${escapeHtml(e.institution)}</div></div>`).join('') || '<p>None</p>'}</div><div class="section-card"><div class="section-title">💼 Work Experience</div>${(profile.workExperience || []).map(w => `<div class="entry-item"><div class="entry-title">${escapeHtml(w.title)} at ${escapeHtml(w.company)}</div></div>`).join('') || '<p>None</p>'}</div><div class="section-card"><div class="section-title">📜 Certifications</div>${(profile.certifications || []).map(c => `<div class="entry-item"><div class="entry-title">${escapeHtml(c.name)}</div><div class="entry-sub">${escapeHtml(c.issuer)}</div></div>`).join('') || '<p>None</p>'}</div>`; showScreen('household-profile-view'); }
+    async function selectProfessional(gigId, professionalId) { await fetch('/api/select-professional', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ gig_id: gigId, professional_id: professionalId }) }); showToast('Professional hired! They will be notified.', 'success'); loadHouseholdGigs(); }
 
-    async function postGigWithLocation() {
-        const title = document.getElementById('gig-title').value.trim();
-        const category = document.getElementById('gig-category').value;
-        const urgency = document.getElementById('gig-urgency').value;
-        const address = document.getElementById('gig-address').value.trim();
-        const description = document.getElementById('gig-desc').value.trim();
-        if (!title || !description) { showToast(currentLanguage === 'en' ? 'Fill all fields' : 'املأ جميع الحقول', 'error'); return; }
-        const newGig = { id: 'gig_' + Date.now(), title, category, urgency, description, address, household_id: currentUser.id, household_name: currentUser.name, created_at: Date.now(), lat: userLocation?.lat || null, lng: userLocation?.lng || null };
-        try { await fetch('/api/gigs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newGig) }); showToast(currentLanguage === 'en' ? 'Gig posted!' : 'تم نشر المهمة!'); backToHousehold(); }
-        catch(e) { showToast(currentLanguage === 'en' ? 'Error posting gig' : 'خطأ في نشر المهمة'); }
-    }
-
-    async function loadProAvailableGigs() {
-        if (!currentUser) return;
-        try {
-            let gigs = [];
-            if (userLocation && currentSort === 'distance') {
-                const res = await fetch('/api/gigs/nearby', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lat: userLocation.lat, lng: userLocation.lng, maxDistance: 100 }) });
-                const nearbyGigs = await res.json();
-                const allRes = await fetch('/api/gigs');
-                const allGigs = await allRes.json();
-                const nonLocationGigs = allGigs.filter(g => g.status === 'open' && g.household_id !== currentUser.id && (!g.lat || !g.lng));
-                gigs = [...nearbyGigs.filter(g => g.status === 'open'), ...nonLocationGigs];
-            } else {
-                const res = await fetch('/api/gigs');
-                const allGigs = await res.json();
-                gigs = allGigs.filter(g => g.status === 'open' && g.household_id !== currentUser.id);
-                if (currentSort === 'recent') gigs.sort((a,b) => b.created_at - a.created_at);
-            }
-            const container = document.getElementById('pro-available-list');
-            if (gigs.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No gigs available' : 'لا توجد مهام متاحة'}</div>`; return; }
-            container.innerHTML = gigs.map(g => `<div class="gig-card"><div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div>${g.distance ? `<span class="distance-badge">📍 ${formatDistance(g.distance)}</span>` : ''}</div><div class="gig-meta">${escapeHtml(g.category)} • ${currentLanguage === 'en' ? 'by' : 'بواسطة'} ${escapeHtml(g.household_name)}${g.address ? ` • 📍 ${escapeHtml(g.address)}` : ''}</div><div class="gig-desc">${escapeHtml(g.description)}</div><button class="btn-primary" onclick="acceptGig('${g.id}')">${currentLanguage === 'en' ? 'Accept Gig' : 'قبول المهمة'}</button></div>`).join('');
-        } catch(e) { showToast(currentLanguage === 'en' ? 'Error loading gigs' : 'خطأ في تحميل المهام'); }
-    }
-
-    async function loadProActiveGigs() {
-        if (!currentUser) return;
-        try { const res = await fetch('/api/gigs'); const gigs = await res.json(); const active = gigs.filter(g => g.status === 'accepted' && g.professional_id === currentUser.id); const container = document.getElementById('pro-active-list');
-            if (active.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No active gigs' : 'لا توجد مهام نشطة'}</div>`; return; }
-            container.innerHTML = active.map(g => `<div class="gig-card"><div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div><span class="badge badge-accepted">${currentLanguage === 'en' ? 'Active' : 'نشط'}</span></div><div class="gig-meta">${currentLanguage === 'en' ? 'Client' : 'العميل'}: ${escapeHtml(g.household_name)}</div><div class="gig-desc">${escapeHtml(g.description)}</div><button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" style="margin-bottom:8px;">💬 ${currentLanguage === 'en' ? 'Chat' : 'محادثة'}</button><button class="btn-primary" style="background:#10b981;" onclick="markComplete('${g.id}')">✅ ${currentLanguage === 'en' ? 'Mark Complete' : 'تأكيد الإكمال'}</button></div>`).join('');
-        } catch(e) { showToast(currentLanguage === 'en' ? 'Error loading active gigs' : 'خطأ في تحميل المهام النشطة'); }
-    }
-
-    async function acceptGig(gigId) {
-        try { const res = await fetch(`/api/gigs/${gigId}/accept`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ professional_id: currentUser.id, professional_name: currentUser.name }) });
-            if (res.ok) { showToast(currentLanguage === 'en' ? 'Gig accepted!' : 'تم قبول المهمة!'); loadProAvailableGigs(); loadProActiveGigs(); }
-            else showToast(currentLanguage === 'en' ? 'Failed' : 'فشل', 'error');
-        } catch(e) { showToast(currentLanguage === 'en' ? 'Error' : 'خطأ', 'error'); }
-    }
-
-    async function markComplete(gigId) {
-        try { await fetch(`/api/gigs/${gigId}/complete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id }) }); showToast(currentLanguage === 'en' ? 'Marked complete!' : 'تم تأكيد الإكمال!'); if (currentUser.role === 'household') loadHouseholdGigs(); else loadProActiveGigs(); }
-        catch(e) { showToast(currentLanguage === 'en' ? 'Error' : 'خطأ'); }
-    }
-
-    async function fundWalletDemo() {
-        try { await fetch('/api/wallet/fund', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id, amount: 100 }) }); currentUser.balance = (currentUser.balance || 0) + 100; showToast(currentLanguage === 'en' ? 'MAD 100 deposited!' : 'تم إيداع 100 درهم!'); loadWallet(); }
-        catch(e) { showToast(currentLanguage === 'en' ? 'Error' : 'خطأ'); }
-    }
-
-    async function loadWallet() {
-        try { const res = await fetch('/api/users?phone=' + encodeURIComponent(currentUser.phone)); const user = await res.json(); if (user) currentUser.balance = user.balance || 0; document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0); }
-        catch(e) { document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0); }
-    }
+    // Professional functions
+    async function loadProAvailableGigs() { if (!currentUser) return; try { let gigs = []; if (userLocation && currentSort === 'distance') { const res = await fetch('/api/gigs/nearby', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lat: userLocation.lat, lng: userLocation.lng, maxDistance: 100 }) }); const nearbyGigs = await res.json(); const allRes = await fetch('/api/gigs'); const allGigs = await allRes.json(); const nonLocationGigs = allGigs.filter(g => g.status === 'open' && g.household_id !== currentUser.id && (!g.lat || !g.lng)); gigs = [...nearbyGigs.filter(g => g.status === 'open'), ...nonLocationGigs]; } else { const res = await fetch('/api/gigs'); const allGigs = await res.json(); gigs = allGigs.filter(g => g.status === 'open' && g.household_id !== currentUser.id); if (currentSort === 'recent') gigs.sort((a,b) => b.created_at - a.created_at); } const container = document.getElementById('pro-available-list'); if (gigs.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px;">No gigs available</div>'; return; } container.innerHTML = gigs.map(g => `<div class="gig-card"><div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div>${g.distance ? `<span class="distance-badge">📍 ${formatDistance(g.distance)}</span>` : ''}</div><div class="gig-meta">${escapeHtml(g.category)} • by ${escapeHtml(g.household_name)}${g.address ? ` • 📍 ${escapeHtml(g.address)}` : ''}</div><div class="gig-desc">${escapeHtml(g.description)}</div><button class="btn-primary" onclick="showApplyModal('${g.id}')">Apply for this Gig</button></div>`).join(''); } catch(e) { showToast('Error loading gigs'); } }
+    function showApplyModal(gigId) { currentGigForApply = gigId; document.getElementById('bid-amount').value = ''; document.getElementById('bid-message').value = ''; document.getElementById('apply-modal').style.display = 'flex'; }
+    async function submitApplication() { const bid_amount = parseInt(document.getElementById('bid-amount').value) || null; const message = document.getElementById('bid-message').value.trim(); await fetch('/api/apply-to-gig', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ gig_id: currentGigForApply, professional_id: currentUser.id, bid_amount, message }) }); showToast('Application submitted!'); closeModal('apply-modal'); loadProAvailableGigs(); }
+    async function loadProActiveGigs() { if (!currentUser) return; try { const res = await fetch('/api/gigs'); const gigs = await res.json(); const active = gigs.filter(g => g.status === 'accepted' && g.professional_id === currentUser.id); const container = document.getElementById('pro-active-list'); if (active.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px;">No active gigs</div>'; return; } container.innerHTML = active.map(g => `<div class="gig-card"><div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div><span class="badge badge-accepted">Active</span></div><div class="gig-meta">Client: ${escapeHtml(g.household_name)}</div><div class="gig-desc">${escapeHtml(g.description)}</div><button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" style="margin-bottom:8px;">💬 Chat</button><button class="btn-primary" style="background:#10b981;" onclick="markComplete('${g.id}')">✅ Mark Complete</button></div>`).join(''); } catch(e) { showToast('Error loading active gigs'); } }
+    async function acceptGig(gigId) { try { const res = await fetch(`/api/gigs/${gigId}/accept`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ professional_id: currentUser.id, professional_name: currentUser.name }) }); if (res.ok) { showToast('Gig accepted!'); loadProAvailableGigs(); loadProActiveGigs(); } else showToast('Failed', 'error'); } catch(e) { showToast('Error'); } }
+    async function markComplete(gigId) { try { await fetch(`/api/gigs/${gigId}/complete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id }) }); showToast('Marked complete!'); if (currentUser.role === 'household') loadHouseholdGigs(); else loadProActiveGigs(); } catch(e) { showToast('Error'); } }
+    async function fundWalletDemo() { try { await fetch('/api/wallet/fund', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id, amount: 100 }) }); currentUser.balance = (currentUser.balance || 0) + 100; showToast('MAD 100 deposited!'); loadWallet(); } catch(e) { showToast('Error'); } }
+    async function loadWallet() { try { const res = await fetch('/api/users?phone=' + encodeURIComponent(currentUser.phone)); const user = await res.json(); if (user) currentUser.balance = user.balance || 0; document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0); } catch(e) { document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0); } }
 
     function switchHouseholdTab(tab) { if (tab === 'gigs') { showScreen('household-main'); loadHouseholdGigs(); } else showScreen('profile-screen'); }
     function switchProTab(tab) { if (tab === 'available') { showScreen('professional-main'); loadProAvailableGigs(); } else if (tab === 'active') { showScreen('pro-active-screen'); loadProActiveGigs(); } else if (tab === 'wallet') { showScreen('pro-wallet-screen'); loadWallet(); } else showScreen('profile-screen'); }
-    function loadProfile() { document.getElementById('profile-name').innerText = currentUser.name; document.getElementById('profile-role').innerText = currentUser.role === 'household' ? (currentLanguage === 'en' ? '🏠 Household' : '🏠 أسرة') : (currentLanguage === 'en' ? '🛠️ Professional' : '🛠️ محترف'); document.getElementById('profile-phone').innerText = currentUser.phone; }
 
+    // Chat functions
     async function openChat(gigId, title) { if (messageInterval) clearInterval(messageInterval); currentChatGig = { id: gigId, title }; document.getElementById('chat-title').innerText = title; showScreen('chat-screen'); await loadMessages(); messageInterval = setInterval(loadMessages, 3000); }
     function closeChat() { if (messageInterval) clearInterval(messageInterval); messageInterval = null; if (currentUser.role === 'household') { showScreen('household-main'); loadHouseholdGigs(); } else { showScreen('professional-main'); loadProAvailableGigs(); loadProActiveGigs(); } }
-    async function loadMessages() { if (!currentChatGig) return; try { const res = await fetch(`/api/gigs/${currentChatGig.id}/messages`); const messages = await res.json(); const container = document.getElementById('chat-messages'); if (messages.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No messages yet' : 'لا توجد رسائل بعد'}</div>`; return; } container.innerHTML = messages.map(msg => `<div class="message ${msg.sender_id === currentUser.id ? 'message-sent' : 'message-received'}"><div class="message-bubble"><div style="font-size:11px;">${escapeHtml(msg.sender_name)}</div><div>${escapeHtml(msg.text)}</div><div style="font-size:10px;opacity:0.5;">${new Date(msg.created_at).toLocaleTimeString()}</div></div></div>`).join(''); container.scrollTop = container.scrollHeight; } catch(e) { console.error(e); } }
-    async function sendMessage() { const input = document.getElementById('chat-input'); const text = input.value.trim(); if (!text || !currentChatGig) return; try { await fetch(`/api/gigs/${currentChatGig.id}/messages`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sender_id: currentUser.id, sender_name: currentUser.name, text }) }); input.value = ''; await loadMessages(); } catch(e) { showToast(currentLanguage === 'en' ? 'Error sending message' : 'خطأ في إرسال الرسالة'); } }
+    async function loadMessages() { if (!currentChatGig) return; try { const res = await fetch(`/api/gigs/${currentChatGig.id}/messages`); const messages = await res.json(); const container = document.getElementById('chat-messages'); if (messages.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px;">No messages yet</div>'; return; } container.innerHTML = messages.map(msg => `<div class="message ${msg.sender_id === currentUser.id ? 'message-sent' : 'message-received'}"><div class="message-bubble"><div style="font-size:11px;">${escapeHtml(msg.sender_name)}</div><div>${escapeHtml(msg.text)}</div><div style="font-size:10px;opacity:0.5;">${new Date(msg.created_at).toLocaleTimeString()}</div></div></div>`).join(''); container.scrollTop = container.scrollHeight; } catch(e) { console.error(e); } }
+    async function sendMessage() { const input = document.getElementById('chat-input'); const text = input.value.trim(); if (!text || !currentChatGig) return; try { await fetch(`/api/gigs/${currentChatGig.id}/messages`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sender_id: currentUser.id, sender_name: currentUser.name, text }) }); input.value = ''; await loadMessages(); } catch(e) { showToast('Error sending message'); } }
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
 
     // Forgot password functions
-    function showForgotPassword() { resetPhone = null; resetCodeVerified = false; document.getElementById('reset-code-group').style.display = 'none'; document.getElementById('new-password-group').style.display = 'none'; document.getElementById('confirm-new-group').style.display = 'none'; document.getElementById('reset-password-btn').style.display = 'none'; document.getElementById('reset-phone').value = ''; document.getElementById('reset-code').value = ''; document.getElementById('new-password').value = ''; document.getElementById('confirm-new-password').value = ''; document.getElementById('reset-send-code-btn').disabled = false; document.getElementById('reset-send-code-btn').innerHTML = currentLanguage === 'en' ? 'Send Code' : 'إرسال الرمز'; showScreen('forgot-password-screen'); }
-    async function sendResetCode() { const phone = document.getElementById('reset-phone').value.trim(); if (!phone) { showToast(currentLanguage === 'en' ? 'Enter phone number' : 'أدخل رقم الهاتف', 'error'); return; } resetPhone = phone; const btn = document.getElementById('reset-send-code-btn'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Sending...' : 'جاري الإرسال...'); try { const response = await fetch('/api/send-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) }); const data = await response.json(); if (data.success) { resetStoredCode = data.testMode ? '123456' : null; showToast(data.testMode ? (currentLanguage === 'en' ? 'Test Mode: Code 123456' : 'وضع الاختبار: الرمز 123456') : (currentLanguage === 'en' ? 'Code sent!' : 'تم إرسال الرمز!'), 'success'); document.getElementById('reset-code-group').style.display = 'block'; } else { showToast(currentLanguage === 'en' ? 'Failed to send code' : 'فشل إرسال الرمز', 'error'); } } catch (err) { resetStoredCode = '123456'; showToast(currentLanguage === 'en' ? 'Demo Mode: Use code 123456' : 'وضع العرض: استخدم الرمز 123456', 'success'); document.getElementById('reset-code-group').style.display = 'block'; } btn.disabled = false; btn.innerHTML = currentLanguage === 'en' ? 'Send Code' : 'إرسال الرمز'; }
-    async function verifyResetCode() { const code = document.getElementById('reset-code').value.trim(); if (!code) { showToast(currentLanguage === 'en' ? 'Enter verification code' : 'أدخل رمز التحقق', 'error'); return; } if (code === '123456' || code === resetStoredCode) { resetCodeVerified = true; showToast(currentLanguage === 'en' ? 'Code verified!' : 'تم التحقق من الرمز!', 'success'); document.getElementById('new-password-group').style.display = 'block'; document.getElementById('confirm-new-group').style.display = 'block'; document.getElementById('reset-password-btn').style.display = 'block'; document.getElementById('reset-verify-btn').disabled = true; document.getElementById('reset-verify-btn').innerHTML = currentLanguage === 'en' ? 'Verified ✓' : 'تم التحقق ✓'; } else { showToast(currentLanguage === 'en' ? 'Invalid code' : 'رمز غير صالح', 'error'); } }
-    async function resetPassword() { const newPassword = document.getElementById('new-password').value; const confirmNew = document.getElementById('confirm-new-password').value; if (!newPassword || newPassword.length < 4) { showToast(currentLanguage === 'en' ? 'Password must be at least 4 characters' : 'يجب أن تتكون كلمة المرور من 4 أحرف على الأقل', 'error'); return; } if (newPassword !== confirmNew) { showToast(currentLanguage === 'en' ? 'Passwords do not match' : 'كلمات المرور غير متطابقة', 'error'); return; } if (!resetCodeVerified) { showToast(currentLanguage === 'en' ? 'Verify your code first' : 'تحقق من الرمز أولاً', 'error'); return; } const btn = document.getElementById('reset-password-btn'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Resetting...' : 'جاري إعادة التعيين...'); try { const response = await fetch('/api/reset-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: resetPhone, newPassword }) }); const data = await response.json(); if (data.success) { showToast(currentLanguage === 'en' ? 'Password reset successful! Please login.' : 'تم إعادة تعيين كلمة المرور بنجاح! يرجى تسجيل الدخول.', 'success'); showScreen('login-screen'); } else { showToast(data.error || (currentLanguage === 'en' ? 'Reset failed' : 'فشل إعادة التعيين'), 'error'); } } catch (err) { showToast(currentLanguage === 'en' ? 'Password reset successful (Demo Mode)!' : 'تم إعادة تعيين كلمة المرور بنجاح (وضع العرض)!', 'success'); showScreen('login-screen'); } btn.disabled = false; }
+    function showForgotPassword() { resetPhone = null; resetCodeVerified = false; document.getElementById('reset-code-group').style.display = 'none'; document.getElementById('new-password-group').style.display = 'none'; document.getElementById('confirm-new-group').style.display = 'none'; document.getElementById('reset-password-btn').style.display = 'none'; document.getElementById('reset-phone').value = ''; resetStoredCode = null; showScreen('forgot-password-screen'); }
+    async function sendResetCode() { const phone = document.getElementById('reset-phone').value.trim(); if (!phone) { showToast('Enter phone number', 'error'); return; } resetPhone = phone; const btn = document.getElementById('reset-send-code-btn'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Sending...'; try { const res = await fetch('/api/send-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) }); const data = await res.json(); if (data.success) { resetStoredCode = data.testMode ? '123456' : null; showToast(data.testMode ? 'Test Mode: Code 123456' : 'Code sent!', 'success'); document.getElementById('reset-code-group').style.display = 'block'; } else showToast('Failed to send code', 'error'); } catch(e) { resetStoredCode = '123456'; showToast('Demo Mode: Code 123456', 'success'); document.getElementById('reset-code-group').style.display = 'block'; } btn.disabled = false; btn.innerHTML = 'Send Code'; }
+    async function verifyResetCode() { const code = document.getElementById('reset-code').value.trim(); if (!code) { showToast('Enter verification code', 'error'); return; } if (code === '123456' || code === resetStoredCode) { resetCodeVerified = true; showToast('Code verified!', 'success'); document.getElementById('new-password-group').style.display = 'block'; document.getElementById('confirm-new-group').style.display = 'block'; document.getElementById('reset-password-btn').style.display = 'block'; document.getElementById('reset-verify-btn').disabled = true; document.getElementById('reset-verify-btn').innerHTML = 'Verified ✓'; } else showToast('Invalid code', 'error'); }
+    async function resetPassword() { const newPassword = document.getElementById('new-password').value; const confirmNew = document.getElementById('confirm-new-password').value; if (!newPassword || newPassword.length < 4) { showToast('Password must be at least 4 characters', 'error'); return; } if (newPassword !== confirmNew) { showToast('Passwords do not match', 'error'); return; } if (!resetCodeVerified) { showToast('Verify your code first', 'error'); return; } const btn = document.getElementById('reset-password-btn'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Resetting...'; try { const res = await fetch('/api/reset-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: resetPhone, newPassword }) }); const data = await res.json(); if (data.success) { showToast('Password reset successful!', 'success'); showScreen('login-screen'); } else showToast('Reset failed', 'error'); } catch(e) { showToast('Password reset successful (Demo Mode)!', 'success'); showScreen('login-screen'); } btn.disabled = false; }
+
+    // Session check
+    const savedUserSession = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (savedUserSession) { try { currentUser = JSON.parse(savedUserSession); if (currentUser?.id) enterApp(); } catch(e) {} }
 </script>
 </body>
 </html>
