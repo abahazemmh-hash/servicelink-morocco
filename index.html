@@ -132,12 +132,6 @@
             margin-bottom: 8px;
         }
 
-        .greeting-ar {
-            font-size: 20px;
-            color: #2563eb;
-            font-weight: 500;
-        }
-
         .auth-buttons {
             display: flex;
             flex-direction: column;
@@ -421,6 +415,8 @@
             border-top: 1px solid #e5e7eb;
             background: white;
             gap: 20px;
+            position: sticky;
+            bottom: 0;
         }
 
         .nav-item {
@@ -557,6 +553,24 @@
             text-decoration: none;
             font-weight: 600;
             cursor: pointer;
+        }
+
+        /* Profile header with back button */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .profile-header .back-btn {
+            margin-bottom: 0;
+            font-size: 28px;
+        }
+
+        .profile-header h1 {
+            margin-bottom: 0;
+            font-size: 24px;
         }
     </style>
 </head>
@@ -783,12 +797,18 @@
     </div>
 
     <div id="pro-active-screen" class="screen">
-        <div class="header"><h1 data-en="My Active Gigs" data-ar="مهامي النشطة">My Active Gigs</h1></div>
+        <div class="header">
+            <button onclick="goBackFromActiveToPro()" style="background: none; border: none; font-size: 24px;">←</button>
+            <h1 data-en="My Active Gigs" data-ar="مهامي النشطة">My Active Gigs</h1>
+        </div>
         <div class="main-content" id="pro-active-list"></div>
     </div>
 
     <div id="pro-wallet-screen" class="screen">
-        <div class="header"><h1 data-en="My Wallet" data-ar="محفظتي">My Wallet</h1></div>
+        <div class="header">
+            <button onclick="goBackFromWalletToPro()" style="background: none; border: none; font-size: 24px;">←</button>
+            <h1 data-en="My Wallet" data-ar="محفظتي">My Wallet</h1>
+        </div>
         <div class="main-content">
             <div class="wallet-card">
                 <div style="opacity: 0.8;" data-en="Available Balance" data-ar="الرصيد المتاح">Available Balance</div>
@@ -798,9 +818,12 @@
         </div>
     </div>
 
-    <!-- Profile Screen -->
+    <!-- Profile Screen with Back Button -->
     <div id="profile-screen" class="screen">
-        <div class="header"><h1 data-en="Profile" data-ar="الملف الشخصي">Profile</h1></div>
+        <div class="profile-header">
+            <button class="back-btn" onclick="goBackFromProfile()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
+            <h1 data-en="Profile" data-ar="الملف الشخصي">Profile</h1>
+        </div>
         <div class="main-content">
             <div style="text-align: center;">
                 <div style="font-size: 64px;">👤</div>
@@ -892,6 +915,28 @@
     function goBackToWelcome() { showScreen('welcome-screen'); }
     function goBackToLogin() { showScreen('login-screen'); }
     function goBackToSignupRole() { showScreen('signup-role-screen'); }
+    
+    // Profile back button - goes to correct dashboard based on role
+    function goBackFromProfile() {
+        if (currentUser && currentUser.role === 'household') {
+            showScreen('household-main');
+        } else if (currentUser && currentUser.role === 'professional') {
+            showScreen('professional-main');
+        } else {
+            showScreen('welcome-screen');
+        }
+    }
+    
+    // Professional sub-screen back buttons
+    function goBackFromActiveToPro() {
+        showScreen('professional-main');
+        loadProAvailableGigs();
+        loadProActiveGigs();
+    }
+    
+    function goBackFromWalletToPro() {
+        showScreen('professional-main');
+    }
 
     function showLoginScreen() {
         showScreen('login-screen');
@@ -1308,12 +1353,28 @@
         } catch(e) { document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0); }
     }
 
-    function switchHouseholdTab(tab) { if (tab === 'gigs') showScreen('household-main'); else showScreen('profile-screen'); }
+    function switchHouseholdTab(tab) { 
+        if (tab === 'gigs') {
+            showScreen('household-main'); 
+            loadHouseholdGigs();
+        } else {
+            showScreen('profile-screen');
+        }
+    }
+    
     function switchProTab(tab) {
-        if (tab === 'available') showScreen('professional-main');
-        else if (tab === 'active') showScreen('pro-active-screen');
-        else if (tab === 'wallet') { showScreen('pro-wallet-screen'); loadWallet(); }
-        else showScreen('profile-screen');
+        if (tab === 'available') {
+            showScreen('professional-main');
+            loadProAvailableGigs();
+        } else if (tab === 'active') {
+            showScreen('pro-active-screen');
+            loadProActiveGigs();
+        } else if (tab === 'wallet') { 
+            showScreen('pro-wallet-screen'); 
+            loadWallet(); 
+        } else {
+            showScreen('profile-screen');
+        }
     }
 
     function loadProfile() {
@@ -1334,8 +1395,14 @@
     function closeChat() {
         if (messageInterval) clearInterval(messageInterval);
         messageInterval = null;
-        if (currentUser.role === 'household') showScreen('household-main');
-        else showScreen('professional-main');
+        if (currentUser.role === 'household') {
+            showScreen('household-main');
+            loadHouseholdGigs();
+        } else {
+            showScreen('professional-main');
+            loadProAvailableGigs();
+            loadProActiveGigs();
+        }
     }
 
     async function loadMessages() {
@@ -1348,7 +1415,7 @@
             container.innerHTML = messages.map(msg => `
                 <div class="message ${msg.sender_id === currentUser.id ? 'message-sent' : 'message-received'}">
                     <div class="message-bubble">
-                        <div style="font-size:11px; opacity:0.7;">${escapeHtml(msg.sender_name)}</div>
+                        <div style="font-size:11px;">${escapeHtml(msg.sender_name)}</div>
                         <div>${escapeHtml(msg.text)}</div>
                         <div style="font-size:10px; opacity:0.5;">${new Date(msg.created_at).toLocaleTimeString()}</div>
                     </div>
