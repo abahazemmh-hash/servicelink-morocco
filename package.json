@@ -4,16 +4,12 @@
   "description": "ServiceLink Morocco - Two-sided marketplace for household services",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "install": "npm install"
+    "start": "node server.js"
   },
   "engines": {
     "node": "20.18.0"
   },
   "dependencies": {
     "sqlite3": "^5.1.7"
-  },
-  "keywords": ["marketplace", "services", "morocco"],
-  "author": "ServiceLink",
-  "license": "ISC"
+  }
 }
