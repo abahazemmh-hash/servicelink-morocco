@@ -17,6 +17,16 @@
             min-height: 100vh;
         }
 
+        .app-container {
+            max-width: 500px;
+            width: 100%;
+            min-height: 100vh;
+            background: white;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.05);
+        }
+
         /* Language Toggle */
         .lang-toggle {
             position: absolute;
@@ -57,26 +67,6 @@
 
         body.rtl .flex-between {
             flex-direction: row-reverse;
-        }
-
-        body.rtl .back-btn {
-            flex-direction: row-reverse;
-        }
-
-        body.rtl .phone-row, 
-        body.rtl .verify-row {
-            flex-direction: row-reverse;
-        }
-
-        /* Main App Container */
-        .app-container {
-            max-width: 500px;
-            width: 100%;
-            min-height: 100vh;
-            background: white;
-            margin: 0 auto;
-            position: relative;
-            box-shadow: 0 0 40px rgba(0,0,0,0.05);
         }
 
         /* Screens */
@@ -126,12 +116,6 @@
             margin-bottom: 8px;
         }
 
-        .greeting {
-            font-size: 18px;
-            color: #64748b;
-            margin-bottom: 8px;
-        }
-
         .auth-buttons {
             display: flex;
             flex-direction: column;
@@ -149,7 +133,6 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .btn-signup {
@@ -162,84 +145,6 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        /* Remember Me Checkbox */
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 16px 0;
-        }
-
-        .checkbox-group input {
-            width: 18px;
-            height: 18px;
-            margin: 0;
-        }
-
-        .checkbox-group label {
-            margin: 0;
-            font-size: 14px;
-            font-weight: normal;
-            color: #64748b;
-        }
-
-        .forgot-password {
-            text-align: right;
-            margin-top: 8px;
-        }
-
-        .forgot-password a {
-            color: #2563eb;
-            text-decoration: none;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        body.rtl .forgot-password {
-            text-align: left;
-        }
-
-        /* Role Cards */
-        .role-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-top: 24px;
-        }
-
-        .role-card {
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 24px;
-            padding: 24px 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .role-card.selected {
-            border-color: #2563eb;
-            background: #eff6ff;
-        }
-
-        .role-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .role-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 6px;
-        }
-
-        .role-desc {
-            font-size: 14px;
-            color: #64748b;
         }
 
         /* Form Styles */
@@ -263,13 +168,11 @@
             font-size: 16px;
             transition: all 0.2s;
             background: white;
-            font-family: inherit;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .phone-row, .verify-row {
@@ -305,7 +208,6 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
             margin-top: 12px;
         }
 
@@ -324,10 +226,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .back-btn span {
-            font-size: 14px;
         }
 
         .progress {
@@ -379,12 +277,42 @@
             text-align: center;
             z-index: 1000;
             display: none;
-            max-width: 460px;
-            margin: 0 auto;
         }
 
         .toast.success { background: #10b981; }
         .toast.error { background: #ef4444; }
+
+        /* Location Permission Bar */
+        .location-bar {
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .location-bar button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .distance-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
 
         /* Main App Styles */
         .flex-between {
@@ -555,7 +483,6 @@
             cursor: pointer;
         }
 
-        /* Profile header with back button */
         .profile-header {
             display: flex;
             align-items: center;
@@ -568,15 +495,98 @@
             font-size: 28px;
         }
 
-        .profile-header h1 {
-            margin-bottom: 0;
-            font-size: 24px;
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 8px;
+        }
+
+        .forgot-password a {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        body.rtl .forgot-password {
+            text-align: left;
+        }
+
+        .role-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .role-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 24px 20px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .role-card.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .role-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .role-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .role-desc {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .sort-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            justify-content: flex-end;
+        }
+
+        .sort-btn {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .sort-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
         }
     </style>
 </head>
 <body>
 <div class="app-container" id="app">
-    <!-- Language Toggle -->
     <div class="lang-toggle">
         <button class="lang-btn" onclick="setLanguage('en')">EN</button>
         <button class="lang-btn" onclick="setLanguage('ar')">AR</button>
@@ -628,7 +638,6 @@
         <button class="back-btn" onclick="goBackToLogin()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
         <h1 data-en="Reset Password" data-ar="إعادة تعيين كلمة المرور">Reset Password</h1>
         <p class="subtitle" data-en="Enter your phone number to reset your password" data-ar="أدخل رقم هاتفك لإعادة تعيين كلمة المرور">Enter your phone number to reset your password</p>
-
         <div class="form-group">
             <label data-en="Phone Number" data-ar="رقم الهاتف">Phone Number</label>
             <div class="phone-row">
@@ -636,7 +645,6 @@
                 <button id="reset-send-code-btn" onclick="sendResetCode()" data-en="Send Code" data-ar="إرسال الرمز">Send Code</button>
             </div>
         </div>
-
         <div class="form-group" id="reset-code-group" style="display: none;">
             <label data-en="Verification Code" data-ar="رمز التحقق">Verification Code</label>
             <div class="verify-row">
@@ -644,17 +652,14 @@
                 <button id="reset-verify-btn" onclick="verifyResetCode()" data-en="Verify" data-ar="تحقق">Verify</button>
             </div>
         </div>
-
         <div class="form-group" id="new-password-group" style="display: none;">
             <label data-en="New Password" data-ar="كلمة المرور الجديدة">New Password</label>
             <input type="password" id="new-password" placeholder="Create a new password">
         </div>
-
         <div class="form-group" id="confirm-new-group" style="display: none;">
             <label data-en="Confirm New Password" data-ar="تأكيد كلمة المرور الجديدة">Confirm New Password</label>
             <input type="password" id="confirm-new-password" placeholder="Confirm your new password">
         </div>
-
         <button id="reset-password-btn" class="btn-primary" onclick="resetPassword()" style="display: none;" data-en="Reset Password" data-ar="إعادة تعيين كلمة المرور">Reset Password</button>
     </div>
 
@@ -663,7 +668,6 @@
         <button class="back-btn" onclick="goBackToWelcome()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
         <h1 data-en="Sign Up" data-ar="إنشاء حساب">Sign Up</h1>
         <p class="subtitle" data-en="Choose how you want to use ServiceLink" data-ar="اختر كيف تريد استخدام ServiceLink">Choose how you want to use ServiceLink</p>
-
         <div class="role-grid">
             <div class="role-card" data-role="household" onclick="selectRole('household')">
                 <div class="role-icon">🏠</div>
@@ -679,178 +683,88 @@
         <button id="signup-continue-btn" class="btn-primary" onclick="goToRegistrationForm()" disabled data-en="Continue" data-ar="استمر">Continue</button>
     </div>
 
-    <!-- ==================== SIGNUP: REGISTRATION FORM ==================== -->
+    <!-- ==================== SIGNUP: REGISTRATION ==================== -->
     <div id="registration-screen" class="screen">
         <button class="back-btn" onclick="goBackToSignupRole()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
-        <div class="progress">
-            <div class="progress-dot active"></div>
-            <div class="progress-dot"></div>
-            <div class="progress-dot"></div>
-        </div>
+        <div class="progress"><div class="progress-dot active"></div><div class="progress-dot"></div><div class="progress-dot"></div></div>
         <h1 data-en="Create Account" data-ar="إنشاء حساب">Create Account</h1>
-        <p class="subtitle" id="registration-role-display" data-en="Registering as Household" data-ar="التسجيل كأسرة">Registering as Household</p>
-
-        <div class="form-group">
-            <label data-en="Full Name" data-ar="الاسم الكامل">Full Name</label>
-            <input type="text" id="full-name" placeholder="Ahmed Benali">
-        </div>
-
-        <div class="form-group">
-            <label data-en="ID Card Number" data-ar="رقم بطاقة التعريف">ID Card Number</label>
-            <input type="text" id="id-card" placeholder="AB123456">
-        </div>
-
+        <p class="subtitle" id="registration-role-display">Registering as Household</p>
+        <div class="form-group"><label data-en="Full Name" data-ar="الاسم الكامل">Full Name</label><input type="text" id="full-name" placeholder="Ahmed Benali"></div>
+        <div class="form-group"><label data-en="ID Card Number" data-ar="رقم بطاقة التعريف">ID Card Number</label><input type="text" id="id-card" placeholder="AB123456"></div>
         <div class="form-group">
             <label data-en="Phone Number" data-ar="رقم الهاتف">Phone Number</label>
-            <div class="phone-row">
-                <input type="tel" id="phone-number" placeholder="+212 6XX-XXXXXX">
-                <button id="send-code-btn" onclick="sendVerificationCode()" data-en="Send Code" data-ar="إرسال الرمز">Send Code</button>
-            </div>
+            <div class="phone-row"><input type="tel" id="phone-number" placeholder="+212 6XX-XXXXXX"><button id="send-code-btn" onclick="sendVerificationCode()" data-en="Send Code" data-ar="إرسال الرمز">Send Code</button></div>
         </div>
-
-        <div class="form-group" id="verification-group" style="display: none;">
-            <label data-en="Verification Code" data-ar="رمز التحقق">Verification Code</label>
-            <div class="verify-row">
-                <input type="text" id="verification-code" placeholder="123456" maxlength="6">
-                <button id="verify-btn" onclick="verifyCode()" data-en="Verify" data-ar="تحقق">Verify</button>
-            </div>
-        </div>
-
-        <div class="form-group" id="password-group" style="display: none;">
-            <label data-en="Password" data-ar="كلمة المرور">Password</label>
-            <input type="password" id="password" placeholder="••••••••">
-        </div>
-
-        <div class="form-group" id="confirm-group" style="display: none;">
-            <label data-en="Confirm Password" data-ar="تأكيد كلمة المرور">Confirm Password</label>
-            <input type="password" id="confirm-password" placeholder="••••••••">
-        </div>
-
+        <div class="form-group" id="verification-group" style="display: none;"><label data-en="Verification Code" data-ar="رمز التحقق">Verification Code</label><div class="verify-row"><input type="text" id="verification-code" placeholder="123456" maxlength="6"><button id="verify-btn" onclick="verifyCode()" data-en="Verify" data-ar="تحقق">Verify</button></div></div>
+        <div class="form-group" id="password-group" style="display: none;"><label data-en="Password" data-ar="كلمة المرور">Password</label><input type="password" id="password" placeholder="••••••••"></div>
+        <div class="form-group" id="confirm-group" style="display: none;"><label data-en="Confirm Password" data-ar="تأكيد كلمة المرور">Confirm Password</label><input type="password" id="confirm-password" placeholder="••••••••"></div>
         <button id="create-account-btn" class="btn-primary" onclick="createAccount()" style="display: none;" data-en="Create Account" data-ar="إنشاء حساب">Create Account</button>
-        <div class="switch-auth">
-            <span data-en="Already have an account?" data-ar="لديك حساب بالفعل؟">Already have an account?</span> 
-            <a onclick="showLoginScreen()" data-en="Login" data-ar="تسجيل الدخول">Login</a>
-        </div>
+        <div class="switch-auth"><span data-en="Already have an account?" data-ar="لديك حساب بالفعل؟">Already have an account?</span> <a onclick="showLoginScreen()" data-en="Login" data-ar="تسجيل الدخول">Login</a></div>
     </div>
 
-    <!-- ==================== MAIN APP SCREENS ==================== -->
-    <!-- Household Main -->
+    <!-- ==================== HOUSEHOLD MAIN ==================== -->
     <div id="household-main" class="screen">
-        <div class="header flex-between">
-            <h1 data-en="My Gigs" data-ar="مهامي">My Gigs</h1>
-            <button onclick="showPostGig()" style="background: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 30px;" data-en="+ New" data-ar="+ جديد">+ New</button>
-        </div>
+        <div class="header flex-between"><h1 data-en="My Gigs" data-ar="مهامي">My Gigs</h1><button onclick="showPostGig()" style="background:#2563eb;color:white;border:none;padding:8px 16px;border-radius:30px;" data-en="+ New" data-ar="+ جديد">+ New</button></div>
         <div class="main-content" id="household-gigs-list"></div>
-        <div class="bottom-nav">
-            <button class="nav-item active" onclick="switchHouseholdTab('gigs')"><span data-en="My Gigs" data-ar="مهامي">My Gigs</span></button>
-            <button class="nav-item" onclick="switchHouseholdTab('profile')"><span data-en="Profile" data-ar="الملف الشخصي">Profile</span></button>
-        </div>
+        <div class="bottom-nav"><button class="nav-item active" onclick="switchHouseholdTab('gigs')"><span data-en="My Gigs" data-ar="مهامي">My Gigs</span></button><button class="nav-item" onclick="switchHouseholdTab('profile')"><span data-en="Profile" data-ar="الملف الشخصي">Profile</span></button></div>
     </div>
 
+    <!-- ==================== POST GIG WITH LOCATION ==================== -->
     <div id="post-gig-screen" class="screen">
-        <div class="header">
-            <button onclick="backToHousehold()" style="background: none; border: none; font-size: 24px;">←</button>
-            <h1 data-en="Post New Gig" data-ar="انشر مهمة جديدة">Post New Gig</h1>
-        </div>
+        <div class="header"><button onclick="backToHousehold()" style="background:none;border:none;font-size:24px;">←</button><h1 data-en="Post New Gig" data-ar="انشر مهمة جديدة">Post New Gig</h1></div>
         <div class="main-content">
-            <div class="form-group">
-                <label data-en="Title" data-ar="العنوان">Title</label>
-                <input type="text" id="gig-title" placeholder="Fix leaky faucet">
+            <div class="location-bar" id="location-bar-post" style="display:none;">
+                <span>📍 <span id="location-status" data-en="Enable location to add address" data-ar="فعّل الموقع لإضافة العنوان">Enable location to add address</span></span>
+                <button onclick="getCurrentLocationForPost()" data-en="Enable" data-ar="تفعيل">Enable</button>
             </div>
-            <div class="form-group">
-                <label data-en="Category" data-ar="الفئة">Category</label>
-                <select id="gig-category">
-                    <option>Plumbing</option>
-                    <option>Electrical</option>
-                    <option>Carpentry</option>
-                    <option>Cleaning</option>
-                    <option>Painting</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label data-en="Urgency" data-ar="الإلحاح">Urgency</label>
-                <select id="gig-urgency">
-                    <option value="normal" data-en="Normal" data-ar="عادي">Normal</option>
-                    <option value="urgent" data-en="Urgent (24h)" data-ar="عاجل (24 ساعة)">Urgent (24h)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label data-en="Description" data-ar="الوصف">Description</label>
-                <textarea id="gig-desc" rows="4" placeholder="Describe what needs to be done..."></textarea>
-            </div>
-            <button class="btn-primary" onclick="postGig()" data-en="Post Gig" data-ar="انشر المهمة">Post Gig</button>
+            <div class="form-group"><label data-en="Title" data-ar="العنوان">Title</label><input type="text" id="gig-title" placeholder="Fix leaky faucet"></div>
+            <div class="form-group"><label data-en="Category" data-ar="الفئة">Category</label><select id="gig-category"><option>Plumbing</option><option>Electrical</option><option>Carpentry</option><option>Cleaning</option><option>Painting</option></select></div>
+            <div class="form-group"><label data-en="Urgency" data-ar="الإلحاح">Urgency</label><select id="gig-urgency"><option value="normal" data-en="Normal" data-ar="عادي">Normal</option><option value="urgent" data-en="Urgent (24h)" data-ar="عاجل (24 ساعة)">Urgent (24h)</option></select></div>
+            <div class="form-group"><label data-en="Address" data-ar="العنوان">Address</label><input type="text" id="gig-address" placeholder="Street, city, area"></div>
+            <div class="form-group"><label data-en="Description" data-ar="الوصف">Description</label><textarea id="gig-desc" rows="4" placeholder="Describe what needs to be done..."></textarea></div>
+            <button class="btn-primary" onclick="postGigWithLocation()" data-en="Post Gig" data-ar="انشر المهمة">Post Gig</button>
         </div>
     </div>
 
-    <!-- Professional Main -->
+    <!-- ==================== PROFESSIONAL MAIN ==================== -->
     <div id="professional-main" class="screen">
-        <div class="header">
-            <h1 data-en="Find Work" data-ar="ابحث عن عمل">Find Work</h1>
+        <div class="header"><h1 data-en="Find Work" data-ar="ابحث عن عمل">Find Work</h1></div>
+        <div class="location-bar" id="location-bar-pro" style="display:none;">
+            <span>📍 <span id="pro-location-status" data-en="Enable location to see nearby gigs" data-ar="فعّل الموقع لمشاهدة المهام القريبة">Enable location to see nearby gigs</span></span>
+            <button onclick="getCurrentLocationForPro()" data-en="Enable" data-ar="تفعيل">Enable</button>
+        </div>
+        <div class="sort-toggle" id="sort-toggle" style="display:none;">
+            <button class="sort-btn active" onclick="setSortBy('distance')">📍 By Distance</button>
+            <button class="sort-btn" onclick="setSortBy('recent')">🕒 Most Recent</button>
         </div>
         <div class="main-content" id="pro-available-list"></div>
-        <div class="bottom-nav">
-            <button class="nav-item active" onclick="switchProTab('available')"><span data-en="Available" data-ar="متاح">Available</span></button>
-            <button class="nav-item" onclick="switchProTab('active')"><span data-en="My Gigs" data-ar="مهامي">My Gigs</span></button>
-            <button class="nav-item" onclick="switchProTab('wallet')"><span data-en="Wallet" data-ar="المحفظة">Wallet</span></button>
-            <button class="nav-item" onclick="switchProTab('profile')"><span data-en="Profile" data-ar="الملف الشخصي">Profile</span></button>
-        </div>
+        <div class="bottom-nav"><button class="nav-item active" onclick="switchProTab('available')"><span data-en="Available" data-ar="متاح">Available</span></button><button class="nav-item" onclick="switchProTab('active')"><span data-en="My Gigs" data-ar="مهامي">My Gigs</span></button><button class="nav-item" onclick="switchProTab('wallet')"><span data-en="Wallet" data-ar="المحفظة">Wallet</span></button><button class="nav-item" onclick="switchProTab('profile')"><span data-en="Profile" data-ar="الملف الشخصي">Profile</span></button></div>
     </div>
 
     <div id="pro-active-screen" class="screen">
-        <div class="header">
-            <button onclick="goBackFromActiveToPro()" style="background: none; border: none; font-size: 24px;">←</button>
-            <h1 data-en="My Active Gigs" data-ar="مهامي النشطة">My Active Gigs</h1>
-        </div>
+        <div class="header"><button onclick="goBackFromActiveToPro()" style="background:none;border:none;font-size:24px;">←</button><h1 data-en="My Active Gigs" data-ar="مهامي النشطة">My Active Gigs</h1></div>
         <div class="main-content" id="pro-active-list"></div>
     </div>
 
     <div id="pro-wallet-screen" class="screen">
-        <div class="header">
-            <button onclick="goBackFromWalletToPro()" style="background: none; border: none; font-size: 24px;">←</button>
-            <h1 data-en="My Wallet" data-ar="محفظتي">My Wallet</h1>
-        </div>
-        <div class="main-content">
-            <div class="wallet-card">
-                <div style="opacity: 0.8;" data-en="Available Balance" data-ar="الرصيد المتاح">Available Balance</div>
-                <div class="wallet-balance" id="wallet-balance">MAD 0</div>
-            </div>
-            <button class="btn-primary" onclick="fundWalletDemo()" data-en="Deposit MAD 100 (Demo)" data-ar="إيداع 100 درهم (تجريبي)">Deposit MAD 100 (Demo)</button>
-        </div>
+        <div class="header"><button onclick="goBackFromWalletToPro()" style="background:none;border:none;font-size:24px;">←</button><h1 data-en="My Wallet" data-ar="محفظتي">My Wallet</h1></div>
+        <div class="main-content"><div class="wallet-card"><div style="opacity:0.8;" data-en="Available Balance" data-ar="الرصيد المتاح">Available Balance</div><div class="wallet-balance" id="wallet-balance">MAD 0</div></div><button class="btn-primary" onclick="fundWalletDemo()" data-en="Deposit MAD 100 (Demo)" data-ar="إيداع 100 درهم (تجريبي)">Deposit MAD 100 (Demo)</button></div>
     </div>
 
-    <!-- Profile Screen with Back Button -->
+    <!-- ==================== PROFILE ==================== -->
     <div id="profile-screen" class="screen">
-        <div class="profile-header">
-            <button class="back-btn" onclick="goBackFromProfile()">← <span data-en="Back" data-ar="رجوع">Back</span></button>
-            <h1 data-en="Profile" data-ar="الملف الشخصي">Profile</h1>
-        </div>
+        <div class="profile-header"><button class="back-btn" onclick="goBackFromProfile()">← <span data-en="Back" data-ar="رجوع">Back</span></button><h1 data-en="Profile" data-ar="الملف الشخصي">Profile</h1></div>
         <div class="main-content">
-            <div style="text-align: center;">
-                <div style="font-size: 64px;">👤</div>
-                <h2 id="profile-name"></h2>
-                <p id="profile-role" style="color: #6b7280;"></p>
-                <p id="profile-phone" style="color: #6b7280;"></p>
-            </div>
-            <button class="btn-primary" onclick="logout()" style="background: #dc2626; margin-top: 24px;" data-en="Logout" data-ar="تسجيل الخروج">Logout</button>
+            <div style="text-align:center;"><div style="font-size:64px;">👤</div><h2 id="profile-name"></h2><p id="profile-role" style="color:#6b7280;"></p><p id="profile-phone" style="color:#6b7280;"></p></div>
+            <button class="btn-primary" onclick="logout()" style="background:#dc2626;margin-top:24px;" data-en="Logout" data-ar="تسجيل الخروج">Logout</button>
         </div>
     </div>
 
-    <!-- Chat Screen -->
+    <!-- ==================== CHAT SCREEN ==================== -->
     <div id="chat-screen" class="screen">
-        <div class="header flex-between">
-            <button onclick="closeChat()" style="background: none; border: none; font-size: 24px;">←</button>
-            <h1 id="chat-title">Chat</h1>
-            <div></div>
-        </div>
-        <div class="main-content" style="display: flex; flex-direction: column; height: calc(100% - 80px);">
-            <div class="chat-messages" id="chat-messages"></div>
-            <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()">➤</button>
-            </div>
-        </div>
+        <div class="header flex-between"><button onclick="closeChat()" style="background:none;border:none;font-size:24px;">←</button><h1 id="chat-title">Chat</h1><div></div></div>
+        <div class="main-content" style="display:flex;flex-direction:column;height:calc(100% - 80px);"><div class="chat-messages" id="chat-messages"></div><div class="chat-input-area"><input type="text" id="chat-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendMessage()"><button onclick="sendMessage()">➤</button></div></div>
     </div>
-
 </div>
 
 <div id="toast" class="toast"></div>
@@ -858,11 +772,9 @@
 <script>
     // ==================== LANGUAGE SUPPORT ====================
     let currentLanguage = 'en';
-
     function setLanguage(lang) {
         currentLanguage = lang;
         document.body.classList.toggle('rtl', lang === 'ar');
-        
         document.querySelectorAll('[data-en]').forEach(el => {
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                 if (el.placeholder) el.placeholder = el.getAttribute(`data-${lang}`) || el.placeholder;
@@ -872,17 +784,12 @@
                 el.textContent = el.getAttribute(`data-${lang}`);
             }
         });
-        
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.classList.remove('active');
-            if ((lang === 'en' && btn.textContent === 'EN') || (lang === 'ar' && btn.textContent === 'AR')) {
-                btn.classList.add('active');
-            }
+            if ((lang === 'en' && btn.textContent === 'EN') || (lang === 'ar' && btn.textContent === 'AR')) btn.classList.add('active');
         });
-        
         localStorage.setItem('language', lang);
     }
-
     const savedLanguage = localStorage.getItem('language');
     if (savedLanguage) setLanguage(savedLanguage);
 
@@ -893,11 +800,11 @@
     let storedVerificationCode = null;
     let currentChatGig = null;
     let messageInterval = null;
-    let resetPhone = null;
-    let resetCodeVerified = false;
-    let resetStoredCode = null;
+    let resetPhone = null, resetCodeVerified = false, resetStoredCode = null;
+    let userLocation = null;
+    let currentSort = 'distance';
 
-    // ==================== UI Helpers ====================
+    // ==================== UI HELPERS ====================
     function showToast(msg, type = 'info') {
         const toast = document.getElementById('toast');
         toast.textContent = msg;
@@ -905,38 +812,68 @@
         toast.style.display = 'block';
         setTimeout(() => { toast.style.display = 'none'; }, 3000);
     }
-
     function showScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
+    }
+
+    // ==================== LOCATION FUNCTIONS ====================
+    async function updateUserLocation(lat, lng) {
+        try {
+            await fetch('/api/users/location', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: currentUser.id, lat, lng })
+            });
+            userLocation = { lat, lng };
+            localStorage.setItem('userLocation', JSON.stringify(userLocation));
+            return true;
+        } catch(e) { return false; }
+    }
+
+    function getCurrentLocationForPost() {
+        if (!navigator.geolocation) { showToast(currentLanguage === 'en' ? 'Geolocation not supported' : 'تحديد الموقع غير مدعوم', 'error'); return; }
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const { latitude, longitude } = position.coords;
+            await updateUserLocation(latitude, longitude);
+            document.getElementById('location-bar-post').style.display = 'none';
+            showToast(currentLanguage === 'en' ? 'Location enabled! You can now add address.' : 'تم تفعيل الموقع! يمكنك الآن إضافة العنوان.', 'success');
+        }, () => { showToast(currentLanguage === 'en' ? 'Location permission denied' : 'تم رفض إذن الموقع', 'error'); });
+    }
+
+    function getCurrentLocationForPro() {
+        if (!navigator.geolocation) { showToast(currentLanguage === 'en' ? 'Geolocation not supported' : 'تحديد الموقع غير مدعوم', 'error'); return; }
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const { latitude, longitude } = position.coords;
+            await updateUserLocation(latitude, longitude);
+            document.getElementById('location-bar-pro').style.display = 'none';
+            document.getElementById('sort-toggle').style.display = 'flex';
+            showToast(currentLanguage === 'en' ? 'Location enabled! Sorting by distance.' : 'تم تفعيل الموقع! الترتيب حسب المسافة.', 'success');
+            loadProAvailableGigs();
+        }, () => { showToast(currentLanguage === 'en' ? 'Location permission denied' : 'تم رفض إذن الموقع', 'error'); });
+    }
+
+    function setSortBy(sort) {
+        currentSort = sort;
+        document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+        if (sort === 'distance') document.querySelector('.sort-btn:first-child').classList.add('active');
+        else document.querySelector('.sort-btn:last-child').classList.add('active');
+        loadProAvailableGigs();
+    }
+
+    function formatDistance(km) {
+        if (!km) return '';
+        if (km < 1) return `${Math.round(km * 1000)}m away`;
+        return `${km.toFixed(1)}km away`;
     }
 
     // ==================== NAVIGATION ====================
     function goBackToWelcome() { showScreen('welcome-screen'); }
     function goBackToLogin() { showScreen('login-screen'); }
     function goBackToSignupRole() { showScreen('signup-role-screen'); }
-    
-    // Profile back button - goes to correct dashboard based on role
-    function goBackFromProfile() {
-        if (currentUser && currentUser.role === 'household') {
-            showScreen('household-main');
-        } else if (currentUser && currentUser.role === 'professional') {
-            showScreen('professional-main');
-        } else {
-            showScreen('welcome-screen');
-        }
-    }
-    
-    // Professional sub-screen back buttons
-    function goBackFromActiveToPro() {
-        showScreen('professional-main');
-        loadProAvailableGigs();
-        loadProActiveGigs();
-    }
-    
-    function goBackFromWalletToPro() {
-        showScreen('professional-main');
-    }
+    function goBackFromProfile() { if (currentUser?.role === 'household') showScreen('household-main'); else showScreen('professional-main'); }
+    function goBackFromActiveToPro() { showScreen('professional-main'); loadProAvailableGigs(); loadProActiveGigs(); }
+    function goBackFromWalletToPro() { showScreen('professional-main'); }
 
     function showLoginScreen() {
         showScreen('login-screen');
@@ -981,109 +918,6 @@
         showScreen('registration-screen');
     }
 
-    // ==================== FORGOT PASSWORD ====================
-    function showForgotPassword() {
-        resetPhone = null;
-        resetCodeVerified = false;
-        document.getElementById('reset-code-group').style.display = 'none';
-        document.getElementById('new-password-group').style.display = 'none';
-        document.getElementById('confirm-new-group').style.display = 'none';
-        document.getElementById('reset-password-btn').style.display = 'none';
-        document.getElementById('reset-phone').value = '';
-        document.getElementById('reset-code').value = '';
-        document.getElementById('new-password').value = '';
-        document.getElementById('confirm-new-password').value = '';
-        document.getElementById('reset-send-code-btn').disabled = false;
-        document.getElementById('reset-send-code-btn').innerHTML = currentLanguage === 'en' ? 'Send Code' : 'إرسال الرمز';
-        showScreen('forgot-password-screen');
-    }
-
-    async function sendResetCode() {
-        const phone = document.getElementById('reset-phone').value.trim();
-        if (!phone) { showToast(currentLanguage === 'en' ? 'Enter phone number' : 'أدخل رقم الهاتف', 'error'); return; }
-        resetPhone = phone;
-        const btn = document.getElementById('reset-send-code-btn');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Sending...' : 'جاري الإرسال...');
-        
-        try {
-            const response = await fetch('/api/send-code', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone })
-            });
-            const data = await response.json();
-            if (data.success) {
-                resetStoredCode = data.testMode ? '123456' : null;
-                showToast(data.testMode ? (currentLanguage === 'en' ? 'Test Mode: Code 123456' : 'وضع الاختبار: الرمز 123456') : (currentLanguage === 'en' ? 'Code sent!' : 'تم إرسال الرمز!'), 'success');
-                document.getElementById('reset-code-group').style.display = 'block';
-            } else {
-                showToast(currentLanguage === 'en' ? 'Failed to send code' : 'فشل إرسال الرمز', 'error');
-            }
-        } catch (err) {
-            resetStoredCode = '123456';
-            showToast(currentLanguage === 'en' ? 'Demo Mode: Use code 123456' : 'وضع العرض: استخدم الرمز 123456', 'success');
-            document.getElementById('reset-code-group').style.display = 'block';
-        }
-        btn.disabled = false;
-        btn.innerHTML = currentLanguage === 'en' ? 'Send Code' : 'إرسال الرمز';
-    }
-
-    async function verifyResetCode() {
-        const code = document.getElementById('reset-code').value.trim();
-        if (!code) { showToast(currentLanguage === 'en' ? 'Enter verification code' : 'أدخل رمز التحقق', 'error'); return; }
-        if (code === '123456' || code === resetStoredCode) {
-            resetCodeVerified = true;
-            showToast(currentLanguage === 'en' ? 'Code verified!' : 'تم التحقق من الرمز!', 'success');
-            document.getElementById('new-password-group').style.display = 'block';
-            document.getElementById('confirm-new-group').style.display = 'block';
-            document.getElementById('reset-password-btn').style.display = 'block';
-            document.getElementById('reset-verify-btn').disabled = true;
-            document.getElementById('reset-verify-btn').innerHTML = currentLanguage === 'en' ? 'Verified ✓' : 'تم التحقق ✓';
-        } else {
-            showToast(currentLanguage === 'en' ? 'Invalid code' : 'رمز غير صالح', 'error');
-        }
-    }
-
-    async function resetPassword() {
-        const newPassword = document.getElementById('new-password').value;
-        const confirmNew = document.getElementById('confirm-new-password').value;
-        
-        if (!newPassword || newPassword.length < 4) {
-            showToast(currentLanguage === 'en' ? 'Password must be at least 4 characters' : 'يجب أن تتكون كلمة المرور من 4 أحرف على الأقل', 'error');
-            return;
-        }
-        if (newPassword !== confirmNew) {
-            showToast(currentLanguage === 'en' ? 'Passwords do not match' : 'كلمات المرور غير متطابقة', 'error');
-            return;
-        }
-        if (!resetCodeVerified) {
-            showToast(currentLanguage === 'en' ? 'Verify your code first' : 'تحقق من الرمز أولاً', 'error');
-            return;
-        }
-        
-        const btn = document.getElementById('reset-password-btn');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Resetting...' : 'جاري إعادة التعيين...');
-        
-        try {
-            const response = await fetch('/api/reset-password', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone: resetPhone, newPassword })
-            });
-            const data = await response.json();
-            if (data.success) {
-                showToast(currentLanguage === 'en' ? 'Password reset successful! Please login.' : 'تم إعادة تعيين كلمة المرور بنجاح! يرجى تسجيل الدخول.', 'success');
-                showScreen('login-screen');
-            } else {
-                showToast(data.error || (currentLanguage === 'en' ? 'Reset failed' : 'فشل إعادة التعيين'), 'error');
-            }
-        } catch (err) {
-            showToast(currentLanguage === 'en' ? 'Password reset successful (Demo Mode)!' : 'تم إعادة تعيين كلمة المرور بنجاح (وضع العرض)!', 'success');
-            showScreen('login-screen');
-        }
-        btn.disabled = false;
-    }
-
     // ==================== AUTHENTICATION ====================
     async function sendVerificationCode() {
         const phone = document.getElementById('phone-number').value.trim();
@@ -1091,20 +925,14 @@
         const btn = document.getElementById('send-code-btn');
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Sending...' : 'جاري الإرسال...');
-        
         try {
-            const response = await fetch('/api/send-code', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone })
-            });
+            const response = await fetch('/api/send-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) });
             const data = await response.json();
             if (data.success) {
                 storedVerificationCode = data.testMode ? '123456' : null;
                 showToast(data.testMode ? (currentLanguage === 'en' ? 'Test Mode: Code 123456' : 'وضع الاختبار: الرمز 123456') : (currentLanguage === 'en' ? 'Code sent!' : 'تم إرسال الرمز!'), 'success');
                 document.getElementById('verification-group').style.display = 'block';
-            } else {
-                showToast(currentLanguage === 'en' ? 'Failed to send code' : 'فشل إرسال الرمز', 'error');
-            }
+            } else { showToast(currentLanguage === 'en' ? 'Failed to send code' : 'فشل إرسال الرمز', 'error'); }
         } catch (err) {
             storedVerificationCode = '123456';
             showToast(currentLanguage === 'en' ? 'Demo Mode: Use code 123456' : 'وضع العرض: استخدم الرمز 123456', 'success');
@@ -1125,9 +953,7 @@
             document.getElementById('create-account-btn').style.display = 'block';
             document.getElementById('verify-btn').disabled = true;
             document.getElementById('verify-btn').innerHTML = currentLanguage === 'en' ? 'Verified ✓' : 'تم التحقق ✓';
-        } else {
-            showToast(currentLanguage === 'en' ? 'Invalid code' : 'رمز غير صالح', 'error');
-        }
+        } else { showToast(currentLanguage === 'en' ? 'Invalid code' : 'رمز غير صالح', 'error'); }
     }
 
     async function createAccount() {
@@ -1136,31 +962,23 @@
         const phone = document.getElementById('phone-number').value.trim();
         const password = document.getElementById('password').value;
         const confirm = document.getElementById('confirm-password').value;
-        
         if (!name) { showToast(currentLanguage === 'en' ? 'Enter full name' : 'أدخل الاسم الكامل', 'error'); return; }
         if (!idCard) { showToast(currentLanguage === 'en' ? 'Enter ID card number' : 'أدخل رقم بطاقة التعريف', 'error'); return; }
         if (!isPhoneVerified) { showToast(currentLanguage === 'en' ? 'Verify phone first' : 'تحقق من الهاتف أولاً', 'error'); return; }
         if (!password || password.length < 4) { showToast(currentLanguage === 'en' ? 'Password must be at least 4 characters' : 'يجب أن تتكون كلمة المرور من 4 أحرف على الأقل', 'error'); return; }
         if (password !== confirm) { showToast(currentLanguage === 'en' ? 'Passwords do not match' : 'كلمات المرور غير متطابقة', 'error'); return; }
-        
         const btn = document.getElementById('create-account-btn');
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Creating...' : 'جاري الإنشاء...');
-        
         try {
-            const response = await fetch('/api/verify-register', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone, code: document.getElementById('verification-code').value, name, password, role: selectedRole })
-            });
+            const response = await fetch('/api/verify-register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, code: document.getElementById('verification-code').value, name, password, role: selectedRole }) });
             const data = await response.json();
             if (data.success) {
                 currentUser = data.user;
                 localStorage.setItem('user', JSON.stringify(currentUser));
                 showToast(currentLanguage === 'en' ? 'Account created!' : 'تم إنشاء الحساب!', 'success');
                 enterApp();
-            } else {
-                showToast(data.error || (currentLanguage === 'en' ? 'Registration failed' : 'فشل التسجيل'), 'error');
-            }
+            } else { showToast(data.error || (currentLanguage === 'en' ? 'Registration failed' : 'فشل التسجيل'), 'error'); }
         } catch (err) {
             currentUser = { id: 'user_' + Date.now(), name, phone, role: selectedRole, balance: 0 };
             localStorage.setItem('user', JSON.stringify(currentUser));
@@ -1174,37 +992,21 @@
         const phone = document.getElementById('login-phone').value.trim();
         const password = document.getElementById('login-password').value;
         const rememberMe = document.getElementById('remember-me').checked;
-        
-        if (!phone || !password) {
-            showToast(currentLanguage === 'en' ? 'Please fill all fields' : 'يرجى ملء جميع الحقول', 'error');
-            return;
-        }
-        
+        if (!phone || !password) { showToast(currentLanguage === 'en' ? 'Please fill all fields' : 'يرجى ملء جميع الحقول', 'error'); return; }
         const btn = document.querySelector('#login-screen .btn-primary');
         btn.disabled = true;
         btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Logging in...' : 'جاري تسجيل الدخول...');
-        
         try {
-            const response = await fetch('/api/login', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone, password })
-            });
+            const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, password }) });
             const data = await response.json();
             if (data.success) {
                 currentUser = data.user;
-                if (rememberMe) {
-                    localStorage.setItem('user', JSON.stringify(currentUser));
-                } else {
-                    sessionStorage.setItem('user', JSON.stringify(currentUser));
-                }
+                if (rememberMe) localStorage.setItem('user', JSON.stringify(currentUser));
+                else sessionStorage.setItem('user', JSON.stringify(currentUser));
                 showToast(currentLanguage === 'en' ? `Welcome back, ${currentUser.name}!` : `مرحبًا بعودتك، ${currentUser.name}!`, 'success');
                 enterApp();
-            } else {
-                showToast(data.error || (currentLanguage === 'en' ? 'Invalid credentials' : 'بيانات غير صحيحة'), 'error');
-            }
-        } catch (err) {
-            showToast(currentLanguage === 'en' ? 'Server error. Try again.' : 'خطأ في الخادم. حاول مرة أخرى.', 'error');
-        }
+            } else { showToast(data.error || (currentLanguage === 'en' ? 'Invalid credentials' : 'بيانات غير صحيحة'), 'error'); }
+        } catch (err) { showToast(currentLanguage === 'en' ? 'Server error. Try again.' : 'خطأ في الخادم. حاول مرة أخرى.', 'error'); }
         btn.disabled = false;
         btn.innerHTML = currentLanguage === 'en' ? 'Login' : 'تسجيل الدخول';
     }
@@ -1220,11 +1022,16 @@
 
     // ==================== MAIN APP ====================
     function enterApp() {
+        const savedLocation = localStorage.getItem('userLocation');
+        if (savedLocation) userLocation = JSON.parse(savedLocation);
         if (currentUser.role === 'household') {
             showScreen('household-main');
             loadHouseholdGigs();
+            if (!userLocation) document.getElementById('location-bar-post').style.display = 'flex';
         } else {
             showScreen('professional-main');
+            if (!userLocation) document.getElementById('location-bar-pro').style.display = 'flex';
+            else document.getElementById('sort-toggle').style.display = 'flex';
             loadProAvailableGigs();
             loadProActiveGigs();
             loadWallet();
@@ -1233,213 +1040,99 @@
     }
 
     const savedUserSession = localStorage.getItem('user') || sessionStorage.getItem('user');
-    if (savedUserSession) {
-        try {
-            currentUser = JSON.parse(savedUserSession);
-            if (currentUser && currentUser.id) enterApp();
-        } catch(e) {}
-    }
+    if (savedUserSession) { try { currentUser = JSON.parse(savedUserSession); if (currentUser?.id) enterApp(); } catch(e) {} }
 
     async function loadHouseholdGigs() {
         if (!currentUser) return;
-        try {
-            const res = await fetch('/api/gigs');
-            const gigs = await res.json();
-            const myGigs = gigs.filter(g => g.household_id === currentUser.id);
-            const container = document.getElementById('household-gigs-list');
+        try { const res = await fetch('/api/gigs'); const gigs = await res.json(); const myGigs = gigs.filter(g => g.household_id === currentUser.id); const container = document.getElementById('household-gigs-list');
             if (myGigs.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No gigs yet.' : 'لا توجد مهام بعد.'}</div>`; return; }
-            container.innerHTML = myGigs.map(g => `
-                <div class="gig-card">
-                    <div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div><span class="badge badge-${g.status || 'open'}">${g.status || 'open'}</span></div>
-                    <div class="gig-meta">${escapeHtml(g.category)}</div>
-                    <div class="gig-desc">${escapeHtml(g.description)}</div>
-                    ${g.status === 'accepted' ? `<button class="btn-primary" style="margin-top:8px; background:#10b981;" onclick="markComplete('${g.id}')">✅ ${currentLanguage === 'en' ? 'Mark Complete' : 'تأكيد الإكمال'}</button><button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" style="margin-top:8px;">💬 ${currentLanguage === 'en' ? 'Chat' : 'محادثة'}</button>` : ''}
-                </div>
-            `).join('');
+            container.innerHTML = myGigs.map(g => `<div class="gig-card"><div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div><span class="badge badge-${g.status || 'open'}">${g.status || 'open'}</span></div><div class="gig-meta">${escapeHtml(g.category)}</div><div class="gig-desc">${escapeHtml(g.description)}</div>${g.status === 'accepted' ? `<button class="btn-primary" style="margin-top:8px; background:#10b981;" onclick="markComplete('${g.id}')">✅ ${currentLanguage === 'en' ? 'Mark Complete' : 'تأكيد الإكمال'}</button><button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" style="margin-top:8px;">💬 ${currentLanguage === 'en' ? 'Chat' : 'محادثة'}</button>` : ''}</div>`).join('');
         } catch(e) { showToast(currentLanguage === 'en' ? 'Error loading gigs' : 'خطأ في تحميل المهام'); }
     }
 
-    function showPostGig() { showScreen('post-gig-screen'); }
+    function showPostGig() { showScreen('post-gig-screen'); if (!userLocation) document.getElementById('location-bar-post').style.display = 'flex'; else document.getElementById('location-bar-post').style.display = 'none'; }
     function backToHousehold() { showScreen('household-main'); loadHouseholdGigs(); }
 
-    async function postGig() {
+    async function postGigWithLocation() {
         const title = document.getElementById('gig-title').value.trim();
         const category = document.getElementById('gig-category').value;
         const urgency = document.getElementById('gig-urgency').value;
+        const address = document.getElementById('gig-address').value.trim();
         const description = document.getElementById('gig-desc').value.trim();
         if (!title || !description) { showToast(currentLanguage === 'en' ? 'Fill all fields' : 'املأ جميع الحقول', 'error'); return; }
-        const newGig = { id: 'gig_' + Date.now(), title, category, urgency, description, household_id: currentUser.id, household_name: currentUser.name, created_at: Date.now() };
-        try {
-            await fetch('/api/gigs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newGig) });
-            showToast(currentLanguage === 'en' ? 'Gig posted!' : 'تم نشر المهمة!');
-            backToHousehold();
-        } catch(e) { showToast(currentLanguage === 'en' ? 'Error posting gig' : 'خطأ في نشر المهمة'); }
+        const newGig = { id: 'gig_' + Date.now(), title, category, urgency, description, address, household_id: currentUser.id, household_name: currentUser.name, created_at: Date.now(), lat: userLocation?.lat || null, lng: userLocation?.lng || null };
+        try { await fetch('/api/gigs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newGig) }); showToast(currentLanguage === 'en' ? 'Gig posted!' : 'تم نشر المهمة!'); backToHousehold(); }
+        catch(e) { showToast(currentLanguage === 'en' ? 'Error posting gig' : 'خطأ في نشر المهمة'); }
     }
 
     async function loadProAvailableGigs() {
         if (!currentUser) return;
         try {
-            const res = await fetch('/api/gigs');
-            const gigs = await res.json();
-            const available = gigs.filter(g => g.status === 'open' && g.household_id !== currentUser.id);
+            let gigs = [];
+            if (userLocation && currentSort === 'distance') {
+                const res = await fetch('/api/gigs/nearby', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lat: userLocation.lat, lng: userLocation.lng, maxDistance: 100 }) });
+                const nearbyGigs = await res.json();
+                const allRes = await fetch('/api/gigs');
+                const allGigs = await allRes.json();
+                const nonLocationGigs = allGigs.filter(g => g.status === 'open' && g.household_id !== currentUser.id && (!g.lat || !g.lng));
+                gigs = [...nearbyGigs.filter(g => g.status === 'open'), ...nonLocationGigs];
+            } else {
+                const res = await fetch('/api/gigs');
+                const allGigs = await res.json();
+                gigs = allGigs.filter(g => g.status === 'open' && g.household_id !== currentUser.id);
+                if (currentSort === 'recent') gigs.sort((a,b) => b.created_at - a.created_at);
+            }
             const container = document.getElementById('pro-available-list');
-            if (available.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No gigs available' : 'لا توجد مهام متاحة'}</div>`; return; }
-            container.innerHTML = available.map(g => `
-                <div class="gig-card">
-                    <div class="gig-title">${escapeHtml(g.title)}</div>
-                    <div class="gig-meta">${escapeHtml(g.category)} • ${currentLanguage === 'en' ? 'by' : 'بواسطة'} ${escapeHtml(g.household_name)}</div>
-                    <div class="gig-desc">${escapeHtml(g.description)}</div>
-                    <button class="btn-primary" onclick="acceptGig('${g.id}')">${currentLanguage === 'en' ? 'Accept Gig' : 'قبول المهمة'}</button>
-                </div>
-            `).join('');
+            if (gigs.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No gigs available' : 'لا توجد مهام متاحة'}</div>`; return; }
+            container.innerHTML = gigs.map(g => `<div class="gig-card"><div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div>${g.distance ? `<span class="distance-badge">📍 ${formatDistance(g.distance)}</span>` : ''}</div><div class="gig-meta">${escapeHtml(g.category)} • ${currentLanguage === 'en' ? 'by' : 'بواسطة'} ${escapeHtml(g.household_name)}${g.address ? ` • 📍 ${escapeHtml(g.address)}` : ''}</div><div class="gig-desc">${escapeHtml(g.description)}</div><button class="btn-primary" onclick="acceptGig('${g.id}')">${currentLanguage === 'en' ? 'Accept Gig' : 'قبول المهمة'}</button></div>`).join('');
         } catch(e) { showToast(currentLanguage === 'en' ? 'Error loading gigs' : 'خطأ في تحميل المهام'); }
     }
 
     async function loadProActiveGigs() {
         if (!currentUser) return;
-        try {
-            const res = await fetch('/api/gigs');
-            const gigs = await res.json();
-            const active = gigs.filter(g => g.status === 'accepted' && g.professional_id === currentUser.id);
-            const container = document.getElementById('pro-active-list');
+        try { const res = await fetch('/api/gigs'); const gigs = await res.json(); const active = gigs.filter(g => g.status === 'accepted' && g.professional_id === currentUser.id); const container = document.getElementById('pro-active-list');
             if (active.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No active gigs' : 'لا توجد مهام نشطة'}</div>`; return; }
-            container.innerHTML = active.map(g => `
-                <div class="gig-card">
-                    <div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div><span class="badge badge-accepted">${currentLanguage === 'en' ? 'Active' : 'نشط'}</span></div>
-                    <div class="gig-meta">${currentLanguage === 'en' ? 'Client' : 'العميل'}: ${escapeHtml(g.household_name)}</div>
-                    <div class="gig-desc">${escapeHtml(g.description)}</div>
-                    <button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" style="margin-bottom:8px;">💬 ${currentLanguage === 'en' ? 'Chat' : 'محادثة'}</button>
-                    <button class="btn-primary" style="background:#10b981;" onclick="markComplete('${g.id}')">✅ ${currentLanguage === 'en' ? 'Mark Complete' : 'تأكيد الإكمال'}</button>
-                </div>
-            `).join('');
+            container.innerHTML = active.map(g => `<div class="gig-card"><div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div><span class="badge badge-accepted">${currentLanguage === 'en' ? 'Active' : 'نشط'}</span></div><div class="gig-meta">${currentLanguage === 'en' ? 'Client' : 'العميل'}: ${escapeHtml(g.household_name)}</div><div class="gig-desc">${escapeHtml(g.description)}</div><button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" style="margin-bottom:8px;">💬 ${currentLanguage === 'en' ? 'Chat' : 'محادثة'}</button><button class="btn-primary" style="background:#10b981;" onclick="markComplete('${g.id}')">✅ ${currentLanguage === 'en' ? 'Mark Complete' : 'تأكيد الإكمال'}</button></div>`).join('');
         } catch(e) { showToast(currentLanguage === 'en' ? 'Error loading active gigs' : 'خطأ في تحميل المهام النشطة'); }
     }
 
     async function acceptGig(gigId) {
-        try {
-            const res = await fetch(`/api/gigs/${gigId}/accept`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ professional_id: currentUser.id, professional_name: currentUser.name }) });
-            if (res.ok) { 
-                showToast(currentLanguage === 'en' ? 'Gig accepted!' : 'تم قبول المهمة!');
-                loadProAvailableGigs(); 
-                loadProActiveGigs(); 
-            } else showToast(currentLanguage === 'en' ? 'Failed' : 'فشل', 'error');
+        try { const res = await fetch(`/api/gigs/${gigId}/accept`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ professional_id: currentUser.id, professional_name: currentUser.name }) });
+            if (res.ok) { showToast(currentLanguage === 'en' ? 'Gig accepted!' : 'تم قبول المهمة!'); loadProAvailableGigs(); loadProActiveGigs(); }
+            else showToast(currentLanguage === 'en' ? 'Failed' : 'فشل', 'error');
         } catch(e) { showToast(currentLanguage === 'en' ? 'Error' : 'خطأ', 'error'); }
     }
 
     async function markComplete(gigId) {
-        try {
-            await fetch(`/api/gigs/${gigId}/complete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id }) });
-            showToast(currentLanguage === 'en' ? 'Marked complete!' : 'تم تأكيد الإكمال!');
-            if (currentUser.role === 'household') loadHouseholdGigs();
-            else loadProActiveGigs();
-        } catch(e) { showToast(currentLanguage === 'en' ? 'Error' : 'خطأ'); }
+        try { await fetch(`/api/gigs/${gigId}/complete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id }) }); showToast(currentLanguage === 'en' ? 'Marked complete!' : 'تم تأكيد الإكمال!'); if (currentUser.role === 'household') loadHouseholdGigs(); else loadProActiveGigs(); }
+        catch(e) { showToast(currentLanguage === 'en' ? 'Error' : 'خطأ'); }
     }
 
     async function fundWalletDemo() {
-        try {
-            await fetch('/api/wallet/fund', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id, amount: 100 }) });
-            currentUser.balance = (currentUser.balance || 0) + 100;
-            showToast(currentLanguage === 'en' ? 'MAD 100 deposited!' : 'تم إيداع 100 درهم!');
-            loadWallet();
-        } catch(e) { showToast(currentLanguage === 'en' ? 'Error' : 'خطأ'); }
+        try { await fetch('/api/wallet/fund', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id, amount: 100 }) }); currentUser.balance = (currentUser.balance || 0) + 100; showToast(currentLanguage === 'en' ? 'MAD 100 deposited!' : 'تم إيداع 100 درهم!'); loadWallet(); }
+        catch(e) { showToast(currentLanguage === 'en' ? 'Error' : 'خطأ'); }
     }
 
     async function loadWallet() {
-        try {
-            const res = await fetch('/api/users?phone=' + encodeURIComponent(currentUser.phone));
-            const user = await res.json();
-            if (user) currentUser.balance = user.balance || 0;
-            document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0);
-        } catch(e) { document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0); }
+        try { const res = await fetch('/api/users?phone=' + encodeURIComponent(currentUser.phone)); const user = await res.json(); if (user) currentUser.balance = user.balance || 0; document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0); }
+        catch(e) { document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0); }
     }
 
-    function switchHouseholdTab(tab) { 
-        if (tab === 'gigs') {
-            showScreen('household-main'); 
-            loadHouseholdGigs();
-        } else {
-            showScreen('profile-screen');
-        }
-    }
-    
-    function switchProTab(tab) {
-        if (tab === 'available') {
-            showScreen('professional-main');
-            loadProAvailableGigs();
-        } else if (tab === 'active') {
-            showScreen('pro-active-screen');
-            loadProActiveGigs();
-        } else if (tab === 'wallet') { 
-            showScreen('pro-wallet-screen'); 
-            loadWallet(); 
-        } else {
-            showScreen('profile-screen');
-        }
-    }
+    function switchHouseholdTab(tab) { if (tab === 'gigs') { showScreen('household-main'); loadHouseholdGigs(); } else showScreen('profile-screen'); }
+    function switchProTab(tab) { if (tab === 'available') { showScreen('professional-main'); loadProAvailableGigs(); } else if (tab === 'active') { showScreen('pro-active-screen'); loadProActiveGigs(); } else if (tab === 'wallet') { showScreen('pro-wallet-screen'); loadWallet(); } else showScreen('profile-screen'); }
+    function loadProfile() { document.getElementById('profile-name').innerText = currentUser.name; document.getElementById('profile-role').innerText = currentUser.role === 'household' ? (currentLanguage === 'en' ? '🏠 Household' : '🏠 أسرة') : (currentLanguage === 'en' ? '🛠️ Professional' : '🛠️ محترف'); document.getElementById('profile-phone').innerText = currentUser.phone; }
 
-    function loadProfile() {
-        document.getElementById('profile-name').innerText = currentUser.name;
-        document.getElementById('profile-role').innerText = currentUser.role === 'household' ? (currentLanguage === 'en' ? '🏠 Household' : '🏠 أسرة') : (currentLanguage === 'en' ? '🛠️ Professional' : '🛠️ محترف');
-        document.getElementById('profile-phone').innerText = currentUser.phone;
-    }
-
-    async function openChat(gigId, title) {
-        if (messageInterval) clearInterval(messageInterval);
-        currentChatGig = { id: gigId, title };
-        document.getElementById('chat-title').innerText = title;
-        showScreen('chat-screen');
-        await loadMessages();
-        messageInterval = setInterval(loadMessages, 3000);
-    }
-
-    function closeChat() {
-        if (messageInterval) clearInterval(messageInterval);
-        messageInterval = null;
-        if (currentUser.role === 'household') {
-            showScreen('household-main');
-            loadHouseholdGigs();
-        } else {
-            showScreen('professional-main');
-            loadProAvailableGigs();
-            loadProActiveGigs();
-        }
-    }
-
-    async function loadMessages() {
-        if (!currentChatGig) return;
-        try {
-            const res = await fetch(`/api/gigs/${currentChatGig.id}/messages`);
-            const messages = await res.json();
-            const container = document.getElementById('chat-messages');
-            if (messages.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No messages yet' : 'لا توجد رسائل بعد'}</div>`; return; }
-            container.innerHTML = messages.map(msg => `
-                <div class="message ${msg.sender_id === currentUser.id ? 'message-sent' : 'message-received'}">
-                    <div class="message-bubble">
-                        <div style="font-size:11px;">${escapeHtml(msg.sender_name)}</div>
-                        <div>${escapeHtml(msg.text)}</div>
-                        <div style="font-size:10px; opacity:0.5;">${new Date(msg.created_at).toLocaleTimeString()}</div>
-                    </div>
-                </div>
-            `).join('');
-            container.scrollTop = container.scrollHeight;
-        } catch(e) { console.error(e); }
-    }
-
-    async function sendMessage() {
-        const input = document.getElementById('chat-input');
-        const text = input.value.trim();
-        if (!text || !currentChatGig) return;
-        try {
-            await fetch(`/api/gigs/${currentChatGig.id}/messages`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sender_id: currentUser.id, sender_name: currentUser.name, text })
-            });
-            input.value = '';
-            await loadMessages();
-        } catch(e) { showToast(currentLanguage === 'en' ? 'Error sending message' : 'خطأ في إرسال الرسالة'); }
-    }
-
+    async function openChat(gigId, title) { if (messageInterval) clearInterval(messageInterval); currentChatGig = { id: gigId, title }; document.getElementById('chat-title').innerText = title; showScreen('chat-screen'); await loadMessages(); messageInterval = setInterval(loadMessages, 3000); }
+    function closeChat() { if (messageInterval) clearInterval(messageInterval); messageInterval = null; if (currentUser.role === 'household') { showScreen('household-main'); loadHouseholdGigs(); } else { showScreen('professional-main'); loadProAvailableGigs(); loadProActiveGigs(); } }
+    async function loadMessages() { if (!currentChatGig) return; try { const res = await fetch(`/api/gigs/${currentChatGig.id}/messages`); const messages = await res.json(); const container = document.getElementById('chat-messages'); if (messages.length === 0) { container.innerHTML = `<div style="text-align:center; padding:40px;">${currentLanguage === 'en' ? 'No messages yet' : 'لا توجد رسائل بعد'}</div>`; return; } container.innerHTML = messages.map(msg => `<div class="message ${msg.sender_id === currentUser.id ? 'message-sent' : 'message-received'}"><div class="message-bubble"><div style="font-size:11px;">${escapeHtml(msg.sender_name)}</div><div>${escapeHtml(msg.text)}</div><div style="font-size:10px;opacity:0.5;">${new Date(msg.created_at).toLocaleTimeString()}</div></div></div>`).join(''); container.scrollTop = container.scrollHeight; } catch(e) { console.error(e); } }
+    async function sendMessage() { const input = document.getElementById('chat-input'); const text = input.value.trim(); if (!text || !currentChatGig) return; try { await fetch(`/api/gigs/${currentChatGig.id}/messages`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sender_id: currentUser.id, sender_name: currentUser.name, text }) }); input.value = ''; await loadMessages(); } catch(e) { showToast(currentLanguage === 'en' ? 'Error sending message' : 'خطأ في إرسال الرسالة'); } }
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+
+    // Forgot password functions
+    function showForgotPassword() { resetPhone = null; resetCodeVerified = false; document.getElementById('reset-code-group').style.display = 'none'; document.getElementById('new-password-group').style.display = 'none'; document.getElementById('confirm-new-group').style.display = 'none'; document.getElementById('reset-password-btn').style.display = 'none'; document.getElementById('reset-phone').value = ''; document.getElementById('reset-code').value = ''; document.getElementById('new-password').value = ''; document.getElementById('confirm-new-password').value = ''; document.getElementById('reset-send-code-btn').disabled = false; document.getElementById('reset-send-code-btn').innerHTML = currentLanguage === 'en' ? 'Send Code' : 'إرسال الرمز'; showScreen('forgot-password-screen'); }
+    async function sendResetCode() { const phone = document.getElementById('reset-phone').value.trim(); if (!phone) { showToast(currentLanguage === 'en' ? 'Enter phone number' : 'أدخل رقم الهاتف', 'error'); return; } resetPhone = phone; const btn = document.getElementById('reset-send-code-btn'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Sending...' : 'جاري الإرسال...'); try { const response = await fetch('/api/send-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) }); const data = await response.json(); if (data.success) { resetStoredCode = data.testMode ? '123456' : null; showToast(data.testMode ? (currentLanguage === 'en' ? 'Test Mode: Code 123456' : 'وضع الاختبار: الرمز 123456') : (currentLanguage === 'en' ? 'Code sent!' : 'تم إرسال الرمز!'), 'success'); document.getElementById('reset-code-group').style.display = 'block'; } else { showToast(currentLanguage === 'en' ? 'Failed to send code' : 'فشل إرسال الرمز', 'error'); } } catch (err) { resetStoredCode = '123456'; showToast(currentLanguage === 'en' ? 'Demo Mode: Use code 123456' : 'وضع العرض: استخدم الرمز 123456', 'success'); document.getElementById('reset-code-group').style.display = 'block'; } btn.disabled = false; btn.innerHTML = currentLanguage === 'en' ? 'Send Code' : 'إرسال الرمز'; }
+    async function verifyResetCode() { const code = document.getElementById('reset-code').value.trim(); if (!code) { showToast(currentLanguage === 'en' ? 'Enter verification code' : 'أدخل رمز التحقق', 'error'); return; } if (code === '123456' || code === resetStoredCode) { resetCodeVerified = true; showToast(currentLanguage === 'en' ? 'Code verified!' : 'تم التحقق من الرمز!', 'success'); document.getElementById('new-password-group').style.display = 'block'; document.getElementById('confirm-new-group').style.display = 'block'; document.getElementById('reset-password-btn').style.display = 'block'; document.getElementById('reset-verify-btn').disabled = true; document.getElementById('reset-verify-btn').innerHTML = currentLanguage === 'en' ? 'Verified ✓' : 'تم التحقق ✓'; } else { showToast(currentLanguage === 'en' ? 'Invalid code' : 'رمز غير صالح', 'error'); } }
+    async function resetPassword() { const newPassword = document.getElementById('new-password').value; const confirmNew = document.getElementById('confirm-new-password').value; if (!newPassword || newPassword.length < 4) { showToast(currentLanguage === 'en' ? 'Password must be at least 4 characters' : 'يجب أن تتكون كلمة المرور من 4 أحرف على الأقل', 'error'); return; } if (newPassword !== confirmNew) { showToast(currentLanguage === 'en' ? 'Passwords do not match' : 'كلمات المرور غير متطابقة', 'error'); return; } if (!resetCodeVerified) { showToast(currentLanguage === 'en' ? 'Verify your code first' : 'تحقق من الرمز أولاً', 'error'); return; } const btn = document.getElementById('reset-password-btn'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> ' + (currentLanguage === 'en' ? 'Resetting...' : 'جاري إعادة التعيين...'); try { const response = await fetch('/api/reset-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: resetPhone, newPassword }) }); const data = await response.json(); if (data.success) { showToast(currentLanguage === 'en' ? 'Password reset successful! Please login.' : 'تم إعادة تعيين كلمة المرور بنجاح! يرجى تسجيل الدخول.', 'success'); showScreen('login-screen'); } else { showToast(data.error || (currentLanguage === 'en' ? 'Reset failed' : 'فشل إعادة التعيين'), 'error'); } } catch (err) { showToast(currentLanguage === 'en' ? 'Password reset successful (Demo Mode)!' : 'تم إعادة تعيين كلمة المرور بنجاح (وضع العرض)!', 'success'); showScreen('login-screen'); } btn.disabled = false; }
 </script>
 </body>
 </html>
