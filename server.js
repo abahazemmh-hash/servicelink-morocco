@@ -48,31 +48,22 @@ db.serialize(() => {
     // Admins table
     db.run(`CREATE TABLE IF NOT EXISTS admins (id TEXT PRIMARY KEY, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, created_at INTEGER)`);
     
+    // CashPlus deposits table
+    db.run(`CREATE TABLE IF NOT EXISTS cashplus_deposits (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, amount INTEGER NOT NULL, reference TEXT UNIQUE NOT NULL, status TEXT DEFAULT 'pending', created_at INTEGER, verified_at INTEGER)`);
+    
+    // Analytics table
+    db.run(`CREATE TABLE IF NOT EXISTS analytics (id TEXT PRIMARY KEY, event_name TEXT NOT NULL, event_data TEXT, user_id TEXT, page TEXT, created_at INTEGER)`);
+    
     console.log('✅ Production database ready');
 
-    // ==================== AUTO-CREATE ADMIN USER ====================
+    // Auto-create admin user
     db.get('SELECT * FROM admins LIMIT 1', [], (err, admin) => {
-        if (err) {
-            console.error('Error checking for admin:', err);
-            return;
-        }
         if (!admin) {
-            console.log('⚠️ No admin found. Creating default admin...');
             bcrypt.hash('admin123', 10).then(hash => {
                 db.run(`INSERT OR IGNORE INTO admins (id, username, password_hash, created_at) VALUES (?, ?, ?, ?)`,
-                    ['admin_1', 'admin', hash, Date.now()], (insertErr) => {
-                        if (insertErr) {
-                            console.error('Error creating admin:', insertErr);
-                        } else {
-                            console.log('✅ Default admin created!');
-                            console.log('   Username: admin');
-                            console.log('   Password: admin123');
-                            console.log('   ⚠️ Please change this password after first login!');
-                        }
-                    });
-            }).catch(err => console.error('Hash error:', err));
-        } else {
-            console.log('✅ Admin user already exists');
+                    ['admin_1', 'admin', hash, Date.now()]);
+                console.log('✅ Default admin created: admin/admin123');
+            });
         }
     });
 });
@@ -192,7 +183,6 @@ const server = http.createServer((req, res) => {
     }
 
     // ==================== AUTH ENDPOINTS ====================
-    
     if (req.url === '/api/send-code' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => body += chunk);
@@ -297,16 +287,10 @@ const server = http.createServer((req, res) => {
     }
 
     // ==================== USER ENDPOINTS ====================
-    
     if (req.url === '/api/users/all' && req.method === 'GET') {
         db.all('SELECT id, name, phone, role, balance, created_at FROM users ORDER BY created_at DESC', (err, rows) => {
-            if (err) {
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: err.message }));
-            } else {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(rows));
-            }
+            if (err) { res.writeHead(500); res.end(JSON.stringify({ error: err.message })); }
+            else { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(rows)); }
         });
         return;
     }
@@ -331,13 +315,8 @@ const server = http.createServer((req, res) => {
     if (req.url.startsWith('/api/users?phone=') && req.method === 'GET') {
         const phone = decodeURIComponent(req.url.split('=')[1]);
         db.get('SELECT * FROM users WHERE phone = ?', [phone], (err, row) => {
-            if (err) {
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: err.message }));
-            } else {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(row || null));
-            }
+            if (err) { res.writeHead(500); res.end(JSON.stringify({ error: err.message })); }
+            else { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(row || null)); }
         });
         return;
     }
@@ -385,18 +364,12 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
-    
+
     // ==================== GIG ENDPOINTS ====================
-    
     if (req.url === '/api/gigs' && req.method === 'GET') {
         db.all('SELECT * FROM gigs ORDER BY created_at DESC', (err, rows) => {
-            if (err) {
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: err.message }));
-            } else {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(rows));
-            }
+            if (err) { res.writeHead(500); res.end(JSON.stringify({ error: err.message })); }
+            else { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(rows)); }
         });
         return;
     }
@@ -501,9 +474,8 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
-    
+
     // ==================== PROFILE ENDPOINTS ====================
-    
     if (req.url.match(/^\/api\/professionals\/.+\/profile$/) && req.method === 'GET') {
         const professionalId = req.url.split('/')[3];
         const profile = {};
@@ -524,9 +496,8 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
-    
+
     // ==================== EDUCATION ENDPOINTS ====================
-    
     if (req.url === '/api/add-education' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => body += chunk);
@@ -607,9 +578,8 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify({ success: true }));
         return;
     }
-    
+
     // ==================== APPLICATIONS ENDPOINTS ====================
-    
     if (req.url === '/api/apply-to-gig' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => body += chunk);
@@ -662,9 +632,8 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
-    
+
     // ==================== WALLET ENDPOINTS ====================
-    
     if (req.url === '/api/wallet/fund' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => body += chunk);
@@ -681,9 +650,66 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
+
+    // ==================== CASHPLUS ENDPOINTS ====================
+    if (req.url === '/api/cashplus/request' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { user_id, amount } = JSON.parse(body);
+                const reference = 'CP' + Date.now() + Math.random().toString(36).substr(2, 8).toUpperCase();
+                const depositId = 'dep_' + Date.now();
+                db.run(`INSERT INTO cashplus_deposits (id, user_id, amount, reference, status, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+                    [depositId, user_id, amount, reference, 'pending', Date.now()]);
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({
+                    success: true,
+                    reference: reference,
+                    instructions: `Transfer MAD ${amount} to CashPlus account: 123-456789-01 (ServiceLink Morocco). Reference: ${reference}`
+                }));
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
     
+    if (req.url === '/api/cashplus/pending' && req.method === 'GET') {
+        db.all('SELECT * FROM cashplus_deposits WHERE status = "pending" ORDER BY created_at DESC', (err, rows) => {
+            if (err) { res.writeHead(500); res.end(JSON.stringify({ error: err.message })); }
+            else { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(rows)); }
+        });
+        return;
+    }
+    
+    if (req.url === '/api/cashplus/verify' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const { reference } = JSON.parse(body);
+                db.get('SELECT * FROM cashplus_deposits WHERE reference = ? AND status = "pending"', [reference], (err, deposit) => {
+                    if (err || !deposit) {
+                        res.writeHead(404, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Deposit not found' }));
+                        return;
+                    }
+                    db.run('UPDATE cashplus_deposits SET status = "verified", verified_at = ? WHERE reference = ?', [Date.now(), reference]);
+                    db.run('UPDATE users SET balance = balance + ? WHERE id = ?', [deposit.amount, deposit.user_id]);
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true, amount: deposit.amount }));
+                });
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
+        });
+        return;
+    }
+
     // ==================== MESSAGES ENDPOINTS ====================
-    
     if (req.url.match(/^\/api\/gigs\/.+\/messages$/) && req.method === 'GET') {
         const gigId = req.url.split('/')[3];
         db.all('SELECT * FROM messages WHERE gig_id = ? ORDER BY created_at ASC', [gigId], (err, rows) => {
@@ -712,9 +738,8 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
-    
+
     // ==================== STATS ENDPOINTS ====================
-    
     if (req.url === '/api/stats' && req.method === 'GET') {
         const stats = {};
         db.get('SELECT COUNT(*) as total FROM users', (err, row) => { stats.totalUsers = row ? row.total : 0; });
@@ -729,9 +754,8 @@ const server = http.createServer((req, res) => {
         }, 200);
         return;
     }
-    
+
     // ==================== REPORTS ENDPOINTS ====================
-    
     if (req.url === '/api/reports' && req.method === 'GET') {
         db.all('SELECT * FROM reports ORDER BY created_at DESC', (err, rows) => {
             if (err) { res.writeHead(500); res.end(JSON.stringify({ error: err.message })); }
@@ -757,14 +781,51 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
-    
+
     // ==================== DELETE USER ====================
-    
     if (req.url.match(/^\/api\/users\/.+\/delete$/) && req.method === 'DELETE') {
         const userId = req.url.split('/')[3];
         db.run('DELETE FROM users WHERE id = ?', [userId]);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: true }));
+        return;
+    }
+
+    // ==================== ANALYTICS ENDPOINTS ====================
+    if (req.url === '/api/analytics' && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk);
+        req.on('end', () => {
+            try {
+                const event = JSON.parse(body);
+                db.run(`INSERT INTO analytics (id, event_name, event_data, user_id, page, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+                    ['evt_' + Date.now(), event.name, JSON.stringify(event.data), event.user_id || 'anonymous', event.page || '', Date.now()]);
+                res.writeHead(200);
+                res.end('OK');
+            } catch (err) {
+                res.writeHead(500);
+                res.end(err.message);
+            }
+        });
+        return;
+    }
+    
+    if (req.url === '/api/analytics/summary' && req.method === 'GET') {
+        const summary = {};
+        db.get('SELECT COUNT(*) as total_views FROM analytics WHERE event_name = "page_view"', (err, row) => {
+            summary.total_views = row?.total_views || 0;
+            db.get('SELECT COUNT(*) as total_users FROM users', (err, row2) => {
+                summary.total_users = row2?.total_users || 0;
+                db.get('SELECT COUNT(*) as total_gigs FROM gigs', (err, row3) => {
+                    summary.total_gigs = row3?.total_gigs || 0;
+                    db.all('SELECT event_name, COUNT(*) as count FROM analytics GROUP BY event_name', (err, rows) => {
+                        summary.event_counts = rows || [];
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify(summary));
+                    });
+                });
+            });
+        });
         return;
     }
 
@@ -777,7 +838,5 @@ const port = process.env.PORT || 3000;
 server.listen(port, () => {
     console.log(`✅ Production server running on port ${port}`);
     console.log(`✅ Twilio Verify active`);
-    console.log(`✅ Admin login available at /login.html`);
-    console.log(`   Username: admin`);
-    console.log(`   Password: admin123`);
+    console.log(`✅ Admin login at /login.html (admin/admin123)`);
 });
