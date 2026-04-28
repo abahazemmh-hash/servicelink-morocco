@@ -10,8 +10,9 @@
     "node": "20.18.0"
   },
   "dependencies": {
-    "sqlite3": "^5.1.7",
     "bcrypt": "^5.1.1",
-    "twilio": "^4.19.3"
+    "bcryptjs": "^3.0.3",
+    "sqlite3": "^5.1.7",
+    "twilio": "^4.23.0"
   }
 }
