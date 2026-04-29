@@ -508,7 +508,49 @@
         btn.innerHTML = 'Create Account';
     }
     
-    async function handleLogin() { const phone = document.getElementById('login-phone').value.trim(); const password = document.getElementById('login-password').value; const rememberMe = document.getElementById('remember-me').checked; if (!phone || !password) { showToast('Fill all fields', 'error'); return; } const btn = document.querySelector('#login-screen .btn-primary'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Logging in...'; try { const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, password }) }); const data = await res.json(); if (data.success) { currentUser = data.user; if (rememberMe) localStorage.setItem('user', JSON.stringify(currentUser)); else sessionStorage.setItem('user', JSON.stringify(currentUser)); showToast(`Welcome back, ${currentUser.name}!`, 'success'); enterApp(); } else showToast(data.error || 'Invalid credentials', 'error'); } catch(e) { showToast('Server error', 'error'); } btn.disabled = false; btn.innerHTML = 'Login'; }
+    async function handleLogin() { 
+        const phone = document.getElementById('login-phone').value.trim(); 
+        const password = document.getElementById('login-password').value; 
+        const rememberMe = document.getElementById('remember-me').checked; 
+        
+        if (!phone || !password) { 
+            showToast('Fill all fields', 'error'); 
+            return; 
+        } 
+        
+        const btn = document.querySelector('#login-screen .btn-primary'); 
+        btn.disabled = true; 
+        btn.innerHTML = '<span class="spinner"></span> Logging in...'; 
+        
+        try { 
+            const res = await fetch('/api/login', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ phone, password }) 
+            }); 
+            const data = await res.json(); 
+            if (data.success) { 
+                currentUser = data.user; 
+                if (rememberMe) { 
+                    localStorage.setItem('user', JSON.stringify(currentUser)); 
+                } else { 
+                    sessionStorage.setItem('user', JSON.stringify(currentUser)); 
+                } 
+                showToast(`Welcome back, ${currentUser.name}!`, 'success'); 
+                
+                // Force hide login screen and show main app
+                document.getElementById('login-screen').classList.remove('active');
+                enterApp();
+            } else { 
+                showToast(data.error || 'Invalid credentials', 'error'); 
+            } 
+        } catch(e) { 
+            showToast('Server error', 'error'); 
+        } 
+        btn.disabled = false; 
+        btn.innerHTML = 'Login'; 
+    }
+    
     function logout() { currentUser = null; localStorage.removeItem('user'); sessionStorage.removeItem('user'); if (messageInterval) clearInterval(messageInterval); showScreen('welcome-screen'); showToast('Logged out successfully', 'success'); }
 
     // ==================== PROFILE COMPLETION ====================
@@ -535,9 +577,56 @@
     function previewProfilePicture(event) { const file = event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = function(e) { document.getElementById('profile-pic-preview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`; localStorage.setItem('profile_pic', e.target.result); }; reader.readAsDataURL(file); } }
 
     // ==================== MAIN APP ====================
-    function enterApp() { const savedLocation = localStorage.getItem('userLocation'); if (savedLocation) userLocation = JSON.parse(savedLocation); if (currentUser.role === 'household') { showScreen('household-main'); loadHouseholdGigs(); if (!userLocation) document.getElementById('location-bar-post').style.display = 'flex'; } else { checkProfileCompletion(); } loadProfileView(); }
-    async function checkProfileCompletion() { const res = await fetch(`/api/my-profile?userId=${currentUser.id}`); const data = await res.json(); if (!data.user.profile_completed) { await loadProfileData(); showScreen('profile-completion-screen'); } else { showScreen('professional-main'); loadProAvailableGigs(); loadProActiveGigs(); loadWallet(); } }
-    async function loadProfileView() { const res = await fetch(`/api/my-profile?userId=${currentUser.id}`); const data = await res.json(); document.getElementById('profile-name').innerText = data.user.name; document.getElementById('profile-role').innerText = currentUser.role === 'household' ? '🏠 Household' : '🛠️ Professional'; document.getElementById('profile-phone').innerText = data.user.phone; document.getElementById('profile-bio-view').innerText = data.user.bio || 'Not provided'; document.getElementById('profile-skills-view').innerText = data.user.skills || 'Not provided'; document.getElementById('profile-education-view').innerHTML = (data.education || []).map(e => `<div class="entry-item"><div class="entry-title">${escapeHtml(e.degree)}</div><div class="entry-sub">${escapeHtml(e.institution)} ${e.year ? `(${e.year})` : ''}</div></div>`).join('') || '<p>No education added</p>'; document.getElementById('profile-work-view').innerHTML = (data.workExperience || []).map(w => `<div class="entry-item"><div class="entry-title">${escapeHtml(w.title)} at ${escapeHtml(w.company)}</div><div class="entry-sub">${w.start_year || ''} - ${w.end_year || 'Present'}</div><div class="entry-sub">${escapeHtml(w.description || '')}</div></div>`).join('') || '<p>No work experience added</p>'; document.getElementById('profile-cert-view').innerHTML = (data.certifications || []).map(c => `<div class="entry-item"><div class="entry-title">${escapeHtml(c.name)}</div><div class="entry-sub">${escapeHtml(c.issuer)} ${c.year ? `(${c.year})` : ''}</div></div>`).join('') || '<p>No certifications added</p>'; if (data.user.profile_picture) document.getElementById('profile-view-pic').innerHTML = `<img src="${data.user.profile_picture}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`; }
+    function enterApp() { 
+        const savedLocation = localStorage.getItem('userLocation'); 
+        if (savedLocation) userLocation = JSON.parse(savedLocation); 
+        
+        // First, remove active class from all screens
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        
+        if (currentUser.role === 'household') { 
+            document.getElementById('household-main').classList.add('active');
+            loadHouseholdGigs(); 
+            if (!userLocation) document.getElementById('location-bar-post').style.display = 'flex'; 
+        } else if (currentUser.role === 'professional') { 
+            document.getElementById('professional-main').classList.add('active');
+            loadProAvailableGigs(); 
+            loadProActiveGigs(); 
+            loadWallet(); 
+            checkProfileCompletion();
+        } else {
+            document.getElementById('welcome-screen').classList.add('active');
+        }
+        loadProfileView(); 
+    }
+    
+    async function checkProfileCompletion() { 
+        try {
+            const res = await fetch(`/api/my-profile?userId=${currentUser.id}`); 
+            const data = await res.json(); 
+            if (!data.user.profile_completed) { 
+                await loadProfileData(); 
+                showScreen('profile-completion-screen'); 
+            } 
+        } catch(e) { console.log('Profile check error'); }
+    }
+    
+    async function loadProfileView() { 
+        try {
+            const res = await fetch(`/api/my-profile?userId=${currentUser.id}`); 
+            const data = await res.json(); 
+            document.getElementById('profile-name').innerText = data.user.name; 
+            document.getElementById('profile-role').innerText = currentUser.role === 'household' ? '🏠 Household' : '🛠️ Professional'; 
+            document.getElementById('profile-phone').innerText = data.user.phone; 
+            document.getElementById('profile-bio-view').innerText = data.user.bio || 'Not provided'; 
+            document.getElementById('profile-skills-view').innerText = data.user.skills || 'Not provided'; 
+            document.getElementById('profile-education-view').innerHTML = (data.education || []).map(e => `<div class="entry-item"><div class="entry-title">${escapeHtml(e.degree)}</div><div class="entry-sub">${escapeHtml(e.institution)} ${e.year ? `(${e.year})` : ''}</div></div>`).join('') || '<p>No education added</p>'; 
+            document.getElementById('profile-work-view').innerHTML = (data.workExperience || []).map(w => `<div class="entry-item"><div class="entry-title">${escapeHtml(w.title)} at ${escapeHtml(w.company)}</div><div class="entry-sub">${w.start_year || ''} - ${w.end_year || 'Present'}</div><div class="entry-sub">${escapeHtml(w.description || '')}</div></div>`).join('') || '<p>No work experience added</p>'; 
+            document.getElementById('profile-cert-view').innerHTML = (data.certifications || []).map(c => `<div class="entry-item"><div class="entry-title">${escapeHtml(c.name)}</div><div class="entry-sub">${escapeHtml(c.issuer)} ${c.year ? `(${c.year})` : ''}</div></div>`).join('') || '<p>No certifications added</p>'; 
+            if (data.user.profile_picture) document.getElementById('profile-view-pic').innerHTML = `<img src="${data.user.profile_picture}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`; 
+        } catch(e) { console.log('Profile load error'); }
+    }
+    
     function editProfile() { showScreen('profile-completion-screen'); loadProfileData(); }
 
     // Household gigs with applicants button

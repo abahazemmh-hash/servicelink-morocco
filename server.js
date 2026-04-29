@@ -164,7 +164,6 @@ const server = http.createServer((req, res) => {
 
     // ==================== AUTH ENDPOINTS (No SMS - Simple Signup) ====================
     
-    // Simple registration - no SMS verification
     if (req.url === '/api/register' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => body += chunk);
@@ -172,7 +171,6 @@ const server = http.createServer((req, res) => {
             try {
                 const { name, phone, password, role } = JSON.parse(body);
                 
-                // Check if user already exists
                 db.get('SELECT * FROM users WHERE phone = ?', [phone], async (err, existing) => {
                     if (existing) {
                         res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -198,7 +196,6 @@ const server = http.createServer((req, res) => {
         return;
     }
     
-    // Login with phone + password
     if (req.url === '/api/login' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => body += chunk);
