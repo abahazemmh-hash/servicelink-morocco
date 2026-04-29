@@ -3,57 +3,22 @@ const fs = require('fs');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
-const twilio = require('twilio');
-
-// ==================== ENVIRONMENT VARIABLES ====================
-const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
-const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-const TWILIO_VERIFY_SERVICE_SID = process.env.TWILIO_VERIFY_SERVICE_SID;
-
-if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_VERIFY_SERVICE_SID) {
-    console.error('❌ Missing Twilio credentials. Set them in Railway environment variables.');
-    process.exit(1);
-}
-
-const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
 // ==================== DATABASE ====================
 const db = new sqlite3.Database('servicelink.db');
 
 db.serialize(() => {
-    // Users table
-    db.run(`CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT NOT NULL, phone TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, is_verified INTEGER DEFAULT 0, role TEXT NOT NULL, bio TEXT, skills TEXT, balance INTEGER DEFAULT 0, profile_picture TEXT, lat REAL, lng REAL, location_updated_at INTEGER, profile_completed INTEGER DEFAULT 0, created_at INTEGER)`);
-    
-    // Gigs table
+    db.run(`CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, name TEXT NOT NULL, phone TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, is_verified INTEGER DEFAULT 1, role TEXT NOT NULL, bio TEXT, skills TEXT, balance INTEGER DEFAULT 0, profile_picture TEXT, lat REAL, lng REAL, location_updated_at INTEGER, profile_completed INTEGER DEFAULT 0, created_at INTEGER)`);
     db.run(`CREATE TABLE IF NOT EXISTS gigs (id TEXT PRIMARY KEY, title TEXT NOT NULL, category TEXT NOT NULL, urgency TEXT NOT NULL, description TEXT NOT NULL, status TEXT DEFAULT 'open', household_id TEXT NOT NULL, household_name TEXT NOT NULL, professional_id TEXT, professional_name TEXT, completed_by TEXT DEFAULT '[]', address TEXT, lat REAL, lng REAL, created_at INTEGER, completed_at INTEGER, rating INTEGER, review TEXT)`);
-    
-    // Education table
     db.run(`CREATE TABLE IF NOT EXISTS education (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, degree TEXT NOT NULL, institution TEXT NOT NULL, year TEXT, created_at INTEGER)`);
-    
-    // Work Experience table
     db.run(`CREATE TABLE IF NOT EXISTS work_experience (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, title TEXT NOT NULL, company TEXT NOT NULL, start_year TEXT, end_year TEXT, description TEXT, created_at INTEGER)`);
-    
-    // Certifications table
     db.run(`CREATE TABLE IF NOT EXISTS certifications (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, name TEXT NOT NULL, issuer TEXT NOT NULL, year TEXT, document_url TEXT, created_at INTEGER)`);
-    
-    // Messages table
     db.run(`CREATE TABLE IF NOT EXISTS messages (id TEXT PRIMARY KEY, gig_id TEXT NOT NULL, sender_id TEXT NOT NULL, sender_name TEXT NOT NULL, text TEXT NOT NULL, created_at INTEGER)`);
-    
-    // Gig applications table
     db.run(`CREATE TABLE IF NOT EXISTS gig_applications (id TEXT PRIMARY KEY, gig_id TEXT NOT NULL, professional_id TEXT NOT NULL, bid_amount INTEGER, message TEXT, status TEXT DEFAULT 'pending', created_at INTEGER)`);
-    
-    // Reports table
     db.run(`CREATE TABLE IF NOT EXISTS reports (id TEXT PRIMARY KEY, reporter_id TEXT NOT NULL, gig_id TEXT NOT NULL, reason TEXT NOT NULL, details TEXT, status TEXT DEFAULT 'pending', created_at INTEGER)`);
-    
-    // Admins table
     db.run(`CREATE TABLE IF NOT EXISTS admins (id TEXT PRIMARY KEY, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, created_at INTEGER)`);
-    
-    // CashPlus deposits table
     db.run(`CREATE TABLE IF NOT EXISTS cashplus_deposits (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, amount INTEGER NOT NULL, reference TEXT UNIQUE NOT NULL, status TEXT DEFAULT 'pending', created_at INTEGER, verified_at INTEGER)`);
-    
-    // Analytics table
     db.run(`CREATE TABLE IF NOT EXISTS analytics (id TEXT PRIMARY KEY, event_name TEXT NOT NULL, event_data TEXT, user_id TEXT, page TEXT, created_at INTEGER)`);
-    
     console.log('✅ Production database ready');
 
     // Auto-create admin user
@@ -63,32 +28,15 @@ db.serialize(() => {
                 db.run(`INSERT OR IGNORE INTO admins (id, username, password_hash, created_at) VALUES (?, ?, ?, ?)`,
                     ['admin_1', 'admin', hash, Date.now()]);
                 console.log('✅ Default admin created: admin/admin123');
+                console.log('⚠️ PLEASE CHANGE THIS PASSWORD AFTER FIRST LOGIN!');
             });
         }
     });
 });
 
-// ==================== TWILIO HELPER FUNCTIONS ====================
-async function sendVerificationCode(phone) {
-    try {
-        const verification = await client.verify.v2.services(TWILIO_VERIFY_SERVICE_SID)
-            .verifications.create({ to: phone, channel: 'sms' });
-        return { success: true };
-    } catch (error) {
-        console.error('Twilio send error:', error);
-        return { success: false, error: error.message };
-    }
-}
-
-async function checkVerificationCode(phone, code) {
-    try {
-        const verificationCheck = await client.verify.v2.services(TWILIO_VERIFY_SERVICE_SID)
-            .verificationChecks.create({ to: phone, code: code });
-        return { success: verificationCheck.status === 'approved' };
-    } catch (error) {
-        console.error('Twilio verify error:', error);
-        return { success: false, error: error.message };
-    }
+// ==================== HELPER FUNCTIONS ====================
+async function hashPassword(password) {
+    return await bcrypt.hash(password, 10);
 }
 
 // ==================== SERVER ====================
@@ -105,7 +53,7 @@ const server = http.createServer((req, res) => {
 
     console.log(`📡 ${req.method} ${req.url}`);
 
-    // ==================== SERVE HTML FILES ====================
+    // Serve HTML files
     if (req.url === '/' || req.url === '/index.html') {
         fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
             if (err) { res.writeHead(500); res.end('Error loading app'); }
@@ -182,21 +130,30 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // ==================== AUTH ENDPOINTS ====================
-    if (req.url === '/api/send-code' && req.method === 'POST') {
+    // ==================== CHANGE ADMIN PASSWORD ====================
+    if (req.url === '/api/admin/change-password' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => body += chunk);
         req.on('end', async () => {
             try {
-                const { phone } = JSON.parse(body);
-                const result = await sendVerificationCode(phone);
-                if (result.success) {
+                const { username, oldPassword, newPassword } = JSON.parse(body);
+                db.get('SELECT * FROM admins WHERE username = ?', [username], async (err, admin) => {
+                    if (err || !admin) {
+                        res.writeHead(401, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Admin not found' }));
+                        return;
+                    }
+                    const match = await bcrypt.compare(oldPassword, admin.password_hash);
+                    if (!match) {
+                        res.writeHead(401, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Current password is incorrect' }));
+                        return;
+                    }
+                    const newHash = await bcrypt.hash(newPassword, 10);
+                    db.run('UPDATE admins SET password_hash = ? WHERE username = ?', [newHash, username]);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: true }));
-                } else {
-                    res.writeHead(500, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ success: false, error: result.error }));
-                }
+                    res.end(JSON.stringify({ success: true, message: 'Password changed successfully' }));
+                });
             } catch (err) {
                 res.writeHead(500, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: err.message }));
@@ -204,30 +161,32 @@ const server = http.createServer((req, res) => {
         });
         return;
     }
+
+    // ==================== AUTH ENDPOINTS (No SMS - Simple Signup) ====================
     
-    if (req.url === '/api/verify-register' && req.method === 'POST') {
+    // Simple registration - no SMS verification
+    if (req.url === '/api/register' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => body += chunk);
         req.on('end', async () => {
             try {
-                const { phone, code, name, password, role } = JSON.parse(body);
-                const verification = await checkVerificationCode(phone, code);
-                if (!verification.success) {
-                    res.writeHead(400, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ error: 'Invalid or expired code' }));
-                    return;
-                }
-                const password_hash = await bcrypt.hash(password, 10);
-                const userId = 'user_' + Date.now();
-                db.get('SELECT * FROM users WHERE phone = ?', [phone], (err, existing) => {
+                const { name, phone, password, role } = JSON.parse(body);
+                
+                // Check if user already exists
+                db.get('SELECT * FROM users WHERE phone = ?', [phone], async (err, existing) => {
                     if (existing) {
-                        db.run(`UPDATE users SET id = ?, name = ?, password_hash = ?, role = ?, is_verified = 1 WHERE phone = ?`,
-                            [userId, name, password_hash, role, phone]);
-                    } else {
-                        db.run(`INSERT INTO users (id, name, phone, password_hash, role, is_verified, created_at, balance) 
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-                            [userId, name, phone, password_hash, role, 1, Date.now(), role === 'professional' ? 0 : 0]);
+                        res.writeHead(400, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Phone number already registered' }));
+                        return;
                     }
+                    
+                    const password_hash = await hashPassword(password);
+                    const userId = 'user_' + Date.now();
+                    
+                    db.run(`INSERT INTO users (id, name, phone, password_hash, role, is_verified, created_at, balance) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                        [userId, name, phone, password_hash, role, 1, Date.now(), 0]);
+                    
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ success: true, user: { id: userId, name, phone, role } }));
                 });
@@ -239,13 +198,14 @@ const server = http.createServer((req, res) => {
         return;
     }
     
+    // Login with phone + password
     if (req.url === '/api/login' && req.method === 'POST') {
         let body = '';
         req.on('data', chunk => body += chunk);
         req.on('end', async () => {
             try {
                 const { phone, password } = JSON.parse(body);
-                db.get('SELECT * FROM users WHERE phone = ? AND is_verified = 1', [phone], async (err, user) => {
+                db.get('SELECT * FROM users WHERE phone = ?', [phone], async (err, user) => {
                     if (err || !user) {
                         res.writeHead(401, { 'Content-Type': 'application/json' });
                         res.end(JSON.stringify({ error: 'Invalid phone or password' }));
@@ -633,24 +593,6 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // ==================== WALLET ENDPOINTS ====================
-    if (req.url === '/api/wallet/fund' && req.method === 'POST') {
-        let body = '';
-        req.on('data', chunk => body += chunk);
-        req.on('end', () => {
-            try {
-                const { user_id, amount } = JSON.parse(body);
-                db.run('UPDATE users SET balance = balance + ? WHERE id = ?', [amount, user_id]);
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: true }));
-            } catch (err) {
-                res.writeHead(500, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: err.message }));
-            }
-        });
-        return;
-    }
-
     // ==================== CASHPLUS ENDPOINTS ====================
     if (req.url === '/api/cashplus/request' && req.method === 'POST') {
         let body = '';
@@ -837,6 +779,6 @@ const server = http.createServer((req, res) => {
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
     console.log(`✅ Production server running on port ${port}`);
-    console.log(`✅ Twilio Verify active`);
     console.log(`✅ Admin login at /login.html (admin/admin123)`);
+    console.log(`⚠️ PLEASE CHANGE DEFAULT ADMIN PASSWORD AFTER FIRST LOGIN!`);
 });

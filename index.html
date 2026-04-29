@@ -114,9 +114,8 @@
         }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
 
-        .phone-row, .verify-row { display: flex; gap: 12px; align-items: center; }
-        .phone-row input, .verify-row input { flex: 2; }
-        .phone-row button, .verify-row button { flex: 1; white-space: nowrap; background: #f1f5f9; color: #2563eb; border: 2px solid #e2e8f0; padding: clamp(14px, 4.5vw, 16px); font-size: clamp(13px, 4vw, 14px); font-weight: 600; cursor: pointer; border-radius: 16px; }
+        .phone-row { display: flex; gap: 12px; align-items: center; }
+        .phone-row input { flex: 1; }
 
         .back-btn { background: none; border: none; font-size: 28px; cursor: pointer; margin-bottom: 16px; color: #64748b; display: flex; align-items: center; gap: 8px; padding: 8px 0; width: auto; }
         .progress { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
@@ -254,18 +253,17 @@
         <button id="signup-continue-btn" class="btn-primary" onclick="goToRegistrationForm()" disabled>Continue</button>
     </div>
 
-    <!-- SIGNUP REGISTRATION -->
+    <!-- SIGNUP REGISTRATION - SIMPLIFIED (NO SMS) -->
     <div id="registration-screen" class="screen">
         <button class="back-btn" onclick="goBackToSignupRole()">← Back</button>
         <div class="progress"><div class="progress-dot active"></div><div class="progress-dot"></div><div class="progress-dot"></div></div>
-        <h1>Create Account</h1><p class="subtitle" id="registration-role-display">Registering as Household</p>
+        <h1>Create Account</h1>
+        <p class="subtitle" id="registration-role-display">Registering as Household</p>
         <div class="form-group"><label>Full Name</label><input type="text" id="full-name" placeholder="Ahmed Benali"></div>
-        <div class="form-group"><label>ID Card Number</label><input type="text" id="id-card" placeholder="AB123456"></div>
-        <div class="form-group"><div class="phone-row"><input type="tel" id="phone-number" placeholder="+212 6XX-XXXXXX"><button id="send-code-btn" onclick="sendVerificationCode()">Send Code</button></div></div>
-        <div class="form-group" id="verification-group" style="display:none;"><div class="verify-row"><input type="text" id="verification-code" placeholder="123456" maxlength="6"><button id="verify-btn" onclick="verifyCode()">Verify</button></div></div>
-        <div class="form-group" id="password-group" style="display:none;"><input type="password" id="password" placeholder="Password"></div>
-        <div class="form-group" id="confirm-group" style="display:none;"><input type="password" id="confirm-password" placeholder="Confirm password"></div>
-        <button id="create-account-btn" class="btn-primary" onclick="createAccount()" style="display:none;">Create Account</button>
+        <div class="form-group"><label>Phone Number</label><input type="tel" id="phone-number" placeholder="+212 6XX-XXXXXX"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="password" placeholder="Create a password"></div>
+        <div class="form-group"><label>Confirm Password</label><input type="password" id="confirm-password" placeholder="Confirm your password"></div>
+        <button id="create-account-btn" class="btn-primary" onclick="createAccount()">Create Account</button>
         <div class="switch-auth">Already have an account? <a onclick="showLoginScreen()">Login</a></div>
     </div>
 
@@ -376,7 +374,7 @@
 
     <div id="pro-active-screen" class="screen"><div class="header"><button onclick="goBackFromActiveToPro()" style="background:none;border:none;font-size:24px;">←</button><h1>My Active Gigs</h1></div><div class="main-content" id="pro-active-list"></div></div>
 
-    <!-- UPDATED WALLET SCREEN - NO DEMO BUTTON -->
+    <!-- WALLET SCREEN - CashPlus Only -->
     <div id="pro-wallet-screen" class="screen">
         <div class="header"><button onclick="goBackFromWalletToPro()" style="background:none;border:none;font-size:24px;">←</button><h1>My Wallet</h1></div>
         <div class="main-content">
@@ -437,8 +435,6 @@
     // ==================== STATE ====================
     let currentUser = null;
     let selectedRole = null;
-    let isPhoneVerified = false;
-    let storedVerificationCode = null;
     let currentChatGig = null;
     let messageInterval = null;
     let resetPhone = null, resetCodeVerified = false, resetStoredCode = null;
@@ -472,12 +468,46 @@
     function showLoginScreen() { showScreen('login-screen'); document.getElementById('login-phone').value = ''; document.getElementById('login-password').value = ''; document.getElementById('remember-me').checked = true; }
     function showSignupRoleScreen() { selectedRole = null; document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected')); document.getElementById('signup-continue-btn').disabled = true; showScreen('signup-role-screen'); }
     function selectRole(role) { selectedRole = role; document.querySelectorAll('.role-card').forEach(c => { c.classList.remove('selected'); if (c.getAttribute('data-role') === role) c.classList.add('selected'); }); document.getElementById('signup-continue-btn').disabled = false; }
+    function goToRegistrationForm() { if (!selectedRole) return; document.getElementById('registration-role-display').innerHTML = selectedRole === 'household' ? 'Registering as Household' : 'Registering as Professional'; document.getElementById('full-name').value = ''; document.getElementById('phone-number').value = ''; document.getElementById('password').value = ''; document.getElementById('confirm-password').value = ''; showScreen('registration-screen'); }
 
-    // ==================== AUTH ====================
-    async function sendVerificationCode() { const phone = document.getElementById('phone-number').value.trim(); if (!phone) { showToast('Enter phone number', 'error'); return; } const btn = document.getElementById('send-code-btn'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Sending...'; try { const res = await fetch('/api/send-code', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) }); const data = await res.json(); if (data.success) { storedVerificationCode = data.testMode ? '123456' : null; showToast(data.testMode ? 'Test Mode: Code 123456' : 'Code sent!', 'success'); document.getElementById('verification-group').style.display = 'block'; } else showToast('Failed to send code', 'error'); } catch(e) { storedVerificationCode = '123456'; showToast('Demo Mode: Use code 123456', 'success'); document.getElementById('verification-group').style.display = 'block'; } btn.disabled = false; btn.innerHTML = 'Send Code'; }
-    async function verifyCode() { const code = document.getElementById('verification-code').value.trim(); if (!code) { showToast('Enter verification code', 'error'); return; } if (code === '123456' || code === storedVerificationCode) { isPhoneVerified = true; showToast('Phone verified!', 'success'); document.getElementById('password-group').style.display = 'block'; document.getElementById('confirm-group').style.display = 'block'; document.getElementById('create-account-btn').style.display = 'block'; document.getElementById('verify-btn').disabled = true; document.getElementById('verify-btn').innerHTML = 'Verified ✓'; } else showToast('Invalid code', 'error'); }
-    function goToRegistrationForm() { if (!selectedRole) return; isPhoneVerified = false; document.getElementById('verification-group').style.display = 'none'; document.getElementById('password-group').style.display = 'none'; document.getElementById('confirm-group').style.display = 'none'; document.getElementById('create-account-btn').style.display = 'none'; document.getElementById('registration-role-display').innerHTML = selectedRole === 'household' ? 'Registering as Household' : 'Registering as Professional'; document.getElementById('full-name').value = ''; document.getElementById('id-card').value = ''; document.getElementById('phone-number').value = ''; document.getElementById('verification-code').value = ''; document.getElementById('password').value = ''; document.getElementById('confirm-password').value = ''; document.getElementById('send-code-btn').disabled = false; document.getElementById('send-code-btn').innerHTML = 'Send Code'; showScreen('registration-screen'); }
-    async function createAccount() { const name = document.getElementById('full-name').value.trim(); const idCard = document.getElementById('id-card').value.trim(); const phone = document.getElementById('phone-number').value.trim(); const password = document.getElementById('password').value; const confirm = document.getElementById('confirm-password').value; if (!name) { showToast('Enter full name', 'error'); return; } if (!idCard) { showToast('Enter ID card number', 'error'); return; } if (!isPhoneVerified) { showToast('Verify phone first', 'error'); return; } if (!password || password.length < 4) { showToast('Password must be at least 4 characters', 'error'); return; } if (password !== confirm) { showToast('Passwords do not match', 'error'); return; } const btn = document.getElementById('create-account-btn'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Creating...'; try { const res = await fetch('/api/verify-register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, code: document.getElementById('verification-code').value, name, password, role: selectedRole }) }); const data = await res.json(); if (data.success) { currentUser = data.user; localStorage.setItem('user', JSON.stringify(currentUser)); showToast('Account created!', 'success'); enterApp(); } else showToast(data.error || 'Registration failed', 'error'); } catch(e) { currentUser = { id: 'user_' + Date.now(), name, phone, role: selectedRole, balance: 0 }; localStorage.setItem('user', JSON.stringify(currentUser)); showToast('Account created (Demo Mode)!', 'success'); enterApp(); } btn.disabled = false; }
+    // ==================== AUTH (No SMS - Simple Signup) ====================
+    async function createAccount() {
+        const name = document.getElementById('full-name').value.trim();
+        const phone = document.getElementById('phone-number').value.trim();
+        const password = document.getElementById('password').value;
+        const confirm = document.getElementById('confirm-password').value;
+        
+        if (!name) { showToast('Enter full name', 'error'); return; }
+        if (!phone) { showToast('Enter phone number', 'error'); return; }
+        if (!password || password.length < 4) { showToast('Password must be at least 4 characters', 'error'); return; }
+        if (password !== confirm) { showToast('Passwords do not match', 'error'); return; }
+        
+        const btn = document.getElementById('create-account-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Creating...';
+        
+        try {
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, phone, password, role: selectedRole })
+            });
+            const data = await res.json();
+            if (data.success) {
+                currentUser = data.user;
+                localStorage.setItem('user', JSON.stringify(currentUser));
+                showToast('Account created!', 'success');
+                enterApp();
+            } else {
+                showToast(data.error || 'Registration failed', 'error');
+            }
+        } catch(e) {
+            showToast('Server error', 'error');
+        }
+        btn.disabled = false;
+        btn.innerHTML = 'Create Account';
+    }
+    
     async function handleLogin() { const phone = document.getElementById('login-phone').value.trim(); const password = document.getElementById('login-password').value; const rememberMe = document.getElementById('remember-me').checked; if (!phone || !password) { showToast('Fill all fields', 'error'); return; } const btn = document.querySelector('#login-screen .btn-primary'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Logging in...'; try { const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, password }) }); const data = await res.json(); if (data.success) { currentUser = data.user; if (rememberMe) localStorage.setItem('user', JSON.stringify(currentUser)); else sessionStorage.setItem('user', JSON.stringify(currentUser)); showToast(`Welcome back, ${currentUser.name}!`, 'success'); enterApp(); } else showToast(data.error || 'Invalid credentials', 'error'); } catch(e) { showToast('Server error', 'error'); } btn.disabled = false; btn.innerHTML = 'Login'; }
     function logout() { currentUser = null; localStorage.removeItem('user'); sessionStorage.removeItem('user'); if (messageInterval) clearInterval(messageInterval); showScreen('welcome-screen'); showToast('Logged out successfully', 'success'); }
 
@@ -528,36 +558,18 @@
     async function acceptGig(gigId) { try { const res = await fetch(`/api/gigs/${gigId}/accept`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ professional_id: currentUser.id, professional_name: currentUser.name }) }); if (res.ok) { showToast('Gig accepted!'); loadProAvailableGigs(); loadProActiveGigs(); } else showToast('Failed', 'error'); } catch(e) { showToast('Error'); } }
     async function markComplete(gigId) { try { await fetch(`/api/gigs/${gigId}/complete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id }) }); showToast('Marked complete!'); if (currentUser.role === 'household') loadHouseholdGigs(); else loadProActiveGigs(); } catch(e) { showToast('Error'); } }
     
-    // NEW: CashPlus deposit function (replaces demo deposit)
     async function requestCashPlusDeposit() {
         const amount = parseInt(document.getElementById('cashplus-amount').value);
-        if (amount < 100) {
-            showToast('Minimum deposit is MAD 100', 'error');
-            return;
-        }
+        if (amount < 100) { showToast('Minimum deposit is MAD 100', 'error'); return; }
         try {
-            const response = await fetch('/api/cashplus/request', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: currentUser.id, amount: amount })
-            });
+            const response = await fetch('/api/cashplus/request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id, amount: amount }) });
             const data = await response.json();
             if (data.success) {
-                document.getElementById('cashplus-instructions').innerHTML = `
-                    <strong>📋 Transfer Instructions:</strong><br>
-                    Transfer MAD ${amount} to CashPlus account: <strong>123-456789-01</strong><br>
-                    (ServiceLink Morocco)<br>
-                    Use reference: <strong>${data.reference}</strong><br><br>
-                    After transfer, admin will verify and credit your wallet.
-                `;
+                document.getElementById('cashplus-instructions').innerHTML = `<strong>📋 Transfer Instructions:</strong><br>Transfer MAD ${amount} to CashPlus account: <strong>123-456789-01</strong><br>(ServiceLink Morocco)<br>Use reference: <strong>${data.reference}</strong><br><br>After transfer, admin will verify and credit your wallet.`;
                 document.getElementById('cashplus-instructions').style.display = 'block';
                 showToast(`Reference generated: ${data.reference}`, 'success');
-            } else {
-                showToast('Failed to generate reference', 'error');
-            }
-        } catch(err) {
-            showToast('Server error', 'error');
-        }
+            } else { showToast('Failed to generate reference', 'error'); }
+        } catch(err) { showToast('Server error', 'error'); }
     }
     
     async function loadWallet() { try { const res = await fetch('/api/users?phone=' + encodeURIComponent(currentUser.phone)); const user = await res.json(); if (user) currentUser.balance = user.balance || 0; document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0); } catch(e) { document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0); } }
