@@ -375,7 +375,27 @@
     </div>
 
     <div id="pro-active-screen" class="screen"><div class="header"><button onclick="goBackFromActiveToPro()" style="background:none;border:none;font-size:24px;">←</button><h1>My Active Gigs</h1></div><div class="main-content" id="pro-active-list"></div></div>
-    <div id="pro-wallet-screen" class="screen"><div class="header"><button onclick="goBackFromWalletToPro()" style="background:none;border:none;font-size:24px;">←</button><h1>My Wallet</h1></div><div class="main-content"><div class="wallet-card"><div>Available Balance</div><div class="wallet-balance" id="wallet-balance">MAD 0</div></div><button class="btn-primary" onclick="fundWalletDemo()">Deposit MAD 100 (Demo)</button></div></div>
+
+    <!-- UPDATED WALLET SCREEN - NO DEMO BUTTON -->
+    <div id="pro-wallet-screen" class="screen">
+        <div class="header"><button onclick="goBackFromWalletToPro()" style="background:none;border:none;font-size:24px;">←</button><h1>My Wallet</h1></div>
+        <div class="main-content">
+            <div class="wallet-card">
+                <div>Available Balance</div>
+                <div class="wallet-balance" id="wallet-balance">MAD 0</div>
+            </div>
+            <div class="card">
+                <h3>💰 Fund via CashPlus</h3>
+                <p style="font-size:13px; margin-bottom:12px;">Generate a reference number, transfer via CashPlus, and admin will credit your wallet.</p>
+                <div class="form-group">
+                    <label>Amount (MAD)</label>
+                    <input type="number" id="cashplus-amount" placeholder="100" value="100" min="100" step="100">
+                </div>
+                <button class="btn-primary" onclick="requestCashPlusDeposit()">Generate CashPlus Reference</button>
+                <div id="cashplus-instructions" style="margin-top:12px; padding:12px; background:#f3f4f6; border-radius:12px; display:none; font-size:13px;"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- PROFILE SCREEN -->
     <div id="profile-screen" class="screen">
@@ -507,7 +527,39 @@
     async function loadProActiveGigs() { if (!currentUser) return; try { const res = await fetch('/api/gigs'); const gigs = await res.json(); const active = gigs.filter(g => g.status === 'accepted' && g.professional_id === currentUser.id); const container = document.getElementById('pro-active-list'); if (active.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px;">No active gigs</div>'; return; } container.innerHTML = active.map(g => `<div class="gig-card"><div class="flex-between"><div class="gig-title">${escapeHtml(g.title)}</div><span class="badge badge-accepted">Active</span></div><div class="gig-meta">Client: ${escapeHtml(g.household_name)}</div><div class="gig-desc">${escapeHtml(g.description)}</div><button onclick="openChat('${g.id}', '${escapeHtml(g.title)}')" style="margin-bottom:8px;">💬 Chat</button><button class="btn-primary" style="background:#10b981;" onclick="markComplete('${g.id}')">✅ Mark Complete</button></div>`).join(''); } catch(e) { showToast('Error loading active gigs'); } }
     async function acceptGig(gigId) { try { const res = await fetch(`/api/gigs/${gigId}/accept`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ professional_id: currentUser.id, professional_name: currentUser.name }) }); if (res.ok) { showToast('Gig accepted!'); loadProAvailableGigs(); loadProActiveGigs(); } else showToast('Failed', 'error'); } catch(e) { showToast('Error'); } }
     async function markComplete(gigId) { try { await fetch(`/api/gigs/${gigId}/complete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id }) }); showToast('Marked complete!'); if (currentUser.role === 'household') loadHouseholdGigs(); else loadProActiveGigs(); } catch(e) { showToast('Error'); } }
-    async function fundWalletDemo() { try { await fetch('/api/wallet/fund', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: currentUser.id, amount: 100 }) }); currentUser.balance = (currentUser.balance || 0) + 100; showToast('MAD 100 deposited!'); loadWallet(); } catch(e) { showToast('Error'); } }
+    
+    // NEW: CashPlus deposit function (replaces demo deposit)
+    async function requestCashPlusDeposit() {
+        const amount = parseInt(document.getElementById('cashplus-amount').value);
+        if (amount < 100) {
+            showToast('Minimum deposit is MAD 100', 'error');
+            return;
+        }
+        try {
+            const response = await fetch('/api/cashplus/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: currentUser.id, amount: amount })
+            });
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('cashplus-instructions').innerHTML = `
+                    <strong>📋 Transfer Instructions:</strong><br>
+                    Transfer MAD ${amount} to CashPlus account: <strong>123-456789-01</strong><br>
+                    (ServiceLink Morocco)<br>
+                    Use reference: <strong>${data.reference}</strong><br><br>
+                    After transfer, admin will verify and credit your wallet.
+                `;
+                document.getElementById('cashplus-instructions').style.display = 'block';
+                showToast(`Reference generated: ${data.reference}`, 'success');
+            } else {
+                showToast('Failed to generate reference', 'error');
+            }
+        } catch(err) {
+            showToast('Server error', 'error');
+        }
+    }
+    
     async function loadWallet() { try { const res = await fetch('/api/users?phone=' + encodeURIComponent(currentUser.phone)); const user = await res.json(); if (user) currentUser.balance = user.balance || 0; document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0); } catch(e) { document.getElementById('wallet-balance').innerText = 'MAD ' + (currentUser.balance || 0); } }
 
     function switchHouseholdTab(tab) { if (tab === 'gigs') { showScreen('household-main'); loadHouseholdGigs(); } else showScreen('profile-screen'); }
